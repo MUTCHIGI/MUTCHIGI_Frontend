@@ -1,0 +1,42 @@
+:root {
+    --root--width: 1920px;
+    --root--height: 1080px;
+    --root--font--ratio: 1;
+}
+
+.Header {
+    margin: 0;
+    display: flex;
+    background-color: #002520;
+    width: 100%;
+    height: calc(var(--root--height)*0.1);
+}
+
+.logo {
+    width: calc(159px*var(--root--font--ratio));
+    height: auto;
+    object-fit: contain;
+    margin: calc(var(--root--height) * 0.03148) calc(var(--root--width) * 0.0135416);
+    cursor: pointer;
+}
+
+.Header .profile_div {
+    display: flex;
+    margin-left: auto;
+    align-items: center;
+    height: calc(var(--root--height)*0.1);
+    gap: calc(var(--root--width)*0.0135416);
+}
+
+.button_profile_logout{
+    margin-right: calc(var(--root--width)*0.089583);
+}
+
+/* 이미지 파일 */
+.profile {
+    width: calc(80px*var(--root--font--ratio));
+    height: calc(80px*var(--root--font--ratio));
+    border: 1px solid #00FFD9;
+    border-radius: 50%;
+}
+
