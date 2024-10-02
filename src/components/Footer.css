@@ -1,0 +1,44 @@
+:root {
+    --root--height: 1920px;
+    --root--width: 1080px;
+    --root--font--ratio: 1;
+}
+
+.Footer {
+    display: flex;
+}
+
+.page_offset {
+    display: flex;
+    align-items: center;
+
+    margin-top: calc(var(--root--height)*0.0171296296);
+
+    width: calc(var(--root--width)*0.2);
+    height: calc(var(--root--height)*0.039814814);
+
+}
+
+.input_page {
+    width: 60px;
+    height: 60px;
+}
+
+.cur_page {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background-color: #D9D9D9;
+
+    width: calc(var(--root--height)*0.039814814);
+    height: 100%;
+
+    font-weight: bolder;
+    font-size: calc(25px*var(--root--font--ratio));
+}
+
+.button_create_quiz {
+    margin-left: auto;
+}

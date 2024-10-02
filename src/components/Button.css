@@ -146,3 +146,43 @@
     border-top: 1px solid rgba(48,100,92,0);
     border-bottom: 1px solid rgba(48,100,92,0);
 }
+
+/* Search Bar */
+
+.button_search {
+    width: calc(var(--root--height)*0.034259259);
+    height: calc(var(--root--height)*0.034259259);
+
+    background-color: white;
+    border: none;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+
+    cursor: pointer;
+}
+
+/* Footer */
+
+.button_page_left {
+    width: calc(var(--root--height)*0.039814814);
+    height: 100%;
+
+    border: 1px solid #D9D9D9;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+
+    font-weight: bold;
+    font-size: calc(25px*var(--root--font--ratio));
+}
+
+.button_page_right {
+    width: calc(var(--root--height)*0.039814814);
+    height: 100%;
+
+    border: 1px solid #D9D9D9;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+    font-weight: bold;
+    font-size: calc(25px*var(--root--font--ratio));
+}
