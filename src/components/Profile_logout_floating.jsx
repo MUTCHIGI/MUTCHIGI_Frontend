@@ -1,4 +1,4 @@
-import './profile_logout_floating.css';
+import './Profile_logout_floating.css';
 
 function profile_logout_floating() {
     return (
