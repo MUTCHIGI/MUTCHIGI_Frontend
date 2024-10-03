@@ -1,9 +1,27 @@
 import './Print_quiz.css';
+import Quiz_item from "./Quiz_item.jsx";
+import Button from "./Button.jsx";
+import Yt_logo from "../img/Yt_logo.png"
 
-function print_quiz() {
+function Print_quiz() {
+
+
     return <div className="PrintQuizList">
-        print_quizlist
+        <div className="select_button">
+            <Button text={"All"} classname={"quiz_platform_all"}/>
+            <Button logo={Yt_logo} classname={"quiz_platform_youtube"}/>
+        </div>
+        <div className="quiz_centerbox">
+            <Quiz_item/>
+            <Quiz_item/>
+            <Quiz_item/>
+            <Quiz_item/>
+            <Quiz_item/>
+            <Quiz_item/>
+            <Quiz_item/>
+            <Quiz_item/>
+        </div>
     </div>
 }
 
-export default print_quiz;
+export default Print_quiz;

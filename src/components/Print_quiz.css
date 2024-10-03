@@ -5,6 +5,10 @@
 }
 
 .PrintQuizList {
+    display: grid;
+
+    position: relative;
+
     width: calc(var(--root--width)*0.83);
     height: calc(var(--root--height)*0.6296296296);
 
@@ -15,4 +19,28 @@
     margin-top: calc(var(--root--height)*0.0148148);
     margin-left: auto;
     margin-right: auto;
+
+    align-items: center;
+}
+
+.quiz_centerbox {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+
+    width: calc(var(--root--width)*0.784375);
+    height: calc(var(--root--height)*0.57685185185);
+
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.select_button {
+    position: absolute;
+    right: 100%;
+
+    height: calc(var(--root--height)*0.6296296296);
+
+    padding-top: calc(var(--root--height)*0.036111111);
 }

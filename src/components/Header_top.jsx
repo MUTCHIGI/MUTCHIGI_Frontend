@@ -3,11 +3,13 @@ import Button from "./Button.jsx";
 import Logo from '../img/mutchigi_logo.png';
 import Profile from '../img/프로필1.png';
 import Triangle from '../img/Polygon 1.png'
-import {useState} from "react";
+import {useContext, useState} from "react";
+import {WindowSizeContext} from "../App.jsx";
 
 function Header_top() {
-    document.documentElement.style.setProperty("--root--height",`${window.innerHeight}px`);
-    document.documentElement.style.setProperty("--root--width",`${window.innerWidth}px`);
+    let windowSize=useContext(WindowSizeContext);
+    document.documentElement.style.setProperty("--root--height",`${windowSize.height}px`);
+    document.documentElement.style.setProperty("--root--width",`${windowSize.width}px`);
 
     let ratio = (((window.innerHeight**2) + (window.innerWidth**2))/4852800)**0.5;
     document.documentElement.style.setProperty("--root--font--ratio",`${ratio}`);

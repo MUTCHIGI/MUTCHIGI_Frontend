@@ -4,6 +4,7 @@
     --root--font--ratio: 1;
 }
 
+/* 버튼자체의 스타일에만 적용되는 css이므로 해당 버튼의 위치는 버튼이 존재하는 컴포넌트 css에서 다룰것 */
 /* Header top 버튼 */
 
 .button_mod_default {
@@ -185,4 +186,54 @@
 
     font-weight: bold;
     font-size: calc(25px*var(--root--font--ratio));
+}
+
+.button_page_move {
+    width: calc(var(--root--height)*0.039814814);
+    height: 70%;
+
+    border-radius: 10px;
+
+    font-size: calc(10px*var(--root--font--ratio));
+
+    margin-left: calc(var(--root--width)*0.005);
+}
+
+.button_create_quiz {
+    width: calc(var(--root--width)*0.10416666);
+    height: calc(var(--root--height)*0.064814814);
+
+    background-color: rgba(0,255,217,0.5);
+
+    font-size: calc(25px*var(--root--font--ratio));
+    font-weight: bold;
+    color: white;
+
+    border: 5px solid #00FFD9;
+    border-radius: calc(var(--root--font--ratio)*20px);
+}
+
+/* Print_quiz */
+
+.button_quiz_platform_all {
+    width: calc(var(--root--width)*0.0364583333);
+    height: calc(var(--root--width)*0.0364583333);
+
+    font-size: calc(30px*var(--root--font--ratio));
+    font-weight: bolder;
+    font-style: italic;
+}
+
+.button_quiz_platform_youtube {
+    border: 1px solid #252525;
+    background-color: #252525;
+
+    width: calc(var(--root--width)*0.0364583333);
+    height: calc(var(--root--width)*0.0364583333);
+}
+
+.button_quiz_platform_youtube .button-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }

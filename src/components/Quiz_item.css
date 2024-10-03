@@ -1,0 +1,7 @@
+.Quiz_item {
+    border-radius: 10px;
+
+    background-color: rgba(0,255,217,0.2);
+    width: calc(var(--root--width)*0.1875);
+    height: calc(var(--root--height)*0.277777777);
+}
