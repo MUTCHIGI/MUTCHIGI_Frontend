@@ -52,3 +52,23 @@
     text-align: center;
     font-size: calc(15px*var(--root--font--ratio));
 }
+
+.search_by_public_or_private {
+    display: flex;
+    font-weight: bolder;
+    margin-left: calc(var(--root--width)*0.0375);
+}
+
+.radio_room_public {
+    width: calc(var(--root--height)*0.0185185185);
+    height: calc(var(--root--height)*0.0185185185);
+}
+
+.radio_room_private{
+    width: calc(var(--root--height)*0.0185185185);
+    height: calc(var(--root--height)*0.0185185185);
+}
+
+.temp {
+    margin-left: calc(var(--root--width)*0.01);
+}

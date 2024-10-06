@@ -6,7 +6,7 @@ function Footer() {
         <div className="page_offset">
             <Button text={"<"} classname={"page_left"}/>
             <div className="cur_page">
-                cur
+                3
             </div>
             <Button text={">"} classname={"page_right"}/>
             <input className="input_page" type="number" />
