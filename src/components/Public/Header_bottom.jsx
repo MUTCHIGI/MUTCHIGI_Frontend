@@ -1,4 +1,4 @@
-import './Header_bottom.css';
+import './CSS/Header_bottom.css';
 import Button from "./Button.jsx";
 
 function Header_bottom() {

@@ -1,4 +1,4 @@
-import './Footer.css';
+import './CSS/Footer.css';
 import Button from "./Button.jsx";
 
 function Footer() {
@@ -6,11 +6,11 @@ function Footer() {
         <div className="page_offset">
             <Button text={"<"} classname={"page_left"}/>
             <div className="cur_page">
-                cur
+                3
             </div>
             <Button text={">"} classname={"page_right"}/>
             <input className="input_page" type="number" />
-            <Button text={"이동"}/>
+            <Button text={"이동"} classname={"page_move"}/>
         </div>
         <Button text={"새 퀴즈 생성"} classname={"create_quiz"}/>
     </div>
