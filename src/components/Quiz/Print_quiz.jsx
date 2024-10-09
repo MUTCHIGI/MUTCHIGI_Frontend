@@ -1,9 +1,9 @@
-import './Print_quiz.css';
+import './CSS/Print_quiz.css';
 import Quiz_item from "./Quiz_item.jsx";
-import Button from "./Button.jsx";
-import Yt_logo from "../img/Yt_logo.png"
-import Thumbnail from '../img/QuizItemTest/test_thumbnail.png';
-import Logo from '../img/Yt_logo.png';
+import Button from "../Public/Button.jsx";
+import Yt_logo from "../../img/Yt_logo.png"
+import Thumbnail from '../../img/QuizItemTest/test_thumbnail.png';
+import Logo from '../../img/Yt_logo.png';
 
 
 function Print_quiz() {

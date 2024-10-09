@@ -1,10 +1,10 @@
-import './Header_top.css';
+import './CSS/Header_top.css';
 import Button from "./Button.jsx";
-import Logo from '../img/mutchigi_logo.png';
-import Profile from '../img/프로필1.png';
-import Triangle from '../img/Polygon 1.png'
+import Logo from '../../img/mutchigi_logo.png';
+import Profile from '../../img/프로필1.png';
+import Triangle from '../../img/Polygon 1.png'
 import {useContext, useState} from "react";
-import {WindowSizeContext} from "../App.jsx";
+import {WindowSizeContext} from "../../App.jsx";
 
 function Header_top() {
     let windowSize=useContext(WindowSizeContext);

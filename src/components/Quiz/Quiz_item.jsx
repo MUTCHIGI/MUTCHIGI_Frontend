@@ -1,4 +1,4 @@
-import './Quiz_item.css';
+import './CSS/Quiz_item.css';
 
 function Quiz_item({Thumbnail,Logo,quiz_title,quiz_description}) {
     let allPropsProvided = Thumbnail&&Logo&&quiz_title&&quiz_description;

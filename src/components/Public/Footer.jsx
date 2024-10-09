@@ -1,4 +1,4 @@
-import './Footer.css';
+import './CSS/Footer.css';
 import Button from "./Button.jsx";
 
 function Footer() {

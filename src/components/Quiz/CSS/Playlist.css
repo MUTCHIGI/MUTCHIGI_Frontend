@@ -1,0 +1,75 @@
+.Playlist {
+    width: calc(var(--root--width)*0.83);
+    height: calc(var(--root--height)*0.74629629629);
+
+    background-color: #D9D9D9;
+
+    border-radius: 10px;
+    border: 1px solid #D9D9D9;
+
+    margin: calc(var(--root--height) * 0.0513888888) auto;
+
+    align-items: center;
+}
+
+.Playlist_explain {
+    display: flex;
+
+    background-color: rgba(0,255,217,0.6);
+
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: calc(var(--root--height)*0.07685185185);
+
+    width: calc(var(--root--width)*0.6125);
+    height: calc(var(--root--height)*0.11111111111111);
+
+    border-radius: 20px;
+    border:1px solid #00FFD9;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: calc(25px*var(--root--font--ratio));
+    font-weight: bolder;
+}
+
+.inner_box {
+    text-align: center;
+    width: calc(var(--root--width)*0.4375);
+}
+
+.Playlist_create {
+    display: flex;
+
+    background-color: #6BC5B4;
+
+    align-items: center;
+
+    width: calc(var(--root--width)*0.675);
+    height: calc(var(--root--height)*0.154629629629);
+
+    margin-top: calc(var(--root--height)*0.079629629629);
+    margin-left: auto;
+    margin-right: auto;
+
+    border-radius: 20px;
+}
+
+.Playlist_input {
+    width: calc(var(--root--width)*0.5635416666666);
+    height: calc(var(--root--height)*0.12407407407);
+
+    border-radius: 20px;
+    border: none;
+
+    margin-left: calc(var(--root--width)*0.0078125);
+
+    text-align: center;
+    font-size: calc(36px*var(--root--font--ratio));
+    font-weight: bolder;
+}
+
+.button_add_playlist {
+    margin-left: auto;
+}

@@ -1,6 +1,6 @@
-import './SearchBar.css';
+import './CSS/SearchBar.css';
 import Button from "./Button.jsx";
-import Search from "../img/search.png";
+import Search from "../../img/search.png";
 import {useState} from "react";
 
 function SearchBar({multiplay}) {
