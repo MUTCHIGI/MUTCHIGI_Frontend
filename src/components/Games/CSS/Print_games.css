@@ -1,0 +1,39 @@
+.Print_games {
+    display: grid;
+
+    position: relative;
+
+    width: calc(var(--root--width)*0.83);
+    height: calc(var(--root--height)*0.6296296296);
+
+    background-color: #D9D9D9;
+
+    border-radius: 10px;
+
+    margin-top: calc(var(--root--height)*0.0148148);
+    margin-left: auto;
+    margin-right: auto;
+
+    align-items: center;
+}
+
+.games_centerbox {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    justify-content: space-between;
+
+    width: calc(var(--root--width)*0.784375);
+    height: calc(var(--root--height)*0.57685185185);
+
+    margin-left: auto;
+}
+
+.dash_line {
+    position: absolute;
+
+    height: 100%;
+
+    margin-left: 50%;
+    border-right: 10px dashed black;
+}

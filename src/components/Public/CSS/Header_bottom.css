@@ -1,3 +1,6 @@
+/* 132623 그라데이션 추가 */
+
+
 :root {
     --root--width: 1920px;
     --root--height: 1080px;
@@ -7,7 +10,7 @@
 .Header_bottom {
     margin: 0;
     display: flex;
-    background-color: rgba(48,100,92,0.5);
+    background: linear-gradient(rgba(19,38,35,0.5),rgba(48,100,92,0.5));
     width: 100%;
     height: calc(var(--root--height)*0.050925);
 }
