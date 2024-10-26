@@ -1,12 +1,3 @@
-/* 132623 그라데이션 추가 */
-
-
-:root {
-    --root--width: 1920px;
-    --root--height: 1080px;
-    --root--font--ratio: 1;
-}
-
 .Header_bottom {
     margin: 0;
     display: flex;
@@ -15,6 +6,9 @@
     height: calc(var(--root--height)*0.050925);
 }
 
-.button_mod_custom {
-    margin-left: calc(var(--root--width)*0.095);
+.Quiz_header_bottom {
+    display: flex;
+    height: 100%;
+
+    margin-left: 15%;
 }

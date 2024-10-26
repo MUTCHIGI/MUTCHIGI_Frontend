@@ -7,13 +7,6 @@ import {useContext, useState} from "react";
 import {WindowSizeContext} from "../../App.jsx";
 
 function Header_top() {
-    let windowSize=useContext(WindowSizeContext);
-    document.documentElement.style.setProperty("--root--height",`${windowSize.height}px`);
-    document.documentElement.style.setProperty("--root--width",`${windowSize.width}px`);
-
-    let ratio = (((window.innerHeight**2) + (window.innerWidth**2))/4852800)**0.5;
-    document.documentElement.style.setProperty("--root--font--ratio",`${ratio}`);
-
     let [activeButton, setActiveButton] = useState(0);
 
     function handleButtonClick(index) {
@@ -26,9 +19,6 @@ function Header_top() {
                 className="logo"
                 src={Logo}
             />
-            <Button text={"기본"} classname={"mod_default"}/>
-            <Button text={"대규모"} classname={"mod_giant"}/>
-            <Button text={"멀티플레이"} classname={"mod_multiplay"}/>
             <div className="profile_div">
                 <img
                     className="profile"

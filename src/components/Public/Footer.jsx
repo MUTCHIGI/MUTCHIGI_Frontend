@@ -12,7 +12,7 @@ function Footer() {
             <input className="input_page" type="number" />
             <Button text={"이동"} classname={"page_move"}/>
         </div>
-        <Button text={"새 퀴즈 생성"} classname={"create_quiz"}/>
+        <Button text={"방 만들기"} classname={"create_room"}/>
     </div>
 }
 
