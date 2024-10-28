@@ -1,3 +1,9 @@
+:root {
+  --root--width: 1920px;
+  --root--height: 1080px;
+  --root--font--ratio: 1;
+}
+
 .App {
   margin: 0;
 }

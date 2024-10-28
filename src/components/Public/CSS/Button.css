@@ -1,60 +1,5 @@
-:root {
-    --root--height: 1920px;
-    --root--width: 1080px;
-    --root--font--ratio: 1;
-}
-
 /* 버튼자체의 스타일에만 적용되는 css이므로 해당 버튼의 위치는 버튼이 존재하는 컴포넌트 css에서 다룰것 */
 /* Header top 버튼 */
-
-.button_mod_default {
-    font-size: calc(32px*var(--root--font--ratio));
-    font-weight: bold;
-    color: #00FFD9;
-    width: calc(var(--root--width)*0.1);
-    height: 100%;
-    border-left: 1px solid #00FFD9;
-
-    /*색상 변경시 모두 같은색으로*/
-    border-top: 1px solid #002520;
-    border-bottom: 1px solid #002520;
-    border-right: 1px solid #002520;
-    background-color: #002520;
-    cursor: pointer;
-}
-
-.button_mod_giant {
-    font-size: calc(32px*var(--root--font--ratio));
-    font-weight: bold;
-    color: #00FFD9;
-    width: calc(var(--root--width)*0.1);
-    height: 100%;
-    border-left: 1px solid #00FFD9;
-
-    /*색상 변경시 모두 같은색으로*/
-    border-top: 1px solid #002520;
-    border-bottom: 1px solid #002520;
-    border-right: 1px solid #002520;
-    background-color: #002520;
-    cursor: pointer;
-}
-
-.button_mod_multiplay {
-    font-size: calc(32px*var(--root--font--ratio));
-    font-weight: bold;
-    color: #00FFD9;
-    width: calc(var(--root--width)*0.1);
-    height: 100%;
-    border-left: 1px solid #00FFD9;
-    border-right: 1px solid #00FFD9;
-
-    /*색상 변경시 모두 같은색으로*/
-    border-top: 1px solid #002520;
-    border-bottom: 1px solid #002520;
-    background-color: #002520;
-
-    cursor: pointer;
-}
 
 .button_profile_logout {
     padding: 0;
@@ -81,9 +26,9 @@
     width: calc(var(--root--width)*0.07);
     height: 100%;
 
-    border-left: 1px solid white;
-
     cursor: pointer;
+
+    border-left: 1px solid white;
 
     /* 색상 변경시 모두 변경 */
     border-top: 1px solid rgba(48,100,92,0);
@@ -120,13 +65,14 @@
     height: 100%;
 
     border-left: 1px solid white;
+    border-right: 1px solid white;
 
     cursor: pointer;
 
     /* 색상 변경시 모두 변경 */
     border-top: 1px solid rgba(48,100,92,0);
     border-bottom: 1px solid rgba(48,100,92,0);
-    border-right: 1px solid rgba(48,100,92,0);
+    /*border-right: 1px solid rgba(48,100,92,0);*/
 }
 
 .button_mod_ai_generate {
@@ -162,6 +108,23 @@
     cursor: pointer;
 }
 
+.button_quiz_type {
+    width: calc(var(--root--width)*0.08);
+    height: calc(var(--root--height)*0.06);
+
+    background-color: rgba(255,255,255,0.5);
+    border: 2px solid #00FFD9;
+    border-radius: 10px;
+
+    font-weight: bold;
+    font-size: calc(16px*var(--root--font--ratio));
+
+    cursor: pointer;
+}
+
+.button_quiz_type:active {
+    background-color: rgba(0,255,172,0.5);
+}
 /* Footer */
 
 .button_page_left {
@@ -203,7 +166,7 @@
     margin-left: calc(var(--root--width)*0.005);
 }
 
-.button_create_quiz {
+.button_create_room {
     width: calc(var(--root--width)*0.10416666);
     height: calc(var(--root--height)*0.064814814);
 
@@ -217,6 +180,10 @@
     border-radius: calc(var(--root--font--ratio)*20px);
 
     cursor: pointer;
+}
+
+.button_create_room:hover {
+    background-color: #00FFD9;
 }
 
 /* Print_quiz */
@@ -277,4 +244,89 @@
     font-weight: bolder;
 
     cursor: pointer;
+}
+
+/* Game_board_waiting */
+
+.button_game_exit {
+    width: calc(var(--root--width)*0.041666666666666);
+    height: calc(var(--root--height)*0.04629629629629);
+
+    font-size: calc(24px*var(--root--font--ratio));
+
+    background-color: rgba(0,255,217,0.5);
+
+    color:white;
+
+    border: none;
+    border-radius: 10px;
+}
+
+.button_game_share {
+    width: calc(var(--root--width)*0.041666666666666);
+    height: calc(var(--root--height)*0.04629629629629);
+
+    font-size: calc(24px*var(--root--font--ratio));
+
+    background-color: rgba(0,255,217,0.5);
+
+    color:white;
+
+    border: none;
+    border-radius: 10px;
+}
+
+.button_game_ready {
+    width: calc(var(--root--width)*0.33333333333333333);
+    height: calc(var(--root--height)*0.1111111111111111111111);
+
+    font-weight: bolder;
+    font-size: calc(48px*var(--root--font--ratio));
+
+    border-radius: 100px / 100px;
+    border: none;
+}
+
+.button_game_ready:hover {
+    border: 1px solid black;
+}
+
+/* Game_board_playing */
+
+.button_skip {
+    width: calc(var(--root--width)*0.078125);
+    height: calc(var(--root--height)*0.13888888888888888888888888888889);
+
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(0,255,217,0.5);
+
+
+    font-size: calc(24px*var(--root--font--ratio));
+    color: white;
+
+    cursor: pointer;
+}
+
+.button_skip:hover {
+    background-color: #00FFD9;
+}
+
+/* Ingame */
+
+.button_chat_submit {
+    display: flex;
+
+    background-color: transparent;
+
+    border: 2px solid #00FFD9;
+
+    width: calc(var(--root--width)*0.02083333333333333333333333333333);
+    height: calc(var(--root--height)*0.03703703703703703703703703703704);
+
+    cursor: pointer;
+}
+
+.button_chat_submit:hover {
+    background-color: rgba(0,255,217,0.5);
 }

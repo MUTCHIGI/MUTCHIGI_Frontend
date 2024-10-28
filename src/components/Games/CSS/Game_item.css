@@ -2,7 +2,14 @@
     position: relative;
     display: flex;
 
+    width: calc(var(--root--width)*0.33645833332933);
     height: calc(var(--root--height)*0.15740740740737);
+
+    cursor: pointer;
+}
+
+.Game_item:hover .room_information_1 {
+    background-color: white;
 }
 
 .Thumbnail {

@@ -9,7 +9,10 @@ function Home() {
     return <div>
         <Header_top/>
         <Header_bottom/>
-        <Playlist/>
+        <SearchBar multiplay={false}/>
+        <Print_quiz/>
+        <Footer/>
+        {/*<Playlist/>*/}
     </div>
 }
 

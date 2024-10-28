@@ -29,7 +29,14 @@ function Print_quiz() {
             <Quiz_item/>
             <Quiz_item/>
             <Quiz_item/>
-            <Quiz_item/>
+            <div className="create_new_quiz">
+                <div className="new_quiz_plus">
+                    +
+                </div>
+                <div className="new_quiz_text">
+                    퀴즈 만들기
+                </div>
+            </div>
         </div>
     </div>
 }

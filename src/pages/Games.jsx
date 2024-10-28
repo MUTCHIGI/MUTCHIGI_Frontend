@@ -7,7 +7,7 @@ import Footer from "../components/Public/Footer.jsx";
 function Games() {
     return <div>
         <Header_top/>
-        <Header_bottom/>
+        <Header_bottom quiz={false}/>
         <SearchBar multiplay={true}/>
         <Print_games/>
         <Footer/>

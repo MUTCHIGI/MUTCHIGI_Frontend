@@ -1,9 +1,3 @@
-:root {
-    --root--height: 1920px;
-    --root--width: 1080px;
-    --root--font--ratio: 1;
-}
-
 .Footer {
     display: flex;
 }
@@ -44,7 +38,7 @@
     font-size: calc(25px*var(--root--font--ratio));
 }
 
-.button_create_quiz {
+.button_create_room {
     margin-left: auto;
     margin-top: calc(var(--root--height)*0.016);
     margin-right: calc(var(--root--width)*0.085);
