@@ -89,16 +89,16 @@ function QuizCreate({ userId, token, typeId }) {
       setStep(step + 1);
     }
     else if (step === 2 && title && description && (mode === 0 || mode === 1 && instrument != -1)) {
-      // postQuiz()
-      //   .then((success) => {
-      //     if (success) {
-      //       setStep(step + 1);
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     console.error("Error in postQuiz:", error);
-      //   });
-      setStep(step + 1);
+      postQuiz()
+        .then((success) => {
+          if (success) {
+            setStep(step + 1);
+          }
+        })
+        .catch((error) => {
+          console.error("Error in postQuiz:", error);
+        });
+      // setStep(step + 1);
     }
   };
 
