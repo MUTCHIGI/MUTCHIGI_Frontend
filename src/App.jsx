@@ -5,6 +5,7 @@ import {createContext, useContext, useEffect, useState} from "react";
 import Games from "./pages/Games.jsx";
 import Footer from "./components/Public/Footer.jsx";
 import Ingame from "./components/InGame/Ingame.jsx";
+import {AuthProvider} from "./components/Login/AuthContext.jsx";
 
 export let WindowSizeContext = createContext();
 
@@ -37,11 +38,13 @@ function App() {
 
   return (
       <WindowSizeContext.Provider value={windowSize}>
-          <div className="App">
-              <Home/>
-              {/*<Games/>*/}
-              {/*<Ingame/>*/}
-          </div>
+          <AuthProvider>
+              <div className="App">
+                  <Home/>
+                  {/*<Games/>*/}
+                  {/*<Ingame/>*/}
+              </div>
+          </AuthProvider>
       </WindowSizeContext.Provider>
   )
 }
