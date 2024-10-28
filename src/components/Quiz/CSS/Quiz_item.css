@@ -8,6 +8,10 @@
     height: calc(var(--root--height)*0.277777777);
 }
 
+.Quiz_item_provided {
+    cursor: pointer;
+}
+
 .quiz_thumbnail {
     width: calc(var(--root--width)*0.1875);
     height: calc(var(--root--height)*0.1875);

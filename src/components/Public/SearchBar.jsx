@@ -14,7 +14,7 @@ function SearchBar({multiplay}) {
 
     /*퀴즈 리스트 문제 분류 (전체,기본,악기분리)*/
     const [textIndex, setTextIndex] = useState(0); // 현재 텍스트의 인덱스 상태
-    const texts = ["전체", "기본", "악기분리"]; // 순환할 텍스트 배열
+    const texts = ["전체", "기본", "악기 분리"]; // 순환할 텍스트 배열
 
     const handleClick = () => {
         setTextIndex((prevIndex) => (prevIndex + 1) % texts.length); // 0, 1, 2를 순환
