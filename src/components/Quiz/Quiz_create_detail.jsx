@@ -129,7 +129,7 @@ const TimeAdjuster = ({ startTime, onUpdateTime, maxTime }) => {
                 <input
                     type="range"
                     min="0"
-                    max="3600"
+                    max={maxTime}
                     value={time}
                     onChange={handleSliderChange}
                     className={styles["option-timebar"]}
@@ -225,7 +225,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
             <HintInput hints={localHints} onUpdateHints={setLocalHints} maxHintNum={hintSetting.length} />
           </div>
           <div className={styles['quiz-seting-right']}>
-            <TimeAdjuster startTime={localTime} onUpdateTime={setLocalTime} />
+            <TimeAdjuster startTime={localTime} onUpdateTime={setLocalTime} maxTime={card.maxTime}/>
           </div>
           <button className={styles["close-btn"]} onClick={handleSave}>
             완료

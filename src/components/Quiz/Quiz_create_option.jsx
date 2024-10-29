@@ -137,7 +137,7 @@ const OptionSelection = ({ info, handlers }) => {
           ))}
         </div>
       </div>
-      {mode === 1 && (
+      {mode === 2 && (
       <div className={styles["option-ai"]}>
         <span className={`${styles['option-white-box']} ${styles['option-select-instrument']}`}>악기 선택</span>
         <InstrumentSelect instrument={instrument} setInstrument={setInstrument} />

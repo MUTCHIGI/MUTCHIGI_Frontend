@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useNavigate } from 'react-router-dom';
 import MainInfo from "./Quiz_create_main";
 import ModeSelection from "./Quiz_create_mode";
 import OptionSelection from "./Quiz_create_option";
@@ -10,7 +11,7 @@ function QuizCreate({ userId, token, typeId }) {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [thumbnail, setThumbnail] = useState(null);
-  const [mode, setMode] = useState(-1);
+  const [mode, setMode] = useState(0);
   const [timeLimit, setTimeLimit] = useState(0);
   const [hints, setHints] = useState([]);
   const [instrument, setInstrument] = useState(-1);
@@ -24,7 +25,7 @@ function QuizCreate({ userId, token, typeId }) {
     const formData = new FormData();
     formData.append("image", thumbnail); // thumbnail 이미지 파일 추가
 
-    fetch(`http://localhost:8080/createQuiz/image?quizId=${quizId}`, {
+    fetch(`http://localhost:8080/quiz/createQuiz/image?quizId=${quizId}`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -41,7 +42,7 @@ function QuizCreate({ userId, token, typeId }) {
   }
 
   const postQuiz = () => {
-    return fetch("http://localhost:8080/createQuiz", {
+    return fetch("http://localhost:8080/quiz/createQuiz", {
       method: "POST",
       headers: {
         "accept": "*/*",
@@ -85,10 +86,10 @@ function QuizCreate({ userId, token, typeId }) {
   };
 
   const nextStep = () => {
-    if (step === 1 && mode != -1) {
+    if (step === 1 && mode) {
       setStep(step + 1);
     }
-    else if (step === 2 && title && description && (mode === 0 || mode === 1 && instrument != -1)) {
+    else if (step === 2 && title && description && (mode === 1 || (mode === 2 && instrument != -1))) {
       postQuiz()
         .then((success) => {
           if (success) {
@@ -98,7 +99,10 @@ function QuizCreate({ userId, token, typeId }) {
         .catch((error) => {
           console.error("Error in postQuiz:", error);
         });
-      // setStep(step + 1);
+    }
+    else if (step === 3)
+    {
+      navigate('/home');
     }
   };
 

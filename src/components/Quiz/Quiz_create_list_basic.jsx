@@ -13,6 +13,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
 
     const convertToSeconds = (timeString) => {
         const [hours, minutes, seconds] = timeString.split(':').map(Number);
+        console.log(hours, minutes, seconds);
         return (hours * 3600) + (minutes * 60) + seconds;
     };
 
@@ -58,7 +59,32 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
     };
 
     const handleDeleteCard = (index) => {
-        setCards(cards.filter((_, i) => i !== index));
+        fetch(`http://localhost:8080/song/youtube/${cards[index].quizRelationId}/delSong`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': '*/*',
+                'Authorization': `Bearer ${token}`, // token을 props나 상태로 전달받아 사용
+            },
+            body: JSON.stringify({
+                youtubeURL: url,
+                quizId: quizId,
+            }),
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                setCards(cards.filter((_, i) => i !== index));
+                return response.status !== 200 ? response.json() : null;
+            })
+            .then((data) => {
+                if (data) {
+                    console.log("Success:", data);
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
     const openModal = (index) => {
