@@ -3,7 +3,7 @@ import Button from "../Public/Button.jsx";
 import {useState} from "react";
 import {useAuth} from "../Login/AuthContext.jsx";
 
-function Room_create_float({onClose}) {
+function Room_create_float({quiz,onClose}) {
     /* 토큰 */
     const {token} = useAuth();
 
@@ -132,11 +132,11 @@ function Room_create_float({onClose}) {
         </div>
         <div className="Room_create_info">
             <div className="Room_create_img">
-                img
+                <img src={quiz.thumbnailURL} className="Room_create_img_src"/>
             </div>
             <div className="Room_create_description">
                 <div className={"Room_create_description_innerbox"}>
-                    description
+                    {quiz.quizDescription}
                 </div>
             </div>
         </div>

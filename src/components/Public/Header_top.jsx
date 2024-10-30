@@ -6,8 +6,10 @@ import Triangle from '../../img/Polygon 1.png'
 import {useContext, useEffect, useRef, useState} from "react";
 import {WindowSizeContext} from "../../App.jsx";
 import Profile_logout_floating from "./Profile_logout_floating.jsx";
+import {useNavigate} from "react-router-dom";
 
 function Header_top() {
+    const navigator = useNavigate();
     /* 프로파일 버튼 클릭시 생성되는 플로팅창 */
     const [isDivVisible, setDivVisible] = useState(false); // div 표시 여부를 관리하는 상태
     const divRef = useRef(null); // div의 참조 생성
@@ -33,6 +35,9 @@ function Header_top() {
             <img
                 className="logo"
                 src={Logo}
+                onClick={() => {
+                    navigator('/');
+                }}
             />
             <div className="profile_div">
                 <img

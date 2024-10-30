@@ -16,6 +16,43 @@
 }
 
 /* Header bottom 버튼 */
+.button_mod_all {
+    font-size: calc(30px*var(--root--font--ratio));
+    color:white;
+    font-weight: bolder;
+
+    background-color: rgba(48,100,92,0);
+    width: calc(var(--root--width)*0.07);
+    height: 100%;
+
+    cursor: pointer;
+
+    border-left: 1px solid white;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    border-right: 1px solid rgba(48,100,92,0);
+}
+
+.button_mod_all_selected {
+    font-size: calc(30px*var(--root--font--ratio));
+    color:white;
+    font-weight: bolder;
+
+    background-color: rgba(255,255,255,0.5);
+    width: calc(var(--root--width)*0.07);
+    height: 100%;
+
+    cursor: pointer;
+
+    border-left: 1px solid white;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    border-right: 1px solid rgba(48,100,92,0);
+}
 
 .button_mod_custom {
     font-size: calc(30px*var(--root--font--ratio));
@@ -36,18 +73,18 @@
     border-right: 1px solid rgba(48,100,92,0);
 }
 
-.button_mod_recommend {
+.button_mod_custom_selected {
     font-size: calc(30px*var(--root--font--ratio));
-    color:white;
+    color : white;
     font-weight: bolder;
 
-    background-color: rgba(48,100,92,0);
-    width: calc(var(--root--width)*0.05);
+    background-color: rgba(255,255,255,0.5);
+    width: calc(var(--root--width)*0.07);
     height: 100%;
 
-    border-left: 1px solid white;
-
     cursor: pointer;
+
+    border-left: 1px solid white;
 
     /* 색상 변경시 모두 변경 */
     border-top: 1px solid rgba(48,100,92,0);
@@ -61,6 +98,26 @@
     font-weight: bolder;
 
     background-color: rgba(48,100,92,0);
+    width: calc(var(--root--width)*0.1072916);
+    height: 100%;
+
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+
+    cursor: pointer;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    /*border-right: 1px solid rgba(48,100,92,0);*/
+}
+
+.button_mod_playlist_selected {
+    font-size: calc(30px*var(--root--font--ratio));
+    color:white;
+    font-weight: bolder;
+
+    background-color: rgba(255,255,255,0.5);
     width: calc(var(--root--width)*0.1072916);
     height: 100%;
 
@@ -97,7 +154,7 @@
 /* Search Bar */
 
 .button_search {
-    width: calc(var(--root--height)*0.034259259);
+    width: calc(var(--root--width)*0.01927083333333333333333333333333);
     height: calc(var(--root--height)*0.034259259);
 
     background-color: white;

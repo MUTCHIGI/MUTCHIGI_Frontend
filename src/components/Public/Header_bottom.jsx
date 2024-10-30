@@ -1,18 +1,17 @@
 import './CSS/Header_bottom.css';
 import Button from "./Button.jsx";
 
-function Header_bottom({quiz}) {
+function Header_bottom({quiz,customOrplaylist,setCustomOrPlaylist}) {
     return (
         <div className="Header_bottom">
             {quiz && (
                 <div className={"Quiz_header_bottom"}>
-                    <Button text={"커스텀"} classname={"mod_custom"}/>
-                    <Button text={"플레이리스트"} classname={"mod_playlist"}/>
+                    <Button text={"전체"} classname={`mod_all${customOrplaylist===0 ? "_selected" : ""}`} onClick={() => setCustomOrPlaylist(0)}/>
+                    <Button text={"기본"} classname={`mod_custom${customOrplaylist===1 ? "_selected" : ""}`} onClick={() => setCustomOrPlaylist(1)}/>
+                    <Button text={"플레이리스트"} classname={`mod_playlist${customOrplaylist===2 ? "_selected" : ""}`} onClick={() => setCustomOrPlaylist(2)}/>
+                    {customOrplaylist}
                 </div>
             )}
-
-            {/*<Button text={"추천"} classname={"mod_recommend"}/>*/}
-            {/*<Button text={"AI악기분리"} classname={"mod_ai_generate"}/>*/}
         </div>
     )
 }

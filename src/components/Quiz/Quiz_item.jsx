@@ -1,7 +1,8 @@
 import './CSS/Quiz_item.css';
+import Logo from '../../img/Yt_logo.png';
 
-function Quiz_item({Thumbnail,Logo,quiz_title,quiz_description,onClick}) {
-    let allPropsProvided = Thumbnail&&Logo&&quiz_title&&quiz_description;
+function Quiz_item({quizId,quiz_title,quiz_description,Thumbnail,onClick}) {
+    let allPropsProvided = quizId !== null;
     let displayDescription="";
 
     if(allPropsProvided) {
@@ -31,9 +32,7 @@ function Quiz_item({Thumbnail,Logo,quiz_title,quiz_description,onClick}) {
                     </div>
                 </>
             ) : (
-                <div>
-
-                </div>
+                <div/>
             )}
 
         </div>
