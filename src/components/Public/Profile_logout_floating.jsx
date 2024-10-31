@@ -1,11 +1,18 @@
 import './CSS/Profile_logout_floating.css';
+import Button from "./Button.jsx";
 
-function profile_logout_floating() {
+function Profile_logout_floating({onclose}) {
     return (
-        <div className="profile_logout_floating">
-            profile_logout_floating
+        <div className="Profile_logout_floating">
+            <div className="Profile_setting">
+                profile setting
+            </div>
+            <div className="Logout">
+                logout
+            </div>
+            <Button text={"X"} onClick={onclose} classname={"profile_floating_out"}/>
         </div>
     )
 }
 
-export default profile_logout_floating;
+export default Profile_logout_floating;

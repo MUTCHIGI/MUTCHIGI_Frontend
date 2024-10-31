@@ -1,0 +1,92 @@
+.Room_create_float {
+    position: absolute;
+
+    display: flex;
+
+    z-index: 3;
+
+    background-color: #252525;
+    border: 5px solid #00FFD9;
+
+
+    width: calc(var(--root--width)*0.5);
+    height: calc(var(--root--height)*0.5);
+}
+
+.Room_create_setting {
+    width: calc(var(--root--width)*0.3125);
+    height: 100%;
+}
+
+.set_room_title {
+
+}
+
+.room_title_input {
+
+}
+
+.set_room_privacy {
+
+}
+
+.set_room_headcount {
+
+}
+
+.Room_create_info {
+    width: calc(var(--root--width)*0.1875);
+    height: 100%;
+}
+
+.Room_create_img {
+    border-left: 2px solid #00FFD9;
+    border-bottom: 1px solid #00FFD9;
+
+    width: 100%;
+    height: calc(var(--root--height)*0.18796296296296296296296296296296);
+}
+
+.Room_create_img_src {
+    width: 100%;
+    height: 100%;
+}
+
+.Room_create_description {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    border-left: 2px solid #00FFD9;
+    border-top: 1px solid #00FFD9;
+
+    width: 100%;
+    height: calc(var(--root--height)*0.31203703703703703703703703703704);
+}
+
+.Room_create_description_innerbox {
+    width: calc(var(--root--width)*0.16822916666666666666666666666667);
+    height: calc(var(--root--height)*0.28148148148148148148148148148148);
+}
+
+.button_room_create_cancel {
+    position: absolute;
+
+    margin-top: calc(var(--root--height)*0.43055555555555555555555555555556);
+    margin-left: calc(var(--root--width)*0.375);
+}
+
+.button_room_create_confirm {
+    position: absolute;
+
+    margin-top: calc(var(--root--height)*0.43055555555555555555555555555556);
+    margin-left: calc(var(--root--width)*0.4375);
+}
+
+.button_room_create_confirm_notyet {
+    position: absolute;
+
+    margin-top: calc(var(--root--height)*0.43055555555555555555555555555556);
+    margin-left: calc(var(--root--width)*0.4375);
+}

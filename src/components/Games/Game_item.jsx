@@ -1,45 +1,87 @@
 import './CSS/Game_item.css';
 import Thumbnail from '../../img/GameitemTest/test_thumbnail.png';
 import Platform from '../../img/GameitemTest/Yt_logo.png';
-import Public from '../../img/GameitemTest/잠금.png';
-import Private from '../../img/GameitemTest/잠금 해제.png';
+import Public from '../../img/GameitemTest/잠금 해제.png';
+import Private from '../../img/GameitemTest/잠금.png';
 
 function Game_item({room}) {
+    let mod;
+    let type;
+    let wait_play;
+
+    if(room.roomId !== null) {
+        switch (room.quiz.modId) {
+            case 1:
+                mod = "커스텀";
+                break;
+            case 2:
+                mod = "플레이리스트";
+                break;
+            default:
+                mod = "undefined";
+        }
+
+        switch (room.quiz.typeId) {
+            case 1:
+                type = "(Default)";
+                break;
+            case 2:
+                type = "(Instrumental Only)";
+                break;
+            default:
+                type = "undefined";
+        }
+
+        switch (room.participateAllowed) {
+            case true:
+                wait_play = "waiting";
+                break;
+            case false:
+                wait_play = "playing";
+                break;
+            default:
+                wait_play = "undefined";
+        }
+    }
+
     return <div className="Game_item">
-        <img src={Thumbnail} className="Thumbnail"/>
-        <img src={Platform} className="Platform"/>
-        <div className="room_number">
-            {room}
-        </div>
-        <div className="room_information_1">
-            <div className="room_info1_top">
-
+        {room.roomId !== null && <>
+            <img src={Thumbnail} className="Thumbnail"/>
+            <img src={Platform} className="Platform"/>
+            <div className="room_number">
+                {room.roomId}
             </div>
-            <div className="room_info1_mid">
-                <div className="mod">
-                    플레이리스트
+            <div className={room.participateAllowed ? "room_information_1_waiting" : "room_information_1_playing"}>
+                <div className="room_info1_top"/>
+                <div className="room_info1_mid">
+                    <div className="mod">
+                        {mod}
+                    </div>
+                    <div className="type">
+                        {type}
+                    </div>
+                </div>
+                <div className="room_info1_bottom">
+                    <div className="wait_play">
+                        {wait_play}
+                    </div>
                 </div>
             </div>
-            <div className="room_info1_bottom">
-                <div className="wait_or_play">
-                    waiting
+            <div className="room_information_2">
+                <div className="room_info2_top">
+
+                </div>
+                <div className="room_info2_mid">
+                    3 / {room.maxPlayer}
+                </div>
+                <div className="room_info2_bottom">
+                    <img src={room.publicRoom ? Public : Private} className="public_or_private"/>
                 </div>
             </div>
-        </div>
-        <div className="room_information_2">
-            <div className="room_info2_top">
-
+            <div className="room_information_title">
+                {room.roomName}
             </div>
-            <div className="room_info2_mid">
-                3 / 8
-            </div>
-            <div className="room_info2_bottom">
-                <img src={Public} className="public_or_private"/>
-            </div>
-        </div>
-        <div className="room_information_title">
-            Title_1
-        </div>
+        </>}
     </div>
 }
 
