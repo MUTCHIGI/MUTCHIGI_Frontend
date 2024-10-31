@@ -1,0 +1,150 @@
+/* 전체 화면 컨테이너 */
+.card-list-container {
+  min-height: calc(782 / 1080 * var(--root--height));
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* padding: 20px; */
+  box-sizing: border-box;
+}
+
+.blur {
+  filter: blur(8px);
+}
+
+/* 입력 섹션 */
+.url-input-section {
+  display: flex;
+  gap: 10px;
+  background: #6BC5B4;
+  border-radius: 20px;
+  margin-top: calc(130 / 1080 * var(--root--height));
+  width: calc(1296 / 1920 * var(--root--width));
+  height: calc(81 / 1080 * var(--root--height));
+  align-items: center;
+  justify-content: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(36px * var(--root--font--ratio));
+  line-height: calc(44px / 1080 * var(--root--height));;
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.url-input {
+  margin-left: calc(15 / 1920 * var(--root--width));
+  width: calc(1082 / 1920 * var(--root--width));
+  height: calc(65 / 1080 * var(--root--height));
+  background: #FFFFFF;
+  border-radius: 20px;
+  padding: 0px;
+  border: 0;
+  outline: none;
+  align-items: center;
+  text-align: center;
+}
+
+.url-input-button {
+  width: calc(187 / 1920 * var(--root--width));
+  height: calc(81 / 1080 * var(--root--height));
+  background: #D9D9D9;
+  border-radius: 20px;
+  border: 0;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(36px * var(--root--font--ratio));
+  line-height: calc(44 / 1080 * var(--root--height));
+  align-items: center;
+  text-align: center;
+  cursor: pointer;
+}
+
+/* 카드 그리드 */
+.card-grid {
+  margin-top: calc(90 / 1080 * var(--root--height));
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+}
+
+/* 카드 스타일 */
+.card {
+  background-color: #808080;
+  border-radius: 10px;
+  padding: 10px;
+  display: flex;
+  height: calc(180 / 1080 * var(--root--height));
+  width: calc(320 / 1920 * var(--root--width));
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.card-icons {
+  display: flex;
+  gap: 5px;
+  position: absolute;
+  bottom: 10px;
+  right: 10px;
+}
+
+.card-edit-btn,
+.card-delete-btn {
+  height: calc(44 / 1080 * var(--root--height));
+  width: calc(44 / 1080 * var(--root--height));
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #D9D9D9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-icon-img {
+  height: calc(33 / 1080 * var(--root--height));
+  width: calc(33 / 1080 * var(--root--height));
+}
+
+
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.quiz-seting-input{
+  display: grid;
+  grid-template-rows: calc(240 / 1080 * var(--root--height)), calc(272 / 1080 * var(--root--height));
+}
+
+.modal-content {
+  background-color: #2d2d2d;
+  border-radius: 10px;
+  padding: 20px;
+  height: calc(700 / 1080 * var(--root--height));
+  width: calc(1200 / 1920 * var(--root--width));
+  /* border: 10px, solid #8ed9c4; */
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 5px;
+  border: 1px solid #00FFD9;
+  background-color: #1e1e1e;
+  color: white;
+}

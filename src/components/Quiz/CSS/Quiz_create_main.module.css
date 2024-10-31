@@ -1,0 +1,104 @@
+
+.quiz-create-main {
+    height: calc(782 / 1080 * var(--root--height));
+    grid-row:1;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: calc(32 / 1080 * var(--root--height));
+    align-items: flex-start; /* Align items to the start */
+    margin-top: calc(50 / 1080 * var(--root--height));
+    left: calc(120 / 1920 * var(--root--width));
+  }
+  
+  .p-box {
+    position: relative;
+    border-radius: 20px;
+    margin: 0;
+    width: calc(200 / 1920 * var(--root--width));
+    height: calc(50 / 1080 * var(--root--height));
+    background-color: #d9d9d9;
+    color: #000000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-size: calc(24px*var(--root--font--ratio));
+    font-family: 'Inter', sans-serif;
+    font-weight: 800;
+  }
+  
+  .title-section {
+    display: flex;
+    flex-direction: column;
+    width: calc(560 * var(--root--width) / 1920);
+    gap: calc(32 / 1080 * var(--root--height)); 
+  }
+  
+  .title-section input{
+    position: relative;
+    width: 100%;
+    height: calc(54 * var(--root--height) / 1080);
+    font-size: calc(24px*var(--root--font--ratio));
+    border-radius: 20px;
+    border: solid #30645C;
+    background-color: rgba(0, 37, 32, 0.6);
+    color: #d9d9d9;
+    padding: 0;
+  }
+
+  .description-section {
+    display: flex;
+    flex-direction: column;
+    gap: calc(32 / 1080 * var(--root--height));
+  }
+  .description-section textarea{
+    position: relative;
+    width: calc(560 * var(--root--width) / 1920);
+    height: calc(135 * var(--root--height) / 1080);
+    font-size: calc(24px*var(--root--font--ratio));
+    border-radius: 20px;
+    border: solid #30645C;
+    background-color: rgba(0, 37, 32, 0.6);
+    color: #d9d9d9;
+    padding: 0;
+  }
+
+  .thumbnail-section{
+    display: flex;
+    flex-direction: column;
+    gap: calc(32 / 1080 * var(--root--height));
+    width: calc(390 / 1920 * var(--root--width));
+  }
+
+  .thumbnail-upload {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 1.777777777 / 1; /* 가로:세로 비율 1:1 유지 */
+    height: auto;
+    border: 5px dashed #C67676; /* Red dashed border */
+    position: relative;
+  }
+  
+  .thumbnail-upload button {
+    background-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: white; /* Cyan colored '+' */
+    border: 4px solid #36F1FD;
+    border-radius: 50%;
+    width: min(calc(80 / 1080 * var(--root--height)), calc(80 / 1920 * var(--root--width)));
+    height: min(calc(80 / 1080 * var(--root--height)), calc(80 / 1920 * var(--root--width)));
+    font-size: calc(45px*var(--root--font--ratio));
+    font-weight: 800;
+    cursor: pointer;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  

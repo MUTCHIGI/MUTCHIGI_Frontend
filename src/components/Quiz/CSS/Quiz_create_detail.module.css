@@ -1,0 +1,361 @@
+.quiz-seting-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.quiz-seting-right {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  width: calc(513 / 1920 * var(--root--width));
+  height: calc(316 / 1080 * var(--root--height));
+  top: calc(75 / 1080 * var(--root--height));
+  left: calc(80 / 1920 * var(--root--width));
+  ;
+}
+
+.answer-container {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  top: calc(75 / 1080 * var(--root--height));
+  left: calc(50 / 1920 * var(--root--width));
+  width: calc(530 / 1920 * var(--root--width));
+  height: calc(240 / 1080 * var(--root--height));
+  border-radius: 10px;
+  background-color: #2d2d2d;
+}
+
+/* 입력 행 */
+.input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.seting-label {
+  width: calc(170 / 1920 * var(--root--width));
+  height: calc(55 / 1080 * var(--root--height));
+  background: #D9D9D9;
+  border-radius: 20px;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  line-height: calc(55 / 1080 * var(--root--height));
+  text-align: center;
+  color: #000000;
+}
+
+
+/* 입력 필드 스타일 */
+.input-square-border {
+  flex: 1;
+  height: calc(55 / 1080 * var(--root--height));
+  width: calc(340 / 1920 * var(--root--width));
+  border: calc(4 / 1080 * var(--root--height)) solid #6BC5B4;
+  border-radius: 15px;
+  outline: none;
+  font-size: 16px;
+}
+
+.input-square-white {
+  flex: 1;
+  height: calc(55 / 1080 * var(--root--height));
+  width: calc(340 / 1920 * var(--root--width));
+  border-radius: 15px;
+  outline: none;
+  font-size: 16px;
+  background-color: #ffffff;
+}
+
+/* 정답 목록 */
+.answer-list {
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-radius: 15px;
+  position: relative;
+  top: calc(20 / 1080 * var(--root--height));
+  height: calc(156 / 1080 * var(--root--height));
+  overflow: auto;
+}
+
+/* 스크롤바 전체 */
+.answer-list::-webkit-scrollbar {
+  width: 15px;
+}
+
+/* 스크롤바 트랙 */
+.answer-list::-webkit-scrollbar-track {
+  background: white;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+/* 스크롤바 핸들 */
+.answer-list::-webkit-scrollbar-thumb { 
+  background-color: #888;
+  border-radius: 15px; 
+  border: 4px solid white; 
+}
+
+/* 정답 항목 */
+.answer-item {
+  background-color: transparent;
+  margin-left: 5px;
+  margin-top: 5px;
+  height: calc(30 / 1080 * var(--root--height));
+  padding-left: calc(5 / 1920 * var(--root--width));
+  border-radius: 15px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: none;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  line-height: calc(44px * var(--root--font--ratio));
+  color: #000000;
+}
+
+.answer-item:hover {
+  background-color: #e0e0e0;
+}
+
+/* 삭제 버튼 (기본 숨김) */
+.delete-btn {
+  background: none;
+  border: none;
+  color: red;
+  margin-right: calc(10 / 1920 * var(--root--width));
+  font-size: calc(20px * var(--root--font--ratio));
+  cursor: pointer;
+  visibility: hidden;
+  transition: visibility 0.3s;
+}
+
+.hint-container {
+  grid-column: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+  top: calc(110 / 1080 * var(--root--height));
+  left: calc(50 / 1920 * var(--root--width));
+  width: calc(530 / 1920 * var(--root--width));
+  height: calc(272 / 1080 * var(--root--height));
+  border-radius: 10px;
+  background-color: transparent;
+}
+
+.hint-list {
+  display: flex;
+  flex-direction: column;
+  background-color: transparent;
+  border-radius: 15px;
+  /* gap: 5px; */
+}
+
+.hint-item {
+  background-color: white;
+  padding-left: calc(10 / 1920 * var(--root--width));
+  margin-top: calc(18 / 1080 * var(--root--height));
+  height: calc(53 / 1080 * var(--root--height));
+  border-radius: 15px;
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: none;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  line-height: calc(44px * var(--root--font--ratio));
+  color: #000000;
+}
+
+.hint-item:hover {
+  background-color: #e0e0e0;
+}
+
+.hint-item:hover .delete-btn {
+  visibility: visible;
+}
+
+.answer-item:hover .delete-btn {
+  visibility: visible;
+}
+
+/* 컨테이너 스타일 */
+.time-adjuster-container {
+  display: flex;
+  flex-direction: column;
+  border-radius: 10px;
+}
+
+
+.slider-section {
+  position: relative;
+  height: calc(92 / 1080 * var(--root--height));
+  width: calc(513 / 1920 * var(--root--width));
+  display: grid;
+  grid-template-columns: calc(170 / 1920 * var(--root--width)) calc(343 / 1920 * var(--root--width));
+  grid-template-rows: calc(55 / 1080 * var(--root--height)) calc(37 / 1080 * var(--root--height));
+}
+
+.slider-labels {
+  grid-row: 2;
+  grid-column: 2;
+}
+
+.slider-labels span {
+  margin-left: calc(30 / 1920 * var(--root--width));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(30px * var(--root--font--ratio));
+  line-height: 36px;
+  text-align: center;
+  color: #FFFFFF;
+}
+
+/* 시간 조절 바 */
+
+.option-timebar {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  position: relative;
+  grid-row: 1;
+  grid-column: 2;
+  top: calc(25 / 1080 * var(--root--height));
+  margin-left: calc(27 / 1920 * var(--root--width));
+  /* margin: 0 calc(56 / 1920 * var(--root--width)); */
+  height: calc(5 / 1080 * var(--root--height));
+  background: #ffffff;
+  border-radius: 5px;
+  outline: none;
+}
+
+.option-timebar::-webkit-slider-thumb {
+  position: relative;
+  -webkit-appearance: none;
+  width: calc(25 / 1080 * var(--root--height));
+  height: calc(25 / 1080 * var(--root--height));
+  background: #000000;
+  border: 5px solid #00FFD9;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 1;
+}
+
+.option-timebar::before,
+.option-timebar::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(25 / 1080 * var(--root--height));
+  height: calc(25 / 1080 * var(--root--height));
+  background: #ffffff;
+  border-radius: 50%;
+  transform: translateY(-50%);
+}
+
+.option-timebar::before {
+  left: 0;
+}
+
+.option-timebar::after {
+  right: 0;
+}
+
+
+/* 시간 표시 */
+.time-display {
+  position: relative;
+  left: 0;
+  display: flex;
+  top: calc(30 / 1080 * var(--root--height));
+  ;
+  align-items: center;
+  gap: 10px;
+}
+
+.time-display label {
+  position: relative;
+  left: calc(36 / 1920 * var(--root--width));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(30px * var(--root--font--ratio));
+  text-align: center;
+  color: #FFFFFF;
+}
+
+.time {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  left: calc(86 / 1920 * var(--root--width));
+  width: calc(232 / 1920 * var(--root--width));
+  height: calc(42 / 1080 * var(--root--height));
+  font-size: calc(24px * var(--root--font--ratio));
+  font-family: 'Inter';
+  font-weight: 800;
+  color: black;
+  background-color: white;
+  /* padding: 10px; */
+  border-radius: 10px;
+}
+
+/* 시간 조정 버튼 */
+.adjust-buttons {
+  display: grid;
+  position: relative;
+  top: calc(62 / 1080 * var(--root--height));
+  left: calc(36 / 1920 * var(--root--width));
+  width: calc(477 / 1920 * var(--root--width));
+  height: calc(120 / 1080 * var(--root--height));
+  grid-template-columns: repeat(4, 1fr);
+  column-gap: calc(10 / 1920 * var(--root--width));
+  row-gap: calc(10 / 1080 * var(--root--height));
+}
+
+.adjust-buttons button {
+  background-color: #D9D9D9;
+  border: none;
+  border-radius: 20px;
+  font-family: 'Inter';
+  font-style: normal;
+  text-align: center;
+  font-weight: 800;
+  color: #000000;
+  font-size: calc(24px * var(--root--font--ratio));
+  cursor: pointer;
+}
+
+.adjust-buttons button:hover {
+  background-color: #a0a0a0;
+}
+
+.close-btn {
+  background-color: #00FFD9;
+  border: none;
+  position: relative;
+  left: calc(-30 / 1920 * var(--root--width));
+  top: calc(560 / 1080 * var(--root--height));
+  height: calc(60 / 1080 * var(--root--height));
+  width: calc(100 / 1920 * var(--root--width));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  cursor: pointer;
+}
