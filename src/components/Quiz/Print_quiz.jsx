@@ -53,30 +53,29 @@ function Print_quiz({quizIds}) {
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
-                // quizIds가 비어있지 않은 경우에만 요청을 보냅니다.
-                if (quizIds.length === 0) return;
+                // quizIds가 비어있지 않은 경우에만 요청을 보냄
+                if (quizIds.length === 0) {
+                    return;
+                }
 
+                // 모든 quizId를 queryString으로 변환하여 요청 URL 구성
+                const queryString = quizIds.map(id => `idList=${id}`).join('&');
+                const response = await fetch(`http://localhost:8080/quiz/Entities?${queryString}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`, // 필요하다면 토큰 포함
+                        'Content-Type': 'application/json'
+                    },
+                });
 
-                // quizIds를 요청 파라미터로 사용하여 요청 URL 구성
-                const responses = await Promise.all(
-                    quizIds.map(async (quizId) => {
-                        const response = await fetch(`http://localhost:8080/quiz/Entities?quizId=${quizId}`, {
-                            method: 'GET',
-                            headers: {
-                                'Authorization': `Bearer ${token}`, // 필요하다면 토큰도 포함
-                            },
-                        });
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
 
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-
-                        return await response.json();
-                    })
-                );
+                const data = await response.json();
 
                 // 7개 미만인 경우 빈 퀴즈 객체를 추가
-                const filledQuizzes = [...responses];
+                const filledQuizzes = [...data];
                 while (filledQuizzes.length < 7) {
                     filledQuizzes.push(emptyQuiz);
                 }
@@ -88,7 +87,8 @@ function Print_quiz({quizIds}) {
         };
 
         fetchQuizzes();
-    }, [quizIds]);
+    }, [quizIds, token]);
+
 
     /* 방을 생성하기 위한 핸들러 */
     let [showFloat,setShowFloat] = useState(false);

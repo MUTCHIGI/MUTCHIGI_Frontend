@@ -49,6 +49,7 @@
 
 .search_by_public_or_private {
     display: flex;
+
     font-weight: bolder;
     margin-left: calc(var(--root--width)*0.0375);
 }

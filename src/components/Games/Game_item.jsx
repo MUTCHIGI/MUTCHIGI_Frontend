@@ -46,7 +46,7 @@ function Game_item({room}) {
 
     return <div className="Game_item">
         {room.roomId !== null && <>
-            <img src={Thumbnail} className="Thumbnail"/>
+            <img src={room.thumbnailURL} className="Thumbnail"/>
             <img src={Platform} className="Platform"/>
             <div className="room_number">
                 {room.roomId}

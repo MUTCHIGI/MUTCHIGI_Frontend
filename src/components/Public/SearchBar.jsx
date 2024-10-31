@@ -59,8 +59,8 @@ function SearchBar({multiplay,
             <div className="search_by_public_or_private">
                 공개
                 <input
-                    className="radio_room_public"
-                    type="radio"
+                    className="radio_room_public_"
+                    type="checkbox"
                     value="public"
                     checked={selectedOption_privacy === true}
                     onChange={() => handlePrivacyChange(true)}
@@ -71,7 +71,7 @@ function SearchBar({multiplay,
                 </div>
                 <input
                     className="radio_room_private"
-                    type="radio"
+                    type="checkbox"
                     value="private"
                     checked={selectedOption_privacy === false}
                     onChange={() => handlePrivacyChange(false)}

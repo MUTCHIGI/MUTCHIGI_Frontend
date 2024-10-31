@@ -7,8 +7,11 @@ import {useContext, useEffect, useRef, useState} from "react";
 import {WindowSizeContext} from "../../App.jsx";
 import Profile_logout_floating from "./Profile_logout_floating.jsx";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../Login/AuthContext.jsx";
 
 function Header_top() {
+    const {token} = useAuth();
+
     const handleLogin = () => {
         window.location.href = 'http://localhost:8080/oauth2/authorization/google';
     };

@@ -17,11 +17,14 @@ function QuizCreate({ userId, typeId }) {
   const [hints, setHints] = useState([]);
   const [instrument, setInstrument] = useState(-1);
   const [quizId, setQuizId] = useState(0);
-  const token = useAuth();
+  const {token} = useAuth();
 
   const handleThumbnailChange = (e) => setThumbnail(e.target.files[0]);
   const handleModeSelect = (selectedMode) => setMode(selectedMode);
   const prevStep = () => step > 1 && setStep(step - 1);
+
+  let navigate = useNavigate()
+
 
   const postThumbnail = () => {
     const formData = new FormData();
@@ -49,7 +52,7 @@ function QuizCreate({ userId, typeId }) {
       headers: {
         "accept": "*/*",
         "Content-Type": "application/json",
-        "Authorization": "Bearer " + token,
+        "Authorization": `Bearer ${token}`,
       },
       body: JSON.stringify({
         quizName: title,

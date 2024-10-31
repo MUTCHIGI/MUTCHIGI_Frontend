@@ -5,13 +5,15 @@ import {createContext, useContext, useEffect, useState} from "react";
 import Quiz_page from "./pages/Quiz_page.jsx";
 import Footer from "./components/Public/Footer.jsx";
 import Ingame from "./components/InGame/Ingame.jsx";
-import {AuthProvider} from "./components/Login/AuthContext.jsx";
+import {AuthProvider, useAuth} from "./components/Login/AuthContext.jsx";
 import {Route, Routes} from "react-router-dom";
 import Quiz_create from "./pages/Quiz_create.jsx";
+import {GoogleOAuthProvider} from "@react-oauth/google";
 
 export let WindowSizeContext = createContext();
 
 function App() {
+    const [userInfo, setUserInfo] = useState(null);
 
     let [windowSize,setWindowSize] = useState({
         width: window.innerWidth,
@@ -43,9 +45,10 @@ function App() {
           <WindowSizeContext.Provider value={windowSize}>
               <AuthProvider>
                   <Routes>
+                      <Route path="/ingame" element={<Ingame/>}/>
                       <Route path="/home" element={<Home/> }/>
-                      <Route path="/home/quiz" element={<Quiz_page />}/>
-                      <Route path="/home/quiz_create" element={<Quiz_create/>}/>
+                      <Route path="/home/quiz" element={<Quiz_page userInfo={userInfo} setUserInfo={setUserInfo}/>}/>
+                      <Route path="/home/quiz_create" element={<Quiz_create typeId={1} userId={userInfo ? userInfo.userId : 0}/>}/>
                   </Routes>
               </AuthProvider>
           </WindowSizeContext.Provider>

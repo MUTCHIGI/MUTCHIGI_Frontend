@@ -51,7 +51,6 @@ function Home() {
 
                 const data = await response.json().catch(() => []);
                 setRoomIds(data);
-
             } catch (error) {
                 console.error('Failed to fetch room IDs:', error);
             }

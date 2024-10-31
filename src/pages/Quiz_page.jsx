@@ -7,7 +7,10 @@ import {useEffect, useState} from "react";
 import Print_quiz from "../components/Quiz/Print_quiz.jsx";
 import {useAuth} from "../components/Login/AuthContext.jsx";
 
-function Quiz_page() {
+function Quiz_page({
+                       userInfo,setUserInfo
+
+}) {
     let {token} = useAuth();
 
     // API를 통해 받아온 퀴즈들의 ID 리스트
@@ -48,6 +51,7 @@ function Quiz_page() {
     // input 태그를 사용해 페이지 이동하는 state
     const [inputValue, setInputValue] = useState(currentPage); // input의 상태
 
+    const [error, setError] = useState(null);
     useEffect(() => {
         const fetchQuizIds = async () => {
             try {
@@ -67,11 +71,42 @@ function Quiz_page() {
                 setQuizIds(data);  // 성공적으로 받아온 데이터 저장
             } catch (error) {
                 console.error('Failed to fetch quiz IDs:', error);
+                setError('Failed to fetch user information');
             }
         };
 
         fetchQuizIds();
     }, [token,currentPage, offset, selectedOption_type, quizTitle, customOrplaylist, selectedOption_quiztype,selectedOption_quizOrder]);
+
+    // 사용자 정보 받아오기
+    useEffect(() => {
+        const fetchUserInfo = async () => {
+            if (token) {
+                console.log(token)
+                try {
+                    const response = await fetch('http://localhost:8080/authTest/google', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: token, // JWT 토큰을 문자열로 변환하여 요청 본문에 포함
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json(); // JSON 형식으로 응답 본문 변환
+                    setUserInfo(data); // 받아온 유저 정보를 상태에 저장
+                } catch (error) {
+                    console.error('Error fetching user info:', error);
+                    setError('Failed to fetch user information');
+                }
+            }
+        };
+
+        fetchUserInfo();
+    }, [token]); // token이 변경될 때마다 실행
 
     return <div>
         <Header_top/>

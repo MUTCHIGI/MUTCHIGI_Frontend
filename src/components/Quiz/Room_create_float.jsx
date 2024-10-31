@@ -17,7 +17,6 @@ function Room_create_float({quiz,onClose}) {
 
         if (response.ok) {
             const data = await response.json();
-            console.log(data);
         } else {
             console.error('데이터 요청 실패');
         }
@@ -75,10 +74,9 @@ function Room_create_float({quiz,onClose}) {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log('방 생성 성공:', data);
+                console.log(JSON.stringify(roomData));
                 onClose(); // 방 생성 성공 시 모달 닫기
             } else {
-                console.log(JSON.stringify(roomData))
                 console.error('Error creating room:', response.statusText);
             }
         } catch (error) {
@@ -101,7 +99,7 @@ function Room_create_float({quiz,onClose}) {
                 <div>
                     공개 :&nbsp;
                     <input
-                        type="radio"
+                        type="checkbox"
                         name="privacy"
                         value="public"
                         checked={privacy === 'public'}
@@ -111,7 +109,7 @@ function Room_create_float({quiz,onClose}) {
                 <div>
                     비공개 :&nbsp;
                     <input
-                        type="radio"
+                        type="checkbox"
                         name="privacy"
                         value="private"
                         checked={privacy === 'private'}
