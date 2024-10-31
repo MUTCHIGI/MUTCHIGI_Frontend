@@ -52,7 +52,6 @@ function Header_top() {
             </div>
             {isDivVisible && (<Profile_logout_floating onclose={() => setDivVisible(false)}/>)}
 
-
             <button onClick={handleLogin}>구글로 로그인</button>
         </div>
     )
