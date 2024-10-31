@@ -83,3 +83,10 @@
     margin-top: calc(var(--root--height)*0.43055555555555555555555555555556);
     margin-left: calc(var(--root--width)*0.4375);
 }
+
+.button_room_create_confirm_notyet {
+    position: absolute;
+
+    margin-top: calc(var(--root--height)*0.43055555555555555555555555555556);
+    margin-left: calc(var(--root--width)*0.4375);
+}

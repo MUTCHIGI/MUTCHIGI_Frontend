@@ -415,3 +415,13 @@
 
     border-radius: 20px;
 }
+
+.button_room_create_confirm_notyet {
+    background-color: darkgray;
+    border : 1px solid darkgray;
+
+    width: calc(var(--root--width)*0.05);
+    height: calc(var(--root--height)*0.05);
+
+    border-radius: 20px;
+}

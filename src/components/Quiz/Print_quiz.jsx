@@ -14,14 +14,14 @@ function Print_quiz({quizIds}) {
 
     // 빈 퀴즈 객체 정의
     const emptyQuiz = {
-        quizId: 1,
+        quizId: null,
         songCount: 0,
         quizName: "빈 퀴즈",
         quizDescription: "설명이 없습니다.",
         releaseDate: "2024-10-30",
         userPlayCount: 0,
-        typeId: 0,
-        modId: 0,
+        typeId: 1,
+        modId: 1,
         hintCount: 0,
         songPlayTime: {
             hour: 0,

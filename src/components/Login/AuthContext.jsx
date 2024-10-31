@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState("eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6Ik5vcm1hbCIsInN1YiI6IjExMDQ2NDc1NjAzODIwOTE2OTY4NCIsImlhdCI6MTczMDMwMTg1MCwiZXhwIjoxNzMwMzM3ODUwfQ.ASR1elu4ilaG0b4-CDgB9ZPezGd_HDIBvLZjXfWYpfKwT2lz228OFZs8Doe5SFXsE-UGqKhavwZE2sU8b7NDxg"); // 임의의 발급받은 JWT 토큰
+    const [token, setToken] = useState("eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6Ik5vcm1hbCIsInN1YiI6IjExMDQ2NDc1NjAzODIwOTE2OTY4NCIsImlhdCI6MTczMDM1MTQ2MywiZXhwIjoxNzMwMzg3NDYzfQ.QM_mPlfG_uX94EQszBlbbh3p253xLCzx6VSFObQnxj8Jl0_AHbDdS-9eN3FU8vZVKjtNVsUy_IjqElgtTbu8ag"); // 임의의 발급받은 JWT 토큰
 
     return (
         <AuthContext.Provider value={{ token, setToken }}>

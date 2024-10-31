@@ -31,16 +31,11 @@ function Room_create_float({quiz,onClose}) {
 
     /* 방 생성 로직 */
     let [roomName, setRoomName] = useState(''); // 방 이름 상태
-    let [isPublic, setIsPublic] = useState(true); // 공개 여부 상태
     let [password, setPassword] = useState(''); // 비밀번호 상태
-    let [maxPlayer, setMaxPlayer] = useState(0); // 최대 플레이어 수 상태
+    let [maxPlayer, setMaxPlayer] = useState(1); // 최대 플레이어 수 상태
 
     let handleRoomNameChange = (e) => {
         setRoomName(e.target.value);
-    };
-
-    let handlePublicChange = (e) => {
-        setIsPublic(e.target.value === 'public');
     };
 
     let handlePasswordChange = (e) => {
@@ -51,15 +46,20 @@ function Room_create_float({quiz,onClose}) {
         setMaxPlayer(Number(e.target.value));
     };
 
+    const handleEmptyInputClick = () => {
+        alert("방 이름은 비어있을 수 없습니다."); // 비어 있을 때 경고창 출력
+    };
+
     // 방 생성 처리
     const handleCreateRoom = async () => {
+        let isPublic = privacy === 'public';
         const roomData = {
             roomName: roomName,
             publicRoom: isPublic,
             participateAllowed: true, // 참여 허용 여부는 true로 고정
             password: password,
             maxPlayer: maxPlayer,
-            quizId: 0, // quizId는 필요에 따라 설정
+            quizId: quiz.quizId, // quizId는 필요에 따라 설정
             userId: 0 // userId는 필요에 따라 설정
         };
 
@@ -78,6 +78,7 @@ function Room_create_float({quiz,onClose}) {
                 console.log('방 생성 성공:', data);
                 onClose(); // 방 생성 성공 시 모달 닫기
             } else {
+                console.log(JSON.stringify(roomData))
                 console.error('Error creating room:', response.statusText);
             }
         } catch (error) {
@@ -93,6 +94,7 @@ function Room_create_float({quiz,onClose}) {
                     className="room_title_input"
                     value={roomName}
                     onChange={handleRoomNameChange}
+                    placeholder="방 이름 입력"
                 />
             </div>
             <div className="set_room_privacy">
@@ -141,7 +143,12 @@ function Room_create_float({quiz,onClose}) {
             </div>
         </div>
         <Button text={"취소"} onClick={onClose} classname={"room_create_cancel"}/>
-        <Button text={"확인"} onClick={handleCreateRoom} classname={"room_create_confirm"}/>
+
+        {roomName.trim() !== '' ?
+            <Button text={"확인"} onClick={handleCreateRoom} classname={"room_create_confirm"}/>
+            :
+            <Button text={"확인"} onClick={handleEmptyInputClick} classname={"room_create_confirm_notyet"}/>
+        }
     </div>
 }
 
