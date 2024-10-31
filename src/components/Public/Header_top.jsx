@@ -9,6 +9,10 @@ import Profile_logout_floating from "./Profile_logout_floating.jsx";
 import {useNavigate} from "react-router-dom";
 
 function Header_top() {
+    const handleLogin = () => {
+        window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    };
+
     const navigator = useNavigate();
     /* 프로파일 버튼 클릭시 생성되는 플로팅창 */
     const [isDivVisible, setDivVisible] = useState(false); // div 표시 여부를 관리하는 상태
@@ -47,6 +51,9 @@ function Header_top() {
                 <Button classname={"profile_logout"} onClick={() => setDivVisible(!isDivVisible)} logo={Triangle}/>
             </div>
             {isDivVisible && (<Profile_logout_floating onclose={() => setDivVisible(false)}/>)}
+
+
+            <button onClick={handleLogin}>구글로 로그인</button>
         </div>
     )
 }
