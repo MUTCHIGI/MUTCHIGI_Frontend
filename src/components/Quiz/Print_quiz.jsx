@@ -7,9 +7,11 @@ import Logo from '../../img/Yt_logo.png';
 import {useEffect, useState} from "react";
 import Room_create_float from "./Room_create_float.jsx";
 import {useAuth} from "../Login/AuthContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 
 function Print_quiz({quizIds}) {
+    let navigate = useNavigate();
     let {token} = useAuth();
 
     // 빈 퀴즈 객체 정의
@@ -101,6 +103,11 @@ function Print_quiz({quizIds}) {
         setShowFloat(false);
     }
 
+    // 퀴즈 만들기 버튼
+    const handleDivClick = () => {
+        navigate('/home/quiz_create'); // 클릭 시 경로 이동
+    };
+
     return <div className="PrintQuizList">
         <div className="select_button">
             <Button text={"All"} classname={"quiz_platform_all"}/>
@@ -156,7 +163,7 @@ function Print_quiz({quizIds}) {
                 Thumbnail={quizzes[6].thumbnailURL}
                 onClick={() => handleShowFloat(quizzes[6])} // 클릭 시 quizzes[0] 정보를 전달
             />
-            <div className="create_new_quiz">
+            <div className="create_new_quiz" onClick={handleDivClick}>
                 <div className="new_quiz_plus">
                     +
                 </div>

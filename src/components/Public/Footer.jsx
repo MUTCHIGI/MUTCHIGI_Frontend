@@ -28,7 +28,7 @@ function Footer({
     const navigate = useNavigate();
 
     const gotoQuiz = () => {
-        navigate('/quiz');
+        navigate('/home/quiz');
     };
 
     return <div className="Footer">

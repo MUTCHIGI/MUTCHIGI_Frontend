@@ -7,6 +7,7 @@ import Footer from "./components/Public/Footer.jsx";
 import Ingame from "./components/InGame/Ingame.jsx";
 import {AuthProvider} from "./components/Login/AuthContext.jsx";
 import {Route, Routes} from "react-router-dom";
+import Quiz_create from "./pages/Quiz_create.jsx";
 
 export let WindowSizeContext = createContext();
 
@@ -42,8 +43,9 @@ function App() {
           <WindowSizeContext.Provider value={windowSize}>
               <AuthProvider>
                   <Routes>
-                      <Route path="/" element={<Home/> }/>
-                      <Route path="/quiz" element={<Quiz_page />}/>
+                      <Route path="/home" element={<Home/> }/>
+                      <Route path="/home/quiz" element={<Quiz_page />}/>
+                      <Route path="/home/quiz_create" element={<Quiz_create/>}/>
                   </Routes>
               </AuthProvider>
           </WindowSizeContext.Provider>

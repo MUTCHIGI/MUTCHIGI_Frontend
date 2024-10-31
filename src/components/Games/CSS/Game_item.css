@@ -4,8 +4,6 @@
 
     width: calc(var(--root--width)*0.33645833332933);
     height: calc(var(--root--height)*0.15740740740737);
-
-    cursor: pointer;
 }
 
 .Thumbnail {

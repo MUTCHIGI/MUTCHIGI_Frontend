@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { useNavigate } from 'react-router-dom';
-import MainInfo from "./Quiz_create_main";
-import ModeSelection from "./Quiz_create_mode";
-import OptionSelection from "./Quiz_create_option";
-import QuizCreateList from "./Quiz_create_list_basic";
-import styles from "./CSS/Quiz_create.module.css";
+import MainInfo from "../components/Quiz/Quiz_create_main.jsx";
+import ModeSelection from "../components/Quiz/Quiz_create_mode.jsx";
+import OptionSelection from "../components/Quiz/Quiz_create_option.jsx";
+import QuizCreateList from "../components/Quiz/Quiz_create_list_basic.jsx";
+import styles from "../components/Quiz/CSS/Quiz_create.module.css";
+import {useAuth} from "../components/Login/AuthContext.jsx";
 
 function QuizCreate({ userId, typeId }) {
   const [step, setStep] = useState(1);
@@ -16,7 +17,7 @@ function QuizCreate({ userId, typeId }) {
   const [hints, setHints] = useState([]);
   const [instrument, setInstrument] = useState(-1);
   const [quizId, setQuizId] = useState(0);
-  const token = useAuth() ;
+  const token = useAuth();
 
   const handleThumbnailChange = (e) => setThumbnail(e.target.files[0]);
   const handleModeSelect = (selectedMode) => setMode(selectedMode);

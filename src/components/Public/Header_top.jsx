@@ -36,7 +36,7 @@ function Header_top() {
                 className="logo"
                 src={Logo}
                 onClick={() => {
-                    navigator('/');
+                    navigator('/home');
                 }}
             />
             <div className="profile_div">
