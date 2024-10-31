@@ -6,7 +6,7 @@ import OptionSelection from "./Quiz_create_option";
 import QuizCreateList from "./Quiz_create_list_basic";
 import styles from "./CSS/Quiz_create.module.css";
 
-function QuizCreate({ userId, token, typeId }) {
+function QuizCreate({ userId, typeId }) {
   const [step, setStep] = useState(1);
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -16,6 +16,7 @@ function QuizCreate({ userId, token, typeId }) {
   const [hints, setHints] = useState([]);
   const [instrument, setInstrument] = useState(-1);
   const [quizId, setQuizId] = useState(0);
+  const token = useAuth() ;
 
   const handleThumbnailChange = (e) => setThumbnail(e.target.files[0]);
   const handleModeSelect = (selectedMode) => setMode(selectedMode);
