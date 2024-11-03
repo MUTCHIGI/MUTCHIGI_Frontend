@@ -17,6 +17,8 @@ function Print_quiz({quizIds,
     let navigate = useNavigate();
     let {token} = useAuth();
 
+    console.log(quizIds)
+
     // 빈 퀴즈 객체 정의
     const emptyQuiz = {
         quizId: null,
@@ -34,7 +36,7 @@ function Print_quiz({quizIds,
             second: 0,
             nano: 0,
         },
-        thumbnailURL: "https://via.placeholder.com/150",
+        thumbnailURL: "",
         instrumentId: 0,
         user: {
             userId: 0,
@@ -54,11 +56,15 @@ function Print_quiz({quizIds,
     const [quizzes, setQuizzes] = useState(Array.from({ length: 7 }, () => ({ ...emptyQuiz })));
     const [imageSrc, setImageSrc] = useState(null);
 
+    console.log(quizzes)
+
     useEffect(() => {
         const fetchQuizzes = async () => {
             try {
                 // quizIds가 비어있지 않은 경우에만 요청을 보냄
                 if (quizIds.length === 0) {
+                    const emptyQuizzes = Array(7).fill(emptyQuiz);
+                    setQuizzes(emptyQuizzes);
                     return;
                 }
 
@@ -92,7 +98,6 @@ function Print_quiz({quizIds,
 
         fetchQuizzes();
     }, [quizIds, token]);
-
 
 
     /* 방을 생성하기 위한 핸들러 */
@@ -181,7 +186,6 @@ function Print_quiz({quizIds,
                 </div>
             </div>
         </div>
-        {/*{showFloat && <Room_create_float quiz={selectedQuiz} onClose={handleCloseFloat}/>}*/}
         {showFloat && (
             <>
                 <div className="backdrop" onClick={handleCloseFloat}></div>

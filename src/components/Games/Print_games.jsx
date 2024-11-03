@@ -84,7 +84,6 @@ function Print_games({roomIds}) {
                 }
 
                 setRooms(filledRooms); // 성공적으로 받아온 데이터 저장
-                console.log(rooms)
             } catch (error) {
                 console.error('Failed to fetch quiz entities:', error);
             }

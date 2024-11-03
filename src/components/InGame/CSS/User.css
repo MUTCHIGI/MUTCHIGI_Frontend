@@ -44,8 +44,8 @@
 
     width: 0;
     height: 0;
-    border-left: 20px solid transparent;
-    border-right: 20px solid transparent;
+    border-left: calc(var(--root--width)*0.01041666666666666666666666666667) solid transparent;
+    border-right: calc(var(--root--width)*0.01041666666666666666666666666667) solid transparent;
     border-top: calc(var(--root--height)*0.0222222222222222) solid white;
 
     margin-top: calc(var(--root--height)*0.06481481481481483);

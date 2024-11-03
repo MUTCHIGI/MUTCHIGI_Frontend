@@ -61,7 +61,6 @@ function Room_create_float({quiz,onClose,userInfo}) {
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(JSON.stringify(roomData));
                 onClose(); // 방 생성 성공 시 모달 닫기
             } else {
                 console.error('Error creating room:', response.statusText);
