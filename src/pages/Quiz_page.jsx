@@ -6,12 +6,14 @@ import Footer from "../components/Public/Footer.jsx";
 import {useEffect, useState} from "react";
 import Print_quiz from "../components/Quiz/Print_quiz.jsx";
 import {useAuth} from "../components/Login/AuthContext.jsx";
+import {useNavigate} from "react-router-dom";
 
 function Quiz_page({
-                       userInfo,setUserInfo
-
+                       userInfo,setUserInfo,
+                       customOrplaylist,setCustomOrPlaylist,
 }) {
     let {token} = useAuth();
+    let navigate = useNavigate();
 
     // API를 통해 받아온 퀴즈들의 ID 리스트
     const [quizIds,setQuizIds] = useState([]);
@@ -20,8 +22,6 @@ function Quiz_page({
     const [offset,setOffset] = useState(8);
 
     /* ------------------------------header_bottom state------------------------------ */
-
-    const [customOrplaylist,setCustomOrPlaylist] = useState(0);
 
     /* ------------------------------header_bottom state------------------------------ */
 
@@ -34,7 +34,7 @@ function Quiz_page({
     const [selectedOption_quiztype, setSelectedQuizType] = useState(0); // 현재 텍스트의 인덱스 상태
     const texts = ["전체", "기본", "악기 분리"]; // 순환할 텍스트 배열
 
-    // 대기방 타입 분류 (전체,커스텀,플레이리스트)
+    // 대기방 타입 분류 (전체,커스텀,플레이리스트) or 최신순,인기순
     const [selectedOption_type, setSelectedOption_type] = useState(4); // 초기 상태 설정
 
     // 퀴즈 정렬 순서 설정 (인기순,최신순)
@@ -78,38 +78,15 @@ function Quiz_page({
         fetchQuizIds();
     }, [token,currentPage, offset, selectedOption_type, quizTitle, customOrplaylist, selectedOption_quiztype,selectedOption_quizOrder]);
 
-    // 사용자 정보 받아오기
     useEffect(() => {
-        const fetchUserInfo = async () => {
-            if (token) {
-                console.log(token)
-                try {
-                    const response = await fetch('http://localhost:8080/authTest/google', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: token, // JWT 토큰을 문자열로 변환하여 요청 본문에 포함
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Network response was not ok');
-                    }
-
-                    const data = await response.json(); // JSON 형식으로 응답 본문 변환
-                    setUserInfo(data); // 받아온 유저 정보를 상태에 저장
-                } catch (error) {
-                    console.error('Error fetching user info:', error);
-                    setError('Failed to fetch user information');
-                }
-            }
-        };
-
-        fetchUserInfo();
-    }, [token]); // token이 변경될 때마다 실행
+        if (token === null) {
+            alert("로그인 후 이용하여 주시기 바랍니다.");
+            navigate('/home'); // 원하는 주소로 변경
+        }
+    }, [token]);
 
     return <div>
-        <Header_top/>
+        <Header_top userInfo={userInfo} setUserInfo={setUserInfo}/>
         <Header_bottom
             quiz={true}
             customOrplaylist={customOrplaylist}
@@ -127,13 +104,14 @@ function Quiz_page({
             setQuizOrder={setSelectedOption_quizOrder}
             texts={texts}
         />
-        <Print_quiz quizIds={quizIds}/>
+        <Print_quiz quizIds={quizIds}
+                    customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
+                    userInfo={userInfo}
+        />
         <Footer
             multiplay={false}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            inputValue={inputValue}
-            setInputValue={setInputValue}
+            currentPage={currentPage} setCurrentPage={setCurrentPage}
+            inputValue={inputValue} setInputValue={setInputValue}
         />
     </div>
 }

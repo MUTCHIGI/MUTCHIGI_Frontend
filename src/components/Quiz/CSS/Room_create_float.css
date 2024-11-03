@@ -1,13 +1,16 @@
 .Room_create_float {
-    position: absolute;
+    /*position: absolute;*/
+
+    /*margin-left: 20%;*/
 
     display: flex;
 
-    z-index: 3;
+    /*z-index: 3;*/
 
     background-color: #252525;
     border: 5px solid #00FFD9;
 
+    border-radius: 20px;
 
     width: calc(var(--root--width)*0.5);
     height: calc(var(--root--height)*0.5);
@@ -19,19 +22,107 @@
 }
 
 .set_room_title {
+    display: flex;
 
+    justify-content: center;
+    align-items: center;
+
+    font-size: calc(36px*var(--root--font--ratio));
+
+    color: white;
+
+    width: 100%;
+    height: 20%;
 }
 
 .room_title_input {
+    box-sizing: border-box;
 
+    width: calc(var(--root--width)*0.2);
+    height: calc(var(--root--height)*0.05);
+
+    font-size: calc(30px*var(--root--font--ratio));
+
+    padding: calc(var(--root--height) * 0.01) calc(var(--root--width) * 0.01);
+
+    border-radius: 20px;
+    border: 1px solid white;
 }
 
 .set_room_privacy {
+    width: 100%;
+    height: 50%;
+}
+
+.set_room_privacy_div1{
+    display: flex;
+
+    align-items: center;
+
+    font-size: calc(36px*var(--root--font--ratio));
+    color: white;
+
+    width: 100%;
+    height: 50%;
+}
+
+.room_ispublic {
+    margin-left: 7%;
+    margin-right: 7%;
+}
+
+.room_isprivate {
 
 }
 
-.set_room_headcount {
+.room_passwordinput {
+    display: flex;
 
+    justify-content: center;
+
+    font-size: calc(36px*var(--root--font--ratio));
+
+    height: 50%;
+
+    color: #6BC5B4;
+}
+
+.room_set_password{
+    box-sizing: border-box;
+
+    width: calc(var(--root--width)*0.19);
+    height: calc(var(--root--height)*0.05);
+
+    font-size: calc(30px*var(--root--font--ratio));
+
+    padding: calc(var(--root--height) * 0.01) calc(var(--root--width) * 0.01);
+
+    border-radius: 20px;
+    border: 1px solid white;
+}
+
+.set_room_headcount {
+    display: flex;
+
+    align-items: center;
+
+    margin-left: 5%;
+
+    font-size: calc(36px*var(--root--font--ratio));
+
+    color: white;
+
+    width: 100%;
+    height: 30%;
+}
+
+.set_headcount {
+    text-align: center;
+    font-size: calc(25px*var(--root--font--ratio));
+    border-radius: 20px;
+
+    width: calc(var(--root--width)*0.08);
+    height: calc(var(--root--height)*0.05);
 }
 
 .Room_create_info {

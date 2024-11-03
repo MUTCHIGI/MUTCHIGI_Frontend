@@ -86,6 +86,8 @@ function QuizCreate({ userId, typeId }) {
       })
       .catch((error) => {
         console.error("Error:", error);
+        console.log(userId);
+        console.log(typeId);
         return false;
       });
   };

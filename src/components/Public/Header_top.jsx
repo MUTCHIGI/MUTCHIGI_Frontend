@@ -9,8 +9,8 @@ import Profile_logout_floating from "./Profile_logout_floating.jsx";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Login/AuthContext.jsx";
 
-function Header_top() {
-    const {token} = useAuth();
+function Header_top({userInfo,setUserInfo}) {
+    const {token,setToken} = useAuth();
 
     const handleLogin = () => {
         window.location.href = 'http://localhost:8080/oauth2/authorization/google';
@@ -19,23 +19,34 @@ function Header_top() {
     const navigator = useNavigate();
     /* 프로파일 버튼 클릭시 생성되는 플로팅창 */
     const [isDivVisible, setDivVisible] = useState(false); // div 표시 여부를 관리하는 상태
-    const divRef = useRef(null); // div의 참조 생성
 
-    // div 외부를 클릭했을 때 div를 숨기는 함수
-    const handleClickOutside = (event) => {
-        if (divRef.current && !divRef.current.contains(event.target)) {
-            setDivVisible(false);
-        }
-    };
-
+    // 사용자 정보 받아오기
     useEffect(() => {
-        // 외부 클릭 이벤트 리스너 추가
-        document.addEventListener("mousedown", handleClickOutside);
-        return () => {
-            // 컴포넌트 언마운트 시 이벤트 리스너 제거
-            document.removeEventListener("mousedown", handleClickOutside);
+        const fetchUserInfo = async () => {
+            if (token) {
+                try {
+                    const response = await fetch('http://localhost:8080/authTest/google', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: token, // JWT 토큰을 문자열로 변환하여 요청 본문에 포함
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json(); // JSON 형식으로 응답 본문 변환
+                    setUserInfo(data); // 받아온 유저 정보를 상태에 저장
+                } catch (error) {
+                    console.error('Error fetching user info:', error);
+                }
+            }
         };
-    }, []);
+
+        fetchUserInfo();
+    }, [token]); // token이 변경될 때마다 실행
 
     return (
         <div className="Header">
@@ -46,16 +57,22 @@ function Header_top() {
                     navigator('/home');
                 }}
             />
-            <div className="profile_div">
-                <img
-                    className="profile"
-                    src={Profile}
-                />
-                <Button classname={"profile_logout"} onClick={() => setDivVisible(!isDivVisible)} logo={Triangle}/>
-            </div>
-            {isDivVisible && (<Profile_logout_floating onclose={() => setDivVisible(false)}/>)}
+            {
+                token ?
+                (<div className="profile_div">
+                    <img
+                        className="profile"
+                        src={userInfo ? userInfo.profileImageURL : Profile}
+                    />
+                    <Button classname={"profile_logout"} onClick={() => setDivVisible(!isDivVisible)} logo={Triangle}/>
+                </div>)
+                :
+                    (<div className="Login_div">
+                        <Button text={"로그인"} onClick={handleLogin} classname={"Login"}/>
+                    </div>)
+            }
 
-            <button onClick={handleLogin}>구글로 로그인</button>
+            {isDivVisible && (<Profile_logout_floating onclose={() => setDivVisible(false)} setToken={setToken} setDivVisible={setDivVisible}/>)}
         </div>
     )
 }

@@ -10,7 +10,10 @@ import {useAuth} from "../Login/AuthContext.jsx";
 import {useNavigate} from "react-router-dom";
 
 
-function Print_quiz({quizIds}) {
+function Print_quiz({quizIds,
+                    customOrplaylist,setCustomOrPlaylist,
+    userInfo
+}) {
     let navigate = useNavigate();
     let {token} = useAuth();
 
@@ -49,6 +52,7 @@ function Print_quiz({quizIds}) {
     };
 
     const [quizzes, setQuizzes] = useState(Array.from({ length: 7 }, () => ({ ...emptyQuiz })));
+    const [imageSrc, setImageSrc] = useState(null);
 
     useEffect(() => {
         const fetchQuizzes = async () => {
@@ -90,6 +94,7 @@ function Print_quiz({quizIds}) {
     }, [quizIds, token]);
 
 
+
     /* 방을 생성하기 위한 핸들러 */
     let [showFloat,setShowFloat] = useState(false);
     const [selectedQuiz, setSelectedQuiz] = useState(null); // 선택된 퀴즈 상태 추가
@@ -105,7 +110,11 @@ function Print_quiz({quizIds}) {
 
     // 퀴즈 만들기 버튼
     const handleDivClick = () => {
-        navigate('/home/quiz_create'); // 클릭 시 경로 이동
+        if (customOrplaylist === 2) {
+            navigate('/home/quiz/playlist'); // customOrplaylist가 2일 경우 이 경로로 이동
+        } else {
+            navigate('/home/quiz_create'); // 그렇지 않으면 원래 경로로 이동
+        }
     };
 
     return <div className="PrintQuizList">
@@ -172,7 +181,15 @@ function Print_quiz({quizIds}) {
                 </div>
             </div>
         </div>
-        {showFloat && <Room_create_float quiz={selectedQuiz} onClose={handleCloseFloat}/>}
+        {/*{showFloat && <Room_create_float quiz={selectedQuiz} onClose={handleCloseFloat}/>}*/}
+        {showFloat && (
+            <>
+                <div className="backdrop" onClick={handleCloseFloat}></div>
+                <div className="modal">
+                    <Room_create_float userInfo={userInfo} quiz={selectedQuiz} onClose={handleCloseFloat} />
+                </div>
+            </>
+        )}
     </div>
 }
 

@@ -26,6 +26,17 @@
     margin-right: calc(var(--root--width)*0.089583);
 }
 
+.Login_div {
+    display: flex;
+
+    align-items: center;
+
+    margin-left: calc(var(--root--width)*0.735);
+
+    width: calc(var(--root--width)*0.06666666666666666666666666666667);
+    height: 100%;
+}
+
 /* 이미지 파일 */
 .profile {
     width: calc(80px*var(--root--font--ratio));

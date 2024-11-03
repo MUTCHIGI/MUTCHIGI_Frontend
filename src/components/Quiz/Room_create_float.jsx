@@ -2,25 +2,12 @@ import '../Quiz/CSS/Room_create_float.css';
 import Button from "../Public/Button.jsx";
 import {useState} from "react";
 import {useAuth} from "../Login/AuthContext.jsx";
+import Thumbnail from "../../img/QuizItemTest/test_thumbnail.png";
 
-function Room_create_float({quiz,onClose}) {
+function Room_create_float({quiz,onClose,userInfo}) {
     /* 토큰 */
     const {token} = useAuth();
 
-    const fetchData = async () => {
-        const response = await fetch('http://localhost:5000/protected-route', {
-            method: 'GET',
-            headers: {
-                'Authorization': `Bearer ${token}`, // JWT 토큰 포함
-            },
-        });
-
-        if (response.ok) {
-            const data = await response.json();
-        } else {
-            console.error('데이터 요청 실패');
-        }
-    };
     /* 공개/비공개방 설정 */
     let [privacy,setPrivacy] = useState('public');
 
@@ -46,7 +33,7 @@ function Room_create_float({quiz,onClose}) {
     };
 
     const handleEmptyInputClick = () => {
-        alert("방 이름은 비어있을 수 없습니다."); // 비어 있을 때 경고창 출력
+        alert("방 이름,또는 비공개방의 비밀번호는 비어있을 수 없습니다."); // 비어 있을 때 경고창 출력
     };
 
     // 방 생성 처리
@@ -59,7 +46,7 @@ function Room_create_float({quiz,onClose}) {
             password: password,
             maxPlayer: maxPlayer,
             quizId: quiz.quizId, // quizId는 필요에 따라 설정
-            userId: 0 // userId는 필요에 따라 설정
+            userId: userInfo.userId// userId는 필요에 따라 설정
         };
 
         try {
@@ -96,29 +83,46 @@ function Room_create_float({quiz,onClose}) {
                 />
             </div>
             <div className="set_room_privacy">
-                <div>
-                    공개 :&nbsp;
-                    <input
-                        type="checkbox"
-                        name="privacy"
-                        value="public"
-                        checked={privacy === 'public'}
-                        onChange={handleChange}
-                    />
+                <div className="set_room_privacy_div1">
+                    <div className="room_ispublic">
+                        공개 :&nbsp;
+                        <input
+                            type="radio"
+                            name="privacy"
+                            value="public"
+                            checked={privacy === 'public'}
+                            onChange={handleChange}
+                        />
+                    </div>
+                    <div className="room_isprivate">
+                        비공개 :&nbsp;
+                        <input
+                            type="radio"
+                            name="privacy"
+                            value="private"
+                            checked={privacy === 'private'}
+                            onChange={handleChange}
+                        />
+                    </div>
                 </div>
-                <div>
-                    비공개 :&nbsp;
-                    <input
-                        type="checkbox"
-                        name="privacy"
-                        value="private"
-                        checked={privacy === 'private'}
-                        onChange={handleChange}
-                    />
+                <div className="room_passwordinput">
+                    {privacy === 'private' && <>
+                        비밀번호 :&nbsp;
+                        <input
+                            type="password"
+                            className="room_set_password"
+                            value={password}
+                            onChange={handlePasswordChange}
+                        />
+                    </>}
                 </div>
             </div>
             <div className="set_room_headcount">
-                <select value={maxPlayer} onChange={handleMaxPlayerChange}>
+                인원 수 :&nbsp;
+                <select
+                    className="set_headcount"
+                    value={maxPlayer}
+                    onChange={handleMaxPlayerChange}>
                     <option value={1}>1 명</option>
                     <option value={2}>2 명</option>
                     <option value={3}>3 명</option>
@@ -132,21 +136,21 @@ function Room_create_float({quiz,onClose}) {
         </div>
         <div className="Room_create_info">
             <div className="Room_create_img">
-                <img src={quiz.thumbnailURL} className="Room_create_img_src"/>
+                {/*<img src={quiz.thumbnailURL} className="Room_create_img_src"/>*/}
             </div>
             <div className="Room_create_description">
                 <div className={"Room_create_description_innerbox"}>
-                    {quiz.quizDescription}
+                    {/*{quiz.quizDescription}*/}
                 </div>
             </div>
         </div>
         <Button text={"취소"} onClick={onClose} classname={"room_create_cancel"}/>
 
-        {roomName.trim() !== '' ?
-            <Button text={"확인"} onClick={handleCreateRoom} classname={"room_create_confirm"}/>
-            :
-            <Button text={"확인"} onClick={handleEmptyInputClick} classname={"room_create_confirm_notyet"}/>
-        }
+        {(roomName.trim() !== '' && (privacy !== 'private' || password.trim() !== '')) ? (
+            <Button text={"확인"} onClick={handleCreateRoom} classname={"room_create_confirm"} />
+        ) : (
+            <Button text={"확인"} onClick={handleEmptyInputClick} classname={"room_create_confirm_notyet"} />
+        )}
     </div>
 }
 

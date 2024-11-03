@@ -1,5 +1,4 @@
 import '../InGame/CSS/User.css';
-import Master from '../../img/room_master.png';
 
 function User({id,name,profile_img,chat,number,master,ready}) {
     return <div className="User">
@@ -14,16 +13,16 @@ function User({id,name,profile_img,chat,number,master,ready}) {
             </>
         )}
         <div className="user_profile">
+            {master && (<>
+                    <div className={"master_div"}>
+                        Master
+                    </div>
+                </>
+            )}
             <div className="profile_image">
                 <img src={profile_img} className="user_img"/>
             </div>
             <div className={`profile_name_${number}`}>
-                    {master && (<>
-                    <div className={"img_master_div"}>
-                        <img src={Master} className="img_master"/>
-                    </div>
-                    </>
-                    )}
                 <div className="inner_box_name">
                     {name}
                 </div>

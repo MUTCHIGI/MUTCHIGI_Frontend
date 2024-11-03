@@ -32,7 +32,10 @@ function SearchBar({multiplay,
 
     return <div className="SearchBar">
         {multiplay ?
-            <select className="select_sorttype" value={selectedOption_type} onChange={handleTypeChange_1}>
+            <select
+                className="select_sorttype"
+                value={selectedOption_type}
+                onChange={handleTypeChange_1}>
                 <option value={0}>
                     전체
                 </option>
@@ -43,7 +46,10 @@ function SearchBar({multiplay,
                     플레이리스트
                 </option>
             </select>
-            : <select className="select_sorttype" value={quizOrder} onChange={handleTypeChange_2}>
+            : <select
+                className="select_sorttype"
+                value={quizOrder}
+                onChange={handleTypeChange_2}>
                 <option value={"DATEDS"}>
                     최신순
                 </option>
@@ -59,8 +65,8 @@ function SearchBar({multiplay,
             <div className="search_by_public_or_private">
                 공개
                 <input
-                    className="radio_room_public_"
-                    type="checkbox"
+                    className="radio_room_public"
+                    type="radio"
                     value="public"
                     checked={selectedOption_privacy === true}
                     onChange={() => handlePrivacyChange(true)}
@@ -71,7 +77,7 @@ function SearchBar({multiplay,
                 </div>
                 <input
                     className="radio_room_private"
-                    type="checkbox"
+                    type="radio"
                     value="private"
                     checked={selectedOption_privacy === false}
                     onChange={() => handlePrivacyChange(false)}

@@ -7,8 +7,10 @@ import Playlist from "../components/Quiz/Playlist.jsx";
 import Print_games from "../components/Games/Print_games.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../components/Login/AuthContext.jsx";
 
-function Home() {
+function Home({userInfo,setUserInfo}) {
+    let token = useAuth();
     // API를 통해 받아온 방들의 ID 리스트
     const [roomIds,setRoomIds] = useState([]);
 
@@ -60,7 +62,7 @@ function Home() {
     }, [currentPage,offset,selectedOption_type,selectedOption_quiztype,quizTitle,selectedOption_privacy]);
 
     return <div>
-        <Header_top/>
+        <Header_top userInfo={userInfo} setUserInfo={setUserInfo}/>
         <Header_bottom/>
         <SearchBar
             multiplay={true}
