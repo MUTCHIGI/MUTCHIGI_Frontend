@@ -4,6 +4,7 @@ import MainInfo from "../components/Quiz/Quiz_create_main.jsx";
 import ModeSelection from "../components/Quiz/Quiz_create_mode.jsx";
 import OptionSelection from "../components/Quiz/Quiz_create_option.jsx";
 import QuizCreateList from "../components/Quiz/Quiz_create_list_basic.jsx";
+import QuizCreateListAi from "../components/Quiz/Quiz_create_list_ai.jsx"
 import styles from "../components/Quiz/CSS/Quiz_create.module.css";
 import {useAuth} from "../components/Login/AuthContext.jsx";
 
@@ -138,11 +139,19 @@ const getMode = () => (
 );
 
 const getlist = () => (
-  <QuizCreateList
-    quizId={quizId}
-    hintSetting={hints}
-    token={token}
-  />
+  mode === 1 ? (
+    <QuizCreateList
+      quizId={quizId}
+      hintSetting={hints}
+      token={token}
+    />
+  ) : (
+    <QuizCreateListAi
+      quizId={quizId}
+      hintSetting={hints}
+      token={token}
+    />
+  )
 );
 
 const steps = [getMode, getMainInfo, getlist];

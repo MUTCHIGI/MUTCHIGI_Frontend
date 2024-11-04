@@ -6,8 +6,8 @@
 
 .navigation-buttons {
   grid-row: 2;
-  position: absolute;
-  top: calc(940 / 1080 * var(--root--height));
+  position: fixed;
+  bottom: calc(140 / 1080 * var(--root--height));
   left: calc(1500 / 1920 * var(--root--width));
   width: calc(300 / 1920 * var(--root--width));
   height: calc(70 / 1080 * var(--root--height));
