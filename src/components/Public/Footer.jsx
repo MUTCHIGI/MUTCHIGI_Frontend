@@ -2,12 +2,14 @@ import './CSS/Footer.css';
 import Button from "./Button.jsx";
 import {useState} from "react";
 import {useNavigate} from "react-router-dom";
+import {useAuth} from "../Login/AuthContext.jsx";
 
 function Footer({
     multiplay,
     currentPage,setCurrentPage,
-    inputValue,setInputValue
+    inputValue,setInputValue,
                 }) {
+    const {token} = useAuth();
 
     const handlePrevPage = () => {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)); // 1보다 작아지지 않도록 설정
@@ -28,7 +30,13 @@ function Footer({
     const navigate = useNavigate();
 
     const gotoQuiz = () => {
-        navigate('/quiz');
+        if(token!==null) {
+            navigate('/home/quiz');
+        }
+        else {
+            alert("로그인 후 이용하여 주시기 바랍니다.");
+            navigate('/home');
+        }
     };
 
     return <div className="Footer">

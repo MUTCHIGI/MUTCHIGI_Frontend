@@ -10,8 +10,8 @@
     color: white;
 
     font-style: italic;
-    font-weight: bold;
-    font-size: calc(24px*var(--root--font--ratio));
+    font-weight: lighter;
+    font-size: calc(20px*var(--root--font--ratio));
 }
 
 .remaining_time {
@@ -19,6 +19,7 @@
 
     color: white;
     font-size: calc(20px*var(--root--font--ratio));
+    font-weight: lighter;
 
     left: 50%;
     transform: translateX(-50%);
@@ -73,14 +74,14 @@
     justify-content: center;
     align-items: center;
 
-    font-size: calc(25px*var(--root--font--ratio));
+    font-size: calc(20px*var(--root--font--ratio));
 }
 
 .ans {
     margin-left: 10px;
 
     font-weight: bolder;
-    font-size: calc(50px*var(--root--font--ratio));
+    font-size: calc(30px*var(--root--font--ratio));
 }
 
 .hint {
@@ -92,9 +93,11 @@
     width: 100%;
     height: calc(var(--root--height)*0.15);
 
+    margin-top: 1%;
+
     font-style: italic;
     font-weight: lighter;
-    font-size: calc(36px*var(--root--font--ratio));
+    font-size: calc(20px*var(--root--font--ratio));
 }
 
 .hint_1,.hint_2,.hint_3 {
@@ -126,7 +129,7 @@
 
     margin-top: calc(var(--root--height)*0.03);
 
-    font-size: calc(36px*var(--root--font--ratio));
+    font-size: calc(24px*var(--root--font--ratio));
 }
 
 .correct_bold {

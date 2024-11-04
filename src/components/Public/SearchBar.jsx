@@ -32,7 +32,10 @@ function SearchBar({multiplay,
 
     return <div className="SearchBar">
         {multiplay ?
-            <select className="select_sorttype" value={selectedOption_type} onChange={handleTypeChange_1}>
+            <select
+                className="select_sorttype"
+                value={selectedOption_type}
+                onChange={handleTypeChange_1}>
                 <option value={0}>
                     전체
                 </option>
@@ -43,7 +46,10 @@ function SearchBar({multiplay,
                     플레이리스트
                 </option>
             </select>
-            : <select className="select_sorttype" value={quizOrder} onChange={handleTypeChange_2}>
+            : <select
+                className="select_sorttype"
+                value={quizOrder}
+                onChange={handleTypeChange_2}>
                 <option value={"DATEDS"}>
                     최신순
                 </option>

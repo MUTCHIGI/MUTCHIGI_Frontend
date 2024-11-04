@@ -4,8 +4,6 @@
 
     width: calc(var(--root--width)*0.33645833332933);
     height: calc(var(--root--height)*0.15740740740737);
-
-    cursor: pointer;
 }
 
 .Thumbnail {
@@ -106,7 +104,9 @@
     font-style: italic;
 
     width: calc(var(--root--width)*0.1375);
-    height: 40%;
+    height: 35%;
+
+    font-size: calc(20px*var(--root--font--ratio));
 
     margin-left: auto;
 }
@@ -157,6 +157,8 @@
 
     background-color: #4D3F3F;
 
+    font-size: calc(20px*var(--root--font--ratio));
+
     color: white;
 
     width: 100%;
@@ -178,7 +180,7 @@
 .public_or_private {
     display: flex;
 
-    width: calc(var(--root--height)*0.0370370370370);
+    width: calc(var(--root--width)*0.02083333333333333333333333333333);
     height: calc(var(--root--height)*0.0370370370370);
 }
 

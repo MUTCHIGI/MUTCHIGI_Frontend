@@ -33,7 +33,7 @@
     justify-content: center;
     align-items: center;
 
-    font-size: calc(36px*var(--root--font--ratio));
+    font-size: calc(20px*var(--root--font--ratio));
     font-weight: bolder;
     font-style: italic;
 
@@ -71,7 +71,7 @@
     margin-top: calc(var(--root--height)*0.0277777777777777777);
 
     color:white;
-    font-size: calc(36px*var(--root--font--ratio));
+    font-size: calc(20px*var(--root--font--ratio));
     font-style: italic;
     font-weight: lighter;
 }

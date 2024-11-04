@@ -9,7 +9,6 @@ function Header_bottom({quiz,customOrplaylist,setCustomOrPlaylist}) {
                     <Button text={"전체"} classname={`mod_all${customOrplaylist===0 ? "_selected" : ""}`} onClick={() => setCustomOrPlaylist(0)}/>
                     <Button text={"기본"} classname={`mod_custom${customOrplaylist===1 ? "_selected" : ""}`} onClick={() => setCustomOrPlaylist(1)}/>
                     <Button text={"플레이리스트"} classname={`mod_playlist${customOrplaylist===2 ? "_selected" : ""}`} onClick={() => setCustomOrPlaylist(2)}/>
-                    {customOrplaylist}
                 </div>
             )}
         </div>

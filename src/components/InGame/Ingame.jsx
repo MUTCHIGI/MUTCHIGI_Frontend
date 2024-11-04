@@ -12,8 +12,8 @@ function Ingame() {
     return <div className="Ingame">
         <div className="left">
             <div className="main_board">
-                {/*<Game_board_waiting/>*/}
-                <Game_board_playing/>
+                <Game_board_waiting/>
+                {/*<Game_board_playing/>*/}
             </div>
             <div className="user_list">
                 <div className="user_box">

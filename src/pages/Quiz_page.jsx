@@ -6,9 +6,14 @@ import Footer from "../components/Public/Footer.jsx";
 import {useEffect, useState} from "react";
 import Print_quiz from "../components/Quiz/Print_quiz.jsx";
 import {useAuth} from "../components/Login/AuthContext.jsx";
+import {useNavigate} from "react-router-dom";
 
-function Quiz_page() {
+function Quiz_page({
+                       userInfo,setUserInfo,
+                       customOrplaylist,setCustomOrPlaylist,
+}) {
     let {token} = useAuth();
+    let navigate = useNavigate();
 
     // API를 통해 받아온 퀴즈들의 ID 리스트
     const [quizIds,setQuizIds] = useState([]);
@@ -17,8 +22,6 @@ function Quiz_page() {
     const [offset,setOffset] = useState(8);
 
     /* ------------------------------header_bottom state------------------------------ */
-
-    const [customOrplaylist,setCustomOrPlaylist] = useState(0);
 
     /* ------------------------------header_bottom state------------------------------ */
 
@@ -31,7 +34,7 @@ function Quiz_page() {
     const [selectedOption_quiztype, setSelectedQuizType] = useState(0); // 현재 텍스트의 인덱스 상태
     const texts = ["전체", "기본", "악기 분리"]; // 순환할 텍스트 배열
 
-    // 대기방 타입 분류 (전체,커스텀,플레이리스트)
+    // 대기방 타입 분류 (전체,커스텀,플레이리스트) or 최신순,인기순
     const [selectedOption_type, setSelectedOption_type] = useState(4); // 초기 상태 설정
 
     // 퀴즈 정렬 순서 설정 (인기순,최신순)
@@ -48,6 +51,7 @@ function Quiz_page() {
     // input 태그를 사용해 페이지 이동하는 state
     const [inputValue, setInputValue] = useState(currentPage); // input의 상태
 
+    const [error, setError] = useState(null);
     useEffect(() => {
         const fetchQuizIds = async () => {
             try {
@@ -67,14 +71,22 @@ function Quiz_page() {
                 setQuizIds(data);  // 성공적으로 받아온 데이터 저장
             } catch (error) {
                 console.error('Failed to fetch quiz IDs:', error);
+                setError('Failed to fetch user information');
             }
         };
 
         fetchQuizIds();
     }, [token,currentPage, offset, selectedOption_type, quizTitle, customOrplaylist, selectedOption_quiztype,selectedOption_quizOrder]);
 
+    useEffect(() => {
+        if (token === null) {
+            alert("로그인 후 이용하여 주시기 바랍니다.");
+            navigate('/home'); // 원하는 주소로 변경
+        }
+    }, [token]);
+
     return <div>
-        <Header_top/>
+        <Header_top userInfo={userInfo} setUserInfo={setUserInfo}/>
         <Header_bottom
             quiz={true}
             customOrplaylist={customOrplaylist}
@@ -92,13 +104,14 @@ function Quiz_page() {
             setQuizOrder={setSelectedOption_quizOrder}
             texts={texts}
         />
-        <Print_quiz quizIds={quizIds}/>
+        <Print_quiz quizIds={quizIds}
+                    customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
+                    userInfo={userInfo}
+        />
         <Footer
             multiplay={false}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            inputValue={inputValue}
-            setInputValue={setInputValue}
+            currentPage={currentPage} setCurrentPage={setCurrentPage}
+            inputValue={inputValue} setInputValue={setInputValue}
         />
     </div>
 }

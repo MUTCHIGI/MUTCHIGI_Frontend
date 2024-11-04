@@ -52,45 +52,45 @@ function Print_games({roomIds}) {
     const [rooms, setRooms] = useState(Array(6).fill(emptyRoomTemplate)); // 초기값을 6개의 빈 방으로 설정
 
     // roomIds 배열을 가지고 API 요청을 보내는 함수
-    const fetchRoomEntities = async () => {
-        // roomIds가 빈 배열인경우?
-        if(roomIds.length === 0) {
-            return;
-        }
-
-        // URLSearchParams로 쿼리 파라미터 생성
-        const params = new URLSearchParams();
-        roomIds.forEach(id => params.append('roomIds', id));
-
-        try {
-            const response = await fetch(`http://localhost:8080/room/Entities?${params.toString()}`);
-
-            // 응답이 성공적인지 확인
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
-            }
-
-            // JSON 형식으로 응답 데이터 파싱
-            const data = await response.json();
-
-            // rooms의 크기를 6으로 맞추는 로직
-            const adjustedRooms = [...data];
-
-            while (adjustedRooms.length < 6) {
-                adjustedRooms.push(emptyRoomTemplate);
-            }
-
-            // 데이터를 rooms 상태에 저장
-            setRooms(adjustedRooms);
-        } catch (error) {
-            console.error('Failed to fetch room entities:', error);
-        }
-    };
-
     useEffect(() => {
-        fetchRoomEntities();
-    }, [roomIds]);
+        setRooms(Array(6).fill(emptyRoomTemplate))
 
+        const fetchRooms = async () => {
+            try {
+                // quizIds가 비어있지 않은 경우에만 요청을 보냄
+                if (roomIds.length === 0) {
+                    return;
+                }
+
+                // 모든 quizId를 queryString으로 변환하여 요청 URL 구성
+                const queryString = roomIds.map(id => `idList=${id}`).join('&');
+                const response = await fetch(`http://localhost:8080/room/Entities?${queryString}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+
+                const data = await response.json();
+
+                // 7개 미만인 경우 빈 퀴즈 객체를 추가
+                const filledRooms = [...data];
+                while (filledRooms.length < 6) {
+                    filledRooms.push(emptyRoomTemplate);
+                }
+
+                setRooms(filledRooms); // 성공적으로 받아온 데이터 저장
+            } catch (error) {
+                console.error('Failed to fetch quiz entities:', error);
+            }
+        };
+
+        fetchRooms();
+    }, [roomIds]);
 
     return <div className="Print_games">
         <div className="dash_line"/>

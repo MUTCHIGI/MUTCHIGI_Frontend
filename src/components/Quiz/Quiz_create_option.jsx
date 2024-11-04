@@ -70,7 +70,7 @@ const OptionSelection = ({ info, handlers }) => {
 
             >{instr.name}</span>
             <input
-              type="radio"
+              className={styles["instrument-radio"]}
               name="instrument"
               value={instr.id}
               checked={instrument === instr.id}

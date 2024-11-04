@@ -1,11 +1,23 @@
 // src/context/AuthContext.js
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
-// AuthContext 생성
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    const [token, setToken] = useState("eyJhbGciOiJIUzUxMiJ9.eyJyb2xlcyI6Ik5vcm1hbCIsInN1YiI6IjExMDQ2NDc1NjAzODIwOTE2OTY4NCIsImlhdCI6MTczMDM1MTQ2MywiZXhwIjoxNzMwMzg3NDYzfQ.QM_mPlfG_uX94EQszBlbbh3p253xLCzx6VSFObQnxj8Jl0_AHbDdS-9eN3FU8vZVKjtNVsUy_IjqElgtTbu8ag"); // 임의의 발급받은 JWT 토큰
+    const [token, setToken] = useState(() => {
+        return localStorage.getItem('jwtToken') || null;
+    });
+
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get('token'); // 'token'을 추출
+
+        // URL에서 토큰이 있는 경우
+        if (tokenFromUrl) {
+            setToken(tokenFromUrl);
+            localStorage.setItem('jwtToken', tokenFromUrl);
+        }
+    }, [window.location.search]);
 
     return (
         <AuthContext.Provider value={{ token, setToken }}>
@@ -14,7 +26,4 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// useAuth 훅 생성
-export const useAuth = () => {
-    return useContext(AuthContext);
-};
+export const useAuth = () => useContext(AuthContext);

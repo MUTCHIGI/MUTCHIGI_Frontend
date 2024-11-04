@@ -5,12 +5,18 @@ import {createContext, useContext, useEffect, useState} from "react";
 import Quiz_page from "./pages/Quiz_page.jsx";
 import Footer from "./components/Public/Footer.jsx";
 import Ingame from "./components/InGame/Ingame.jsx";
-import {AuthProvider} from "./components/Login/AuthContext.jsx";
+import {AuthProvider, useAuth} from "./components/Login/AuthContext.jsx";
 import {Route, Routes} from "react-router-dom";
+import Quiz_create from "./pages/Quiz_create.jsx";
+import {GoogleOAuthProvider} from "@react-oauth/google";
+import Quiz_page_Playlist from "./pages/Quiz_page_Playlist.jsx";
 
 export let WindowSizeContext = createContext();
 
 function App() {
+    const [userInfo, setUserInfo] = useState(null);
+    const [customOrplaylist,setCustomOrPlaylist] = useState(0);
+    const [playListUrl,setPlayListUrl] = useState(null);
 
     let [windowSize,setWindowSize] = useState({
         width: window.innerWidth,
@@ -34,16 +40,30 @@ function App() {
     document.documentElement.style.setProperty("--root--height",`${windowSize.height}px`);
     document.documentElement.style.setProperty("--root--width",`${windowSize.width}px`);
 
-    let ratio = (((window.innerHeight**2) + (window.innerWidth**2))/4852800)**0.5;
+    const horizontalRatio = window.innerWidth / 1920;  // 기준 너비인 1920에 대한 비율
+    const verticalRatio = window.innerHeight / 1080;   // 기준 높이인 1080에 대한 비율
+    let ratio = Math.min(horizontalRatio, verticalRatio);
     document.documentElement.style.setProperty("--root--font--ratio",`${ratio}`);
+
+    //Quiz Create에 Playlist URL 입력하기
 
   return (
       <div className="App">
           <WindowSizeContext.Provider value={windowSize}>
               <AuthProvider>
                   <Routes>
-                      <Route path="/" element={<Home/> }/>
-                      <Route path="/quiz" element={<Quiz_page />}/>
+                      <Route path="/ingame" element={<Ingame/>}/>
+                      <Route path="/home" element={<Home userInfo={userInfo} setUserInfo={setUserInfo}/> }/>
+                      <Route path="/home/quiz" element={<Quiz_page
+                          userInfo={userInfo} setUserInfo={setUserInfo}
+                          customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
+                      />}/>
+                      <Route path="/home/quiz/playlist" element={<Quiz_page_Playlist
+                          userInfo={userInfo} setUserInfo={setUserInfo}
+                          playlistUrl={playListUrl} setPlayListUrl={setPlayListUrl}
+                          customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
+                      />}/>
+                      <Route path="/home/quiz_create" element={<Quiz_create typeId={customOrplaylist} userId={userInfo ? userInfo.userId : 0}/>}/>
                   </Routes>
               </AuthProvider>
           </WindowSizeContext.Provider>
