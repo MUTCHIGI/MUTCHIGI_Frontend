@@ -42,7 +42,6 @@ const MainInfo = ({ info, handlers }) => {
           placeholder=""
         />
       </div>
-
       <div className={styles['description-section']}>
         <p htmlFor="description" className={styles['p-box']}>설명</p>
         <textarea

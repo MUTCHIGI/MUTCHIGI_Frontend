@@ -83,6 +83,39 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
     return data; // 필요 시 응답 데이터 반환
   }
 
+  const postHints = async (quizIdNumber) => {
+    const hintsPayload = hints.map((hint) => {
+        // hint.value = hour * 3600 + minute * 60 + second + '초 후'
+        console.log(hint);
+        const totalSeconds = parseInt(hint.time.replace('초 후', ''), 10);
+        const hour = Math.floor(totalSeconds / 3600);
+        const minute = Math.floor((totalSeconds % 3600) / 60);
+        const second = totalSeconds % 60;
+
+        return {
+            hour: hour,
+            minute: minute,
+            second: second,
+            hintType: hint.text,
+        };
+    });
+
+    const response = await fetch(`http://localhost:8080/quiz/${quizIdNumber}/hintState`, {
+        method: "POST",
+        headers: {
+            "Accept": "*/*",
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+        },
+        body: JSON.stringify(hintsPayload),
+    });
+
+    if (!response.ok) {
+        throw new Error("Failed to post hints");
+    }
+};
+
+
   const postQuiz = async () => {
     const response = await fetch("http://localhost:8080/quiz/createQuiz", {
       method: "POST",
@@ -112,7 +145,7 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
     const quizIdNumber = parseInt(id, 10);
     if (!isNaN(quizIdNumber)) {
       setQuizId(quizIdNumber);
-      console.log(quizIdNumber);
+      await postHints(quizIdNumber);
     }
     if (thumbnail) {
       postThumbnail();
@@ -137,7 +170,7 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
           setStep(step + 1);
         }
       }
-      catch (e) {
+      catch (error) {
         console.error("Error in postQuiz:", error);
         setIsLoading(false);
       }

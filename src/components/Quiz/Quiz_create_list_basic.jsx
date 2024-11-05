@@ -26,7 +26,6 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
     };
 
     useEffect(() => {
-        console.log(quizId);
         if (quizId !== -1) {
             fetch(`http://localhost:8080/song/youtube/songList?quizId=${quizId}`, {
                 method: 'GET',
