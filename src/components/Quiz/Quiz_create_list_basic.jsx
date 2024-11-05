@@ -1,4 +1,4 @@
-import React, { startTransition, useState } from 'react';
+import React, { startTransition, useState, useEffect } from 'react';
 import './CSS/Quiz_create_list_basic.css';
 import editButton from '../../img/edit_button.svg';
 import deleteButton from '../../img/delete_button.svg';
@@ -11,51 +11,116 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
     const [selectedCardIndex, setSelectedCardIndex] = useState(null);
 
 
+    const fetchGetApi = async (url, token) => {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': '*/*',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to fetch data from ${url}`);
+        }
+        return response.json();
+    };
+
+    useEffect(() => {
+        console.log(quizId);
+        if (quizId !== -1) {
+            fetch(`http://localhost:8080/song/youtube/songList?quizId=${quizId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': '*/*',
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(async (data) => {
+                    const formattedCards = await Promise.all(data.map(async (item) => {
+                        const maxTimeInSeconds = convertToSeconds(item.songTime);
+
+                        // Fetch answers
+                        const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${data.quizSongRelationID}/answers`, token);
+                        // Fetch hints
+                        const hints = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/hint`, token);
+
+                        return {
+                            url: item.playURL,
+                            answers: answers, // 할당된 answers
+                            hints: hints.map(hint => ({
+                                hintId: hint.hintId,
+                                hintTime: convertToSeconds(hint.hintTime),
+                                hintType: hint.hintType,
+                                hintText: hint.hintText
+                            })), // 할당된 hints
+                            startTime: 0,
+                            quizRelationId: item.quizSongRelationID,
+                            quizUrl: item.playURL,
+                            quizThumbnail: item.thumbnailURL,
+                            maxTime: maxTimeInSeconds,
+                        };
+                    }));
+                    setCards(formattedCards);
+                })
+                .catch((error) => {
+                    console.error('Error fetching song list:', error);
+                });
+        }
+    }, [quizId, token]);
+
     const convertToSeconds = (timeString) => {
         const [hours, minutes, seconds] = timeString.split(':').map(Number);
         console.log(hours, minutes, seconds);
         return (hours * 3600) + (minutes * 60) + seconds;
     };
 
-    const handleAddCard = () => {
+    const handleAddCard = async () => {
         if (url.trim() === '') return;
-
-        fetch('http://localhost:8080/song/youtube', {
-            method: 'POST',
-            headers: {
-                'Accept': '*/*',
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`, // token을 props나 상태로 전달받아 사용
-            },
-            body: JSON.stringify({
-                youtubeURL: url,
-                quizId: quizId,
-            }),
-        })
-            .then((response) => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then((data) => {
-                const maxTimeInSeconds = convertToSeconds(data.songTime);
-                const newCard = {
-                    url: data.playURL,
-                    answers: [],
-                    hints: [],
-                    startTime: 0,
-                    quizRelationId: data.quizSongRelationID,
-                    quizUrl: data.playURL,
-                    quizThumbnail: data.thumbnailURL,
-                    maxTime: maxTimeInSeconds,
-                };
-                setCards((prevCards) => [...prevCards, newCard]);
-                setUrl('');
-            })
-            .catch((error) => {
-                console.error('Error:', error);
+    
+        try {
+            const response = await fetch('http://localhost:8080/song/youtube', {
+                method: 'POST',
+                headers: {
+                    'Accept': '*/*',
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`, // token을 props나 상태로 전달받아 사용
+                },
+                body: JSON.stringify({
+                    youtubeURL: url,
+                    quizId: quizId,
+                }),
             });
+    
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+    
+            const data = await response.json();
+            const maxTimeInSeconds = convertToSeconds(data.songTime);
+            // Fetch answers
+            const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${data.quizSongRelationID}/answers`, token);
+            const newCard = {
+                url: data.playURL,
+                answers: answers, // 할당된 answers
+                hints: [],
+                startTime: 0,
+                quizRelationId: data.quizSongRelationID,
+                quizUrl: data.playURL,
+                quizThumbnail: data.thumbnailURL,
+                maxTime: maxTimeInSeconds,
+            };
+    
+            setCards((prevCards) => [...prevCards, newCard]);
+            setUrl('');
+        } catch (error) {
+            console.error('Error:', error);
+        }
     };
 
     const handleDeleteCard = (index) => {
