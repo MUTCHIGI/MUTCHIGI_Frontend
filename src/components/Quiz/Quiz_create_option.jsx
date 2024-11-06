@@ -20,33 +20,27 @@ const OptionSelection = ({ info, handlers }) => {
 
   const addHint = () => {
     if (hints.length < 3) {
-      setHints([...hints, { id: hints.length + 1, text: '', time: '10초 후' }]);
+      setHints([...hints, { id: hints.length + 1, text: '', time: '0초 후' }]);
     }
   };
 
-  const updateHint = (id, field, value) => {
-    setHints(
-      hints.map((hint) =>
-        hint.id === id ? { ...hint, [field]: value } : hint
+  const updateHint = (id, text, time) => {
+    setHints((prevHints) =>
+      prevHints.map((hint) =>
+        hint.id === id ? { ...hint, text: text, time: time } : hint
       )
     );
   };
 
   const removeHint = (id) => {
-    setHints(hints.filter((hint) => hint.id !== id));
-  };
-
-  const getHintDescription = (id) => {
-    switch (id) {
-      case 1:
-        return '가수';
-      case 2:
-        return '장르';
-      case 3:
-        return '제목(일부분)';
-      default:
-        return '';
-    }
+    setHints((prevHints) =>
+      prevHints
+        .filter((hint) => hint.id !== id) // delete selected hint
+        .map((hint, index) => ({
+          ...hint,
+          id: index + 1, // reallocate id with remain hint list
+        }))
+    );
   };
 
   const InstrumentSelect = ({ instrument, setInstrument }) => {
@@ -60,23 +54,25 @@ const OptionSelection = ({ info, handlers }) => {
     return (
       <div className={styles["instrument-selection"]}>
         {instruments.map((instr) => (
-          <label
-            key={instr.id}
-            className={`${styles['instrument-option']} ${instrument === instr.id ? styles['selected'] : ''
-              }`}
-            style={instr.name === '베이스' ? { width: 'calc(120 / 1920 * var(--root--width))' } : {}}
-          >
-            <span className={styles["instrument-name"]}
-
-            >{instr.name}</span>
+          <>
+            <label
+              key={instr.id}
+              className={styles['instrument-option']}
+              style={instr.name === '베이스' ? { width: 'calc(80 / 1920 * var(--root--width))' } : {}}
+            >
+              <span className={styles["instrument-name"]}>
+                {instr.name}
+              </span>
+            </label>
             <input
               className={styles["instrument-radio"]}
               name="instrument"
               value={instr.id}
               checked={instrument === instr.id}
               onChange={(e) => setInstrument(parseInt(e.target.value, 10))}
+              type='radio'
             />
-          </label>
+          </>
         ))}
       </div>
     );
@@ -95,7 +91,7 @@ const OptionSelection = ({ info, handlers }) => {
         />
         <div className={styles["option-timetext"]}>
           <span>0</span>
-          <span style={{ marginLeft: 'calc(215 / 1920 * var(--root--width))' }}>Max</span>
+          <span style={{ marginLeft: 'calc(245 / 1920 * var(--root--width))' }}>Max</span>
         </div>
         <input
           type="number"
@@ -106,8 +102,10 @@ const OptionSelection = ({ info, handlers }) => {
         <span className={styles['option-second']}>초</span>
       </div>
       <div className={styles["option-section-hint"]}>
-        <span className={`${styles['option-white-box']} ${styles['option-hint-text']}`}>힌트</span>
-        <button onClick={addHint} className={styles["add-hint-button"]}>+</button>
+        <div className={styles["option-hint-top"]}>
+          <span className={styles['option-white-box']}>힌트</span>
+          <button onClick={addHint} className={styles["add-hint-button"]}>+</button>
+        </div>
         <div className={styles['option-hint-list']}>
           {(Array.isArray(hints) ? hints : []).map((hint, index) => (
             <div
@@ -115,18 +113,24 @@ const OptionSelection = ({ info, handlers }) => {
               className={styles["option-hint"]}
               style={{ gridRow: index + 1 }}
             >
-              <span className={styles["hint-number"]}>{index + 1}</span>
-              <span className={styles["hint-description"]}>
-                {getHintDescription(index + 1)}
+              <span className={styles["hint-number"]}>
+                {index + 1}
               </span>
+              <input className={styles["hint-description"]}
+                type="text"
+                id="title"
+                value={hint.text}
+                onChange={(e) => updateHint(hint.id, e.target.value, hint.value)}
+                placeholder="힌트 유형"
+              />
               <select
                 value={hint.time}
-                onChange={(e) => updateHint(hint.id, 'time', e.target.value)}
+                onChange={(e) => updateHint(hint.id, hint.text, e.target.value)}
                 className={styles["hint-select"]}
               >
-                {Array.from({ length: timeLimit / 10 }, (_, i) => (
-                  <option key={i} value={`${(i + 1) * 10}초 후`}>
-                    {(i + 1) * 10}초 후
+                {Array.from({ length: timeLimit / 5 }, (_, i) => (
+                  <option key={i} value={`${(i) * 5}초 후`}>
+                    {(i) * 5}초 후
                   </option>
                 ))}
               </select>
@@ -138,10 +142,10 @@ const OptionSelection = ({ info, handlers }) => {
         </div>
       </div>
       {mode === 2 && (
-      <div className={styles["option-ai"]}>
-        <span className={`${styles['option-white-box']} ${styles['option-select-instrument']}`}>악기 선택</span>
-        <InstrumentSelect instrument={instrument} setInstrument={setInstrument} />
-      </div>
+        <div className={styles["option-ai"]}>
+          <span className={`${styles['option-white-box']} ${styles['option-select-instrument']}`}>악기 선택</span>
+          <InstrumentSelect instrument={instrument} setInstrument={setInstrument} />
+        </div>
       )}
     </div>
   );

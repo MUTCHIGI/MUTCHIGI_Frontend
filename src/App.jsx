@@ -63,7 +63,12 @@ function App() {
                           playlistUrl={playListUrl} setPlayListUrl={setPlayListUrl}
                           customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
                       />}/>
-                      <Route path="/home/quiz_create" element={<Quiz_create typeId={customOrplaylist} userId={userInfo ? userInfo.userId : 0}/>}/>
+                      <Route path="/home/quiz_create" element={<Quiz_create 
+                          typeId={customOrplaylist}
+                          userId={userInfo ? userInfo.userId : 0}
+                          playListUrl={playListUrl}
+                          setPlayListUrl={setPlayListUrl}
+                      />}/>
                   </Routes>
               </AuthProvider>
           </WindowSizeContext.Provider>

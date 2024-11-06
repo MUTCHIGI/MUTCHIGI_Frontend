@@ -33,6 +33,7 @@
     flex-direction: column;
     width: calc(560 * var(--root--width) / 1920);
     gap: calc(32 / 1080 * var(--root--height)); 
+    
   }
   
   .title-section input{
@@ -45,16 +46,18 @@
     background-color: rgba(0, 37, 32, 0.6);
     color: #d9d9d9;
     padding: 0;
+    padding-left: 5px;
   }
 
   .description-section {
     display: flex;
     flex-direction: column;
     gap: calc(32 / 1080 * var(--root--height));
+    width: calc(560 * var(--root--width) / 1920);
   }
   .description-section textarea{
     position: relative;
-    width: calc(560 * var(--root--width) / 1920);
+    width: 100%;
     height: calc(135 * var(--root--height) / 1080);
     font-size: calc(24px*var(--root--font--ratio));
     border-radius: 20px;
@@ -62,6 +65,8 @@
     background-color: rgba(0, 37, 32, 0.6);
     color: #d9d9d9;
     padding: 0;
+    padding-left: 5px;
+    padding-top: 5px;
   }
 
   .thumbnail-section{
@@ -102,3 +107,8 @@
     transform: translateY(-50%);
   }
   
+  .thumbnail-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: cover;
+  }
