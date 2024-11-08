@@ -85,35 +85,35 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
 
   const postHints = async (quizIdNumber) => {
     const hintsPayload = hints.map((hint) => {
-        // hint.value = hour * 3600 + minute * 60 + second + '초 후'
-        console.log(hint);
-        const totalSeconds = parseInt(hint.time.replace('초 후', ''), 10);
-        const hour = Math.floor(totalSeconds / 3600);
-        const minute = Math.floor((totalSeconds % 3600) / 60);
-        const second = totalSeconds % 60;
+      // hint.value = hour * 3600 + minute * 60 + second + '초 후'
+      console.log(hint);
+      const totalSeconds = parseInt(hint.time.replace('초 후', ''), 10);
+      const hour = Math.floor(totalSeconds / 3600);
+      const minute = Math.floor((totalSeconds % 3600) / 60);
+      const second = totalSeconds % 60;
 
-        return {
-            hour: hour,
-            minute: minute,
-            second: second,
-            hintType: hint.text,
-        };
+      return {
+        hour: hour,
+        minute: minute,
+        second: second,
+        hintType: hint.text,
+      };
     });
 
     const response = await fetch(`http://localhost:8080/quiz/${quizIdNumber}/hintState`, {
-        method: "POST",
-        headers: {
-            "Accept": "*/*",
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(hintsPayload),
+      method: "POST",
+      headers: {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(hintsPayload),
     });
 
     if (!response.ok) {
-        throw new Error("Failed to post hints");
+      throw new Error("Failed to post hints");
     }
-};
+  };
 
 
   const postQuiz = async () => {
@@ -246,7 +246,10 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
               type="button"
               onClick={prevStep}
               className={styles["nav-button"]}
-              style={{ visibility: (step === 1 || step === 3) ? "hidden" : "visible" }}
+              style={{
+                visibility: (step === 1 || step === 3) ? "hidden" : "visible",
+                borderRight: step === 2 ? "1px solid #000000" : "none"
+              }}
             >
               {step === 2 ? "모드 선택" : step === 3 ? "기본 설정" : ""}
             </button>

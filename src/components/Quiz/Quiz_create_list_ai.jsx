@@ -4,7 +4,6 @@ import './CSS/Quiz_create_list_basic.css'
 import editButton from '../../img/edit_button.svg';
 import deleteButton from '../../img/delete_button.svg';
 import QuizCreateDetail from './Quiz_create_detail';
-import { FaPlus, FaEdit, FaTrash, FaArrowRight, FaArrowLeft } from 'react-icons/fa';
 
 const QuizCreateListAi = ({ quizId, hintSetting, token }) => {
     const [cards, setCards] = useState([]);

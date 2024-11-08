@@ -45,7 +45,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                         const maxTimeInSeconds = convertToSeconds(item.songTime);
 
                         // Fetch answers
-                        const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${data.quizSongRelationID}/answers`, token);
+                        const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/answers`, token);
                         // Fetch hints
                         const hints = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/hint`, token);
 

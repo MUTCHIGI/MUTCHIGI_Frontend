@@ -345,12 +345,18 @@
   background-color: #a0a0a0;
 }
 
+.btn-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  left: calc(-130 / 1920 * var(--root--width));
+  top: calc(560 / 1080 * var(--root--height));
+}
+
 .close-btn {
   background-color: #00FFD9;
   border: none;
   position: relative;
-  left: calc(-30 / 1920 * var(--root--width));
-  top: calc(560 / 1080 * var(--root--height));
   height: calc(60 / 1080 * var(--root--height));
   width: calc(100 / 1920 * var(--root--width));
   font-family: 'Inter';
