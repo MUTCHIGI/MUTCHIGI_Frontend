@@ -1,6 +1,5 @@
 import React, { startTransition, useState } from 'react';
 import styles from './CSS/Quiz_create_list_ai.module.css';
-import './CSS/Quiz_create_list_basic.css'
 import editButton from '../../img/edit_button.svg';
 import deleteButton from '../../img/delete_button.svg';
 import QuizCreateDetail from './Quiz_create_detail';

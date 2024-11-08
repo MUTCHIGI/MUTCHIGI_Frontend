@@ -250,8 +250,8 @@ const QuizCreateDetail = ({ info, handlers }) => {
   };
 
   return (
-    <div className="modal-overlay">
-      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+    <div className={styles["modal-overlay"]}>
+      <div className={styles["modal-content"]} onClick={(e) => e.stopPropagation()}>
         <div className={styles["quiz-seting-left"]}>
           <AnswerInput answers={localAnswers} onUpdateAnswers={setLocalAnswers} />
           <HintInput hints={localHints} onUpdateHints={setLocalHints} maxHintNum={hintSetting.length} />

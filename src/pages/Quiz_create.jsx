@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
 import MainInfo from "../components/Quiz/Quiz_create_main.jsx";
 import ModeSelection from "../components/Quiz/Quiz_create_mode.jsx";
@@ -7,6 +7,7 @@ import QuizCreateList from "../components/Quiz/Quiz_create_list_basic.jsx";
 import QuizCreateListAi from "../components/Quiz/Quiz_create_list_ai.jsx"
 import styles from "../components/Quiz/CSS/Quiz_create.module.css";
 import { useAuth } from "../components/Login/AuthContext.jsx";
+import spinner from "../img/loading.svg"
 
 function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl }) {
   // quiz main info
@@ -234,10 +235,22 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
 
   const steps = [getMode, getMainInfo, getlist];
 
+
   return (
     <div className={styles["quiz-container"]}>
       {isLoading ? (
-        <div className={styles["loading-screen"]}>로딩 중...</div>
+        <div className={styles["loading-screen"]}>
+          <div className={styles["loading-component"]}>
+            <img
+              src={spinner}
+              style={{ width: '100%', height: '100%' }}
+            >
+            </img>
+          </div>
+          <h1 className={styles["loading-title"]}>
+            퀴즈 생성 중...
+          </h1>
+        </div>
       ) : (
         <>
           {steps[step - 1]()}
@@ -246,10 +259,7 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
               type="button"
               onClick={prevStep}
               className={styles["nav-button"]}
-              style={{
-                visibility: (step === 1 || step === 3) ? "hidden" : "visible",
-                borderRight: step === 2 ? "1px solid #000000" : "none"
-              }}
+              style={{ visibility: (step === 1 || step === 3) ? "hidden" : "visible" }}
             >
               {step === 2 ? "모드 선택" : step === 3 ? "기본 설정" : ""}
             </button>
