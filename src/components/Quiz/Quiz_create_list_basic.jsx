@@ -1,4 +1,5 @@
 import React, { startTransition, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './CSS/Quiz_create_list_basic.module.css';
 import editButton from '../../img/edit_button.svg';
 import deleteButton from '../../img/delete_button.svg';
@@ -227,6 +228,23 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
         setCards(updatedCards);
     }
 
+    let navigate = useNavigate();
+
+    const nextStep = async () => {
+        fetch(`http://localhost:8080/quiz/setReady/${quizId}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "*/*",
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Failed to upload image");
+                }
+                navigate('/home');
+            })
+    };
 
     const modalHandlers = { setIsModalOpen, setSelectedCardIndex, handleUpdateAnswers, handleUpdateHints, handleUpdateStartTime };
     return (
@@ -255,6 +273,15 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                             handleDeleteCard: handleDeleteCard
                         }}
                     />
+                    <div className={styles["navigation-buttons"]}>
+                        <button
+                            type="button"
+                            onClick={nextStep}
+                            className={styles["nav-button"]}
+                        >
+                            퀴즈 생성
+                        </button>
+                    </div>
                     {isModalOpen && (
                         <QuizCreateDetail
                             info={{

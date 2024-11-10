@@ -45,18 +45,17 @@ const OptionSelection = ({ info, handlers }) => {
 
   const InstrumentSelect = ({ instrument, setInstrument }) => {
     const instruments = [
-      { id: 0, name: '보컬' },
-      { id: 1, name: '베이스' },
-      { id: 2, name: '반주' },
-      { id: 3, name: '드럼' },
+      { id: 1, name: '보컬' },
+      { id: 2, name: '베이스' },
+      { id: 3, name: '반주' },
+      { id: 4, name: '드럼' },
     ];
 
     return (
       <div className={styles["instrument-selection"]}>
         {instruments.map((instr) => (
-          <>
+          <React.Fragment key={instr.id}>
             <label
-              key={instr.id}
               className={styles['instrument-option']}
               style={instr.name === '베이스' ? { width: 'calc(80 / 1920 * var(--root--width))' } : {}}
             >
@@ -72,7 +71,7 @@ const OptionSelection = ({ info, handlers }) => {
               onChange={(e) => setInstrument(parseInt(e.target.value, 10))}
               type='radio'
             />
-          </>
+          </React.Fragment>
         ))}
       </div>
     );

@@ -176,21 +176,6 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
         setIsLoading(false);
       }
     }
-    else if (step === 3) {
-      fetch(`http://localhost:8080/quiz/setReady/${quizId}`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "*/*",
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to upload image");
-          }
-          navigate('/home');
-        })
-    }
   };
 
   const getMainInfo = () => {
@@ -227,6 +212,7 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
     ) : (
       <QuizCreateListAi
         quizId={quizId}
+        instrumentId={instrument}
         hintSetting={hints}
         token={token}
       />
@@ -254,23 +240,26 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
       ) : (
         <>
           {steps[step - 1]()}
-          <div className={styles["navigation-buttons"]}>
-            <button
-              type="button"
-              onClick={prevStep}
-              className={styles["nav-button"]}
-              style={{ visibility: (step === 1 || step === 3) ? "hidden" : "visible" }}
-            >
-              {step === 2 ? "모드 선택" : step === 3 ? "기본 설정" : ""}
-            </button>
-            <button
-              type="button"
-              onClick={nextStep}
-              className={styles["nav-button"]}
-            >
-              {step === 1 ? "기본 설정" : step === 2 ? "음악 추가" : step === 3 ? "퀴즈 생성" : ""}
-            </button>
-          </div>
+          {step < 3 ? (
+            <div className={styles["navigation-buttons"]}>
+              <button
+                type="button"
+                onClick={prevStep}
+                className={styles["nav-button"]}
+                style={{ visibility: (step === 2) ? "visible" : "hidden" }}
+              >
+                {step === 2 ? "모드 선택" : step === 3 ? "기본 설정" : ""}
+              </button>
+              <button
+                type="button"
+                onClick={nextStep}
+                className={styles["nav-button"]}
+                style={{ visibility: (step < 3) ? "visible" : "hidden" }}
+              >
+                {step === 1 ? "기본 설정" : step === 2 ? "음악 추가" : ""}
+              </button>
+            </div>
+          ) : ''}
         </>
       )}
     </div>

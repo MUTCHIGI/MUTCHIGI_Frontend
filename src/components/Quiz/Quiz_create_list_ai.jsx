@@ -1,29 +1,168 @@
-import React, { startTransition, useState } from 'react';
+import React, { startTransition, useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from './CSS/Quiz_create_list_ai.module.css';
 import editButton from '../../img/edit_button.svg';
+import playButton from '../../img/music_play_button.svg'
 import deleteButton from '../../img/delete_button.svg';
 import QuizCreateDetail from './Quiz_create_detail';
+import PageMove from './Page_move.jsx'
+import SoundWavePlayer from './Sound_wave_player.jsx';
+import spinner from '../../img/loading.svg'
 
-const QuizCreateListAi = ({ quizId, hintSetting, token }) => {
-    const [cards, setCards] = useState([]);
-    const [isModalOpen, setIsModalOpen] = useState(false);
-    const [selectedCardIndex, setSelectedCardIndex] = useState(null);
+const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
+    // screan setting
     const [currentScreen, setCurrentScreen] = useState(1);
+    const [isLoading, setIsLoading] = useState(false);
+    // selected song info
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [cards, setCards] = useState([]);
+    const [selectedCardIndex, setSelectedCardIndex] = useState(null);
+    // candidates song
     const [selectedItems, setSelectedItems] = useState([]);
+    // song search page info
+    const [currentPage, setCurrentPage] = useState(1);
+    const [inputValue, setInputValue] = useState(currentPage);
+
+    useEffect(() => {
+        setIsLoading(true);
+        if (quizId !== -1) {
+            fetch(`http://localhost:8080/song/youtube/songList?quizId=${quizId}`, {
+                method: 'GET',
+                headers: {
+                    'Accept': '*/*',
+                    'Authorization': `Bearer ${token}`,
+                },
+            })
+                .then(async (response) => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(async (data) => {
+                    const formattedCards = await Promise.all(data.map(async (item) => {
+                        const maxTimeInSeconds = convertToSeconds(item.songTime);
+
+                        // Fetch answers
+                        const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/answers`, token);
+                        // Fetch hints
+                        const hints = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/hint`, token);
+
+                        return {
+                            url: item.playURL,
+                            answers: answers, // 할당된 answers
+                            hints: hints.map(hint => ({
+                                hintId: hint.hintId,
+                                hintTime: convertToSeconds(hint.hintTime),
+                                hintType: hint.hintType,
+                                hintText: hint.hintText
+                            })), // 할당된 hints
+                            startTime: 0,
+                            quizRelationId: item.quizSongRelationID,
+                            quizUrl: item.playURL,
+                            quizThumbnail: item.thumbnailURL,
+                            maxTime: maxTimeInSeconds,
+                        };
+                    }));
+                    setCards(formattedCards);
+                    setIsLoading(false);
+                })
+                .catch((error) => {
+                    console.error('Error fetching song list:', error);
+                    setIsLoading(false);
+                });
+        }
+    }, [quizId, token]);
+
+    const convertToSeconds = (timeString) => {
+        const [hours, minutes, seconds] = timeString.split(':').map(Number);
+        console.log(hours, minutes, seconds);
+        return (hours * 3600) + (minutes * 60) + seconds;
+    };
 
     const switchScreen = (screenNumber) => setCurrentScreen(screenNumber);
 
-    const confirmCandidate = () => {
-        setCards([...cards, ...selectedItems]);
-        setSelectedItems([]);  // Clear selected items in ScreenTwo
-        switchScreen(1);
+    const fetchGetApi = async (url, token) => {
+        const response = await fetch(url, {
+            method: 'GET',
+            headers: {
+                'Accept': '*/*',
+                'Authorization': `Bearer ${token}`,
+            },
+        });
+        if (!response.ok) {
+            throw new Error(`Failed to fetch data from ${url}`);
+        }
+        return response.json();
+    };
+
+    const confirmCandidate = async () => {
+        try {
+            const updatedSelectedItems = await Promise.all(
+                selectedItems.map(async (item) => {
+                    const response = await fetch(
+                        `http://localhost:8080/GCP/DemucsSong/SongToQuiz?songIds=${item.songId}&quizId=${quizId}`,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Accept': '*/*',
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({}),
+                        }
+                    );
+
+                    if (!response.ok) throw new Error('Failed to assign song to quiz');
+
+                    // 응답에서 quizSongRelationId를 추출
+                    const [quizSongRelationId] = await response.json();
+
+                    // 새로운 card 형식으로 반환
+                    const maxTimeInSeconds = item.maxTime;
+                    const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${quizSongRelationId}/answers`, token);
+                    return {
+                        url: item.playURL,
+                        answers: answers, // answers 초기값으로 빈 배열 설정
+                        hints: [],
+                        startTime: 0,
+                        quizRelationId: quizSongRelationId,
+                        quizUrl: item.quizUrl,
+                        quizThumbnail: item.quizThumbnail,
+                        maxTime: maxTimeInSeconds,
+                    };
+                })
+            );
+
+            // cards에 updatedSelectedItems 추가 및 selectedItems 초기화
+            setCards([...cards, ...updatedSelectedItems]);
+            setSelectedItems([]);  // ScreenTwo에서 선택 항목 초기화
+            switchScreen(1);
+        } catch (error) {
+            console.error('Error assigning songs to quiz:', error);
+        }
     };
 
     const handleDeleteCard = (index) => {
-        /*
-            api code be here
-        */
-        setCards(cards.filter((_, i) => i !== index));
+        fetch(`http://localhost:8080/song/youtube/${cards[index].quizRelationId}/delSong`, {
+            method: 'DELETE',
+            headers: {
+                'Accept': '*/*',
+                'Authorization': `Bearer ${token}`, // token을 props나 상태로 전달받아 사용
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                setCards(cards.filter((_, i) => i !== index));
+                return response.status !== 200 ? response.json() : null;
+            })
+            .then((data) => {
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
     };
 
     const openModal = (index) => {
@@ -55,8 +194,11 @@ const QuizCreateListAi = ({ quizId, hintSetting, token }) => {
         <>
             {currentScreen === 1 && (
                 <MusicList
+                    quizId={quizId}
                     cards={cards}
                     isModalOpen={isModalOpen}
+                    isLoading={isLoading}
+                    token={token}
                     openModal={openModal}
                     handleDeleteCard={handleDeleteCard}
                     onNavigate={() => switchScreen(2)}
@@ -74,6 +216,8 @@ const QuizCreateListAi = ({ quizId, hintSetting, token }) => {
                 <SearchPreProcessSong
                     selectedItems={selectedItems}
                     setSelectedItems={setSelectedItems}
+                    token={token}
+                    instrumentId={instrumentId}
                     onNavigateBack={() => switchScreen(2)}
                     onNavigateToSeparation={() => switchScreen(4)}
                 />
@@ -99,44 +243,88 @@ const QuizCreateListAi = ({ quizId, hintSetting, token }) => {
     );
 };
 
-function MusicList({ cards, isModalOpen, openModal, handleDeleteCard, onNavigate }) {
+function MusicList({ quizId, cards, isModalOpen, isLoading, token, openModal, handleDeleteCard, onNavigate }) {
+    let navigate = useNavigate();
+
+    const nextStep = async () => {
+        fetch(`http://localhost:8080/quiz/setReady/${quizId}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "*/*",
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Failed to upload image");
+                }
+                navigate('/home');
+            })
+    };
+
     return (
-        <div className={`${styles['card-list-container']} ${isModalOpen ? styles['blur'] : ''}`}>
-            <button className={styles['add-button']} onClick={onNavigate}>추가</button>
-            <div className={styles['card-grid']}>
-                <div className={styles['card']}>
-                    <button className={styles['add-icon']} onClick={onNavigate}>
-                        +
-                    </button>
-                </div>
-                {cards.map((card, index) => (
-                    <div
-                        className={styles['card']}
-                        key={index}
-                        style={{
-                            backgroundImage: `url(${card.quizThumbnail})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            backgroundColor: 'gray',
-                        }}
-                    >
-                        <div className={styles['card-content']}>
-                            <div className={styles['card-icons']}>
-                                <button className={styles['card-edit-btn']} onClick={() => openModal(index)}>
-                                    <img src={editButton} alt="Edit" className={styles['card-icon-img']} />
-                                </button>
-                                <button
-                                    className={styles['card-delete-btn']}
-                                    onClick={() => handleDeleteCard(index)}
-                                >
-                                    <img src={deleteButton} alt="Delete" className={styles['card-icon-img']} />
-                                </button>
-                            </div>
-                        </div>
+        <>
+            {isLoading ? (
+                <div className={styles["loading-screen"]}>
+                    <div className={styles["loading-component"]}>
+                        <img
+                            src={spinner}
+                            style={{ width: '100%', height: '100%' }}
+                            alt="Loading Spinner"
+                        />
                     </div>
-                ))}
-            </div>
-        </div>
+                    <h1 className={styles["loading-title"]}>
+                        불러오는 중...
+                    </h1>
+                </div>
+            ) : (
+                <div className={`${styles['card-list-container']} ${isModalOpen ? styles['blur'] : ''}`}>
+                    <button className={styles['add-button']}>퀴즈 목록</button>
+                    <div className={styles['card-grid']}>
+                        <div className={styles['card']}>
+                            <button className={styles['add-icon']} onClick={onNavigate}>
+                                +
+                            </button>
+                        </div>
+                        {cards.map((card, index) => (
+                            <div
+                                className={styles['card']}
+                                key={index}
+                                style={{
+                                    backgroundImage: `url(${card.quizThumbnail})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundColor: 'gray',
+                                }}
+                            >
+                                <div className={styles['card-content']}>
+                                    <div className={styles['card-icons']}>
+                                        <button className={styles['card-edit-btn']} onClick={() => openModal(index)}>
+                                            <img src={editButton} alt="Edit" className={styles['card-icon-img']} />
+                                        </button>
+                                        <button
+                                            className={styles['card-delete-btn']}
+                                            onClick={() => handleDeleteCard(index)}
+                                        >
+                                            <img src={deleteButton} alt="Delete" className={styles['card-icon-img']} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    <div className={styles["navigation-buttons"]}>
+                        <button
+                            type="button"
+                            onClick={nextStep}
+                            className={styles["nav-button"]}
+                        >
+                            퀴즈 생성
+                        </button>
+                    </div>
+                </div>
+            )}
+        </>
     );
 }
 
@@ -147,7 +335,7 @@ function SelectedCandidate({ selectedItems, setSelectedItems, onComplete, onNavi
 
     return (
         <div className={styles['card-list-container']}>
-            <button className={styles['complete-button']} onClick={onComplete}>선택 완료</button>
+            <button className={styles['complete-button']}>선택 목록</button>
             <div className={styles['card-grid']}>
                 {selectedItems.map((item, index) => (
                     <div
@@ -167,32 +355,81 @@ function SelectedCandidate({ selectedItems, setSelectedItems, onComplete, onNavi
             <span className={`${styles['navigation-icon']} ${styles['right']}`} onClick={onNavigateToSearch}>
                 →
             </span>
+            <div className={styles["navigation-buttons"]}>
+                <button
+                    type="button"
+                    onClick={onComplete}
+                    className={styles["nav-button"]}
+                >
+                    음악 추가
+                </button>
+            </div>
         </div>
     );
 }
 
-function SearchPreProcessSong({ selectedItems, setSelectedItems, onNavigateBack, onNavigateToSeparation }) {
+function SearchPreProcessSong({ selectedItems, setSelectedItems, token, instrumentId, onNavigateBack, onNavigateToSeparation }) {
+    const [currentPage, setCurrentPage] = useState(1);
+    const [inputValue, setInputValue] = useState(currentPage);
+    const [title, setTitle] = useState('');
+    const [cards, setCards] = useState([]);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [modalData, setModalData] = useState({ songId: null, instrumentId: null });
 
-    const [url, setUrl] = useState('');
+    const handlePlayButtonClick = (songId) => {
+        setModalData({ songId, instrumentId });
+        setIsModalOpen(true);
+    };
 
-    const [cards, setDummyData] = useState(
-        Array(8).fill().map((_, index) => ({
-            url: null,
-            answers: [],
-            hints: [],
-            startTime: 0,
-            quizRelationId: null,
-            quizUrl: null,
-            quizThumbnail: null,
-            maxTime: 120,
-        }))
-    );
-
-    const handleSelectItem = (item) => {
-        if (!selectedItems.includes(item)) {
-            setSelectedItems([...selectedItems, item]);
+    const handleSelectItem = (card) => {
+        if (!selectedItems.some(selectedItem => selectedItem.songId === card.songId)) {
+            setSelectedItems([...selectedItems, card]);
+        }
+        else {
+            setSelectedItems(selectedItems.filter(selectedItem => selectedItem.songId !== card.songId));
         }
     };
+
+    const convertToSeconds = (timeString) => {
+        const [hours, minutes, seconds] = timeString.split(':').map(Number);
+        console.log(hours, minutes, seconds);
+        return (hours * 3600) + (minutes * 60) + seconds;
+    };
+
+    const fetchData = async () => {
+        try {
+            const response = await fetch(`http://localhost:8080/GCP/DemucsSong/List?page=${currentPage}&offset=12&songTitle=${encodeURIComponent(title)}`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': '*/*',
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch data');
+
+            const data = await response.json();
+            const formattedData = data.map(song => ({
+                url: song.playURL,
+                answers: [],
+                hints: [],
+                startTime: 0,
+                quizRelationId: null,
+                songId: song.songId,
+                quizUrl: song.playURL,
+                songName: song.songName,
+                quizThumbnail: song.thumbnailURL,
+                maxTime: convertToSeconds(song.songTime)
+            }));
+            setCards(formattedData);
+        } catch (error) {
+            console.error('Error fetching data:', error);
+        }
+    };
+
+    useEffect(() => {
+        fetchData();
+    }, [currentPage]);
 
     return (
         <div className={styles['card-list-container']}>
@@ -200,32 +437,44 @@ function SearchPreProcessSong({ selectedItems, setSelectedItems, onNavigateBack,
                 <input
                     type="text"
                     placeholder="기존에 변환된 음악을 찾아보세요!"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
                     className={styles['url-input']}
                 />
-                <button className={styles['url-input-button']}>검색</button>
+                <button className={styles['url-input-button']} onClick={fetchData}>검색</button>
             </div>
             <div className={styles['card-grid']}>
-                {cards.map((card, index) => (
-                    <div>
-                        <div
-                            className={styles['card']}
-                            key={index}
-                            style={{
-                                backgroundImage: `url(${card.quizThumbnail})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                backgroundColor: 'gray',
-                            }}
-                            onClick={() => handleSelectItem(card)}
-                        >
+                {cards.map((card, index) => {
+                    const isSelected = selectedItems.some(selectedItem => selectedItem.songId === card.songId); // songId로 선택 여부 확인
+                    return (
+                        <div key={index} style={{ width: '100%' }}>
+                            <div
+                                className={`${styles['card']} ${isSelected ? styles['highlight-border'] : ''}`}
+                                style={{
+                                    backgroundImage: `url(${card.quizThumbnail})`,
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center',
+                                    backgroundColor: 'gray',
+                                }}
+                                onClick={() => handleSelectItem(card)}
+                            >
+                                <div className={styles['card-content']}>
+                                    <div className={styles['card-icons']}>
+                                        <button
+                                            className={styles['card-play-btn']}
+                                            onClick={() => handlePlayButtonClick(card.songId)}
+                                        >
+                                            <img src={playButton} alt="Play" className={styles['card-icon-img']} />
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <span className={styles['card-title']}>
+                                <span className={styles["scroll-text"]}>{card.songName ? card.songName : 'test'}</span>
+                            </span>
                         </div>
-                        <span className={styles['card-title']}>
-                            test
-                        </span>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
             <span className={`${styles['navigation-icon']} ${styles['left']}`} onClick={onNavigateBack}>
                 ←
@@ -233,25 +482,81 @@ function SearchPreProcessSong({ selectedItems, setSelectedItems, onNavigateBack,
             <span className={`${styles['navigation-icon']} ${styles['right']}`} onClick={onNavigateToSeparation}>
                 →
             </span>
+            <PageMove
+                info={{ currentPage, inputValue }}
+                handlers={{ setCurrentPage, setInputValue }}
+            />
+            {isModalOpen && (
+                <SoundWavePlayer
+                    songId={modalData.songId}
+                    instrumentId={modalData.instrumentId}
+                    onClose={() => setIsModalOpen(false)}
+                    token={token}
+                />
+            )}
         </div>
     );
 }
 
-function MusicSeparation({ token, quizId, onNavigateBack }) {
-    const [cards, setDummyData] = useState(
-        Array(8).fill().map((_, index) => ({
-            url: null,
-            answers: [],
-            hints: [],
-            startTime: 0,
-            quizRelationId: null,
-            quizUrl: null,
-            quizThumbnail: null,
-            maxTime: 120,
-        }))
-    );
-
+function MusicSeparation({ token, onNavigateBack }) {
+    const [cards, setCards] = useState([]);
     const [url, setUrl] = useState('');
+
+    // Function to initiate song conversion
+    const handleSearch = async () => {
+        if (url.trim() === '') return;
+
+        try {
+            const response = await fetch(`http://localhost:8080/GCP/publish?youtubeURL=${encodeURIComponent(url)}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': '*/*',
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to initiate song conversion');
+
+            const data = await response.json();
+            const newCard = {
+                thumbnailURL: data.thumbnailURL,
+            };
+            setCards((prevCards) => [newCard, ...prevCards]);
+        } catch (error) {
+            console.error('Error initiating song conversion:', error);
+        }
+    };
+
+    // Function to fetch the list of songs being processed
+    const fetchProcessingSongs = async () => {
+        try {
+            const response = await fetch('http://localhost:8080/GCP/DemucsSong/myOrderList', {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': '*/*',
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch processing songs');
+
+            const data = await response.json();
+            const processedSongs = data.map(song => ({
+                thumbnailURL: song.thumbnailURL,
+                demucsCompleted: song.demucsCompleted,
+            }));
+            setCards(processedSongs);
+        } catch (error) {
+            console.error('Error fetching processing songs:', error);
+        }
+    };
+
+    // Initial fetch and set up interval for periodic fetching
+    useEffect(() => {
+        fetchProcessingSongs(); // Initial fetch
+        const intervalId = setInterval(fetchProcessingSongs, 120000); // Fetch every 2 minutes
+
+        return () => clearInterval(intervalId); // Cleanup on component unmount
+    }, [token]);
 
     return (
         <div className={styles['card-list-container']}>
@@ -265,10 +570,12 @@ function MusicSeparation({ token, quizId, onNavigateBack }) {
                 />
                 <span className={`${styles['tooltip-icon']}`}>
                     ?
-                    <span className={`${styles['tooltip-text']}`}>AI 퀴즈 노래 변환은 하루에 10곡으로 제한되며,<br/>
-                        변환을 시작하면 되돌릴 수 없습니다.</span>
+                    <span className={`${styles['tooltip-text']}`}>
+                        AI 퀴즈 노래 변환은 하루에 10곡으로 제한되며,<br />
+                        변환을 시작하면 되돌릴 수 없습니다.
+                    </span>
                 </span>
-                <button className={styles['url-input-button']}>검색</button>
+                <button onClick={handleSearch} className={styles['url-input-button']}>변환</button>
             </div>
             <div className={styles['card-grid']}>
                 {cards.map((card, index) => (
@@ -276,12 +583,17 @@ function MusicSeparation({ token, quizId, onNavigateBack }) {
                         className={styles['card']}
                         key={index}
                         style={{
-                            backgroundImage: `url(${card.quizThumbnail})`,
+                            backgroundImage: `url(${card.thumbnailURL})`,
                             backgroundSize: 'cover',
                             backgroundPosition: 'center',
                             backgroundColor: 'gray',
                         }}
                     >
+                        {!card.demucsCompleted && (
+                            <div className={styles['overlay']}>
+                                <span className={styles['overlay-text']}>변환 중</span>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
