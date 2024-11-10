@@ -55,6 +55,7 @@ function Header_top({userInfo,setUserInfo}) {
                 src={Logo}
                 onClick={() => {
                     navigator('/home');
+                    window.location.reload();
                 }}
             />
             {

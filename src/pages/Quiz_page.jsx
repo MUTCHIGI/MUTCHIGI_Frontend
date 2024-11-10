@@ -11,6 +11,13 @@ import {useNavigate} from "react-router-dom";
 function Quiz_page({
                        userInfo,setUserInfo,
                        customOrplaylist,setCustomOrPlaylist,
+    selectedQuiz,setSelectedQuiz,
+    setChatRoomId,
+    privacy,setPrivacy,
+    roomName,setRoomName,
+    password,setPassword,
+    maxPlayer,setMaxPlayer,
+    setFirstCreate,
 }) {
     let {token} = useAuth();
     let navigate = useNavigate();
@@ -19,7 +26,7 @@ function Quiz_page({
     const [quizIds,setQuizIds] = useState([]);
 
     // 페이지 오프셋
-    const [offset,setOffset] = useState(8);
+    const [offset,setOffset] = useState(7);
 
     /* ------------------------------header_bottom state------------------------------ */
 
@@ -107,6 +114,13 @@ function Quiz_page({
         <Print_quiz quizIds={quizIds}
                     customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
                     userInfo={userInfo}
+                    selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
+                    setChatRoomId={setChatRoomId}
+                    privacy={privacy} setPrivacy={setPrivacy}
+                    roomName={roomName} setRoomName={setRoomName}
+                    password={password} setPassword={setPassword}
+                    maxPlayer={maxPlayer} setMaxPlayer={setMaxPlayer}
+                    setFirstCreate={setFirstCreate}
         />
         <Footer
             multiplay={false}

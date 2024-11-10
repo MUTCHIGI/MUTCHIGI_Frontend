@@ -40,7 +40,6 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
 
   let navigate = useNavigate()
 
-
   const postThumbnail = () => {
     const formData = new FormData();
     formData.append("image", thumbnail); // thumbnail 이미지 파일 추가

@@ -3,11 +3,22 @@ import Thumbnail from '../../img/GameitemTest/test_thumbnail.png';
 import Platform from '../../img/GameitemTest/Yt_logo.png';
 import Public from '../../img/GameitemTest/잠금 해제.png';
 import Private from '../../img/GameitemTest/잠금.png';
+import {useNavigate} from "react-router-dom";
 
-function Game_item({room}) {
+function Game_item({room,setChatRoomId,setFirstCreate}) {
     let mod;
     let type;
     let wait_play;
+
+    const navigate = useNavigate();
+
+    const handleClick = () => {
+        if (room.roomId !== null) {  // room.id가 null이 아닐 때
+            setChatRoomId(room.roomId);
+            setFirstCreate(false);
+            navigate('/ingame');  // '/ingame'으로 네비게이션
+        }
+    };
 
     if(room.roomId !== null) {
         switch (room.quiz.modId) {
@@ -44,7 +55,7 @@ function Game_item({room}) {
         }
     }
 
-    return <div className="Game_item">
+    return <div className="Game_item" onClick={room.id !== null ? handleClick : undefined}>
         {room.roomId !== null && <>
             <img src={room.thumbnailURL} className="Thumbnail"/>
             <img src={Platform} className="Platform"/>

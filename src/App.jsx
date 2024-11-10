@@ -3,12 +3,10 @@ import Header_bottom from "./components/Public/Header_bottom.jsx";
 import Home from "./pages/Home.jsx";
 import {createContext, useContext, useEffect, useState} from "react";
 import Quiz_page from "./pages/Quiz_page.jsx";
-import Footer from "./components/Public/Footer.jsx";
-import Ingame from "./components/InGame/Ingame.jsx";
+import Ingame from "./pages/Ingame.jsx";
 import {AuthProvider, useAuth} from "./components/Login/AuthContext.jsx";
 import {Route, Routes} from "react-router-dom";
 import Quiz_create from "./pages/Quiz_create.jsx";
-import {GoogleOAuthProvider} from "@react-oauth/google";
 import Quiz_page_Playlist from "./pages/Quiz_page_Playlist.jsx";
 
 export let WindowSizeContext = createContext();
@@ -17,6 +15,17 @@ function App() {
     const [userInfo, setUserInfo] = useState(null);
     const [customOrplaylist,setCustomOrPlaylist] = useState(0);
     const [playListUrl,setPlayListUrl] = useState(null);
+
+    // 방 생성에 필요한 요소들
+    const [chatRoomId,setChatRoomId] = useState(-1);
+    const [selectedQuiz, setSelectedQuiz] = useState(null); // 선택된 퀴즈 상태 추가
+    let [privacy,setPrivacy] = useState('public');
+    let [roomName, setRoomName] = useState(''); // 방 이름 상태
+    let [password, setPassword] = useState(''); // 비밀번호 상태
+    let [maxPlayer, setMaxPlayer] = useState(1); // 최대 플레이어 수 상태
+
+    // 최초 생성의 경우 true, 참여하는 경우 false
+    let [firstCreate,setFirstCreate] = useState(true);
 
     let [windowSize,setWindowSize] = useState({
         width: window.innerWidth,
@@ -52,11 +61,31 @@ function App() {
           <WindowSizeContext.Provider value={windowSize}>
               <AuthProvider>
                   <Routes>
-                      <Route path="/ingame" element={<Ingame/>}/>
-                      <Route path="/home" element={<Home userInfo={userInfo} setUserInfo={setUserInfo}/> }/>
+                      <Route path="/ingame" element={<Ingame
+                          quiz={selectedQuiz}
+                          chatRoomId={chatRoomId} setChatRoomId={setChatRoomId}
+                          privacy={privacy}
+                          roomName={roomName}
+                          password={password}
+                          maxPlayer={maxPlayer}
+                          userInfo={userInfo}
+                          firstCreate={firstCreate} setFirstCreate={setFirstCreate}
+                      />}/>
+                      <Route path="/home" element={<Home
+                          userInfo={userInfo} setUserInfo={setUserInfo}
+                          setChatRoomId={setChatRoomId}
+                          setFirstCreate={setFirstCreate}
+                      /> }/>
                       <Route path="/home/quiz" element={<Quiz_page
                           userInfo={userInfo} setUserInfo={setUserInfo}
                           customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
+                          selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
+                          setChatRoomId={setChatRoomId}
+                          privacy={privacy} setPrivacy={setPrivacy}
+                          roomName={roomName} setRoomName={setRoomName}
+                          password={password} setPassword={setPassword}
+                          maxPlayer={maxPlayer} setMaxPlayer={setMaxPlayer}
+                          setFirstCreate={setFirstCreate}
                       />}/>
                       <Route path="/home/quiz/playlist" element={<Quiz_page_Playlist
                           userInfo={userInfo} setUserInfo={setUserInfo}

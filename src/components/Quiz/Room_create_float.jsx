@@ -1,24 +1,28 @@
 import '../Quiz/CSS/Room_create_float.css';
 import Button from "../Public/Button.jsx";
-import {useState} from "react";
+import {useEffect, useState} from "react";
 import {useAuth} from "../Login/AuthContext.jsx";
 import Thumbnail from "../../img/QuizItemTest/test_thumbnail.png";
+import {useNavigate} from "react-router-dom";
 
-function Room_create_float({quiz,onClose,userInfo}) {
+function Room_create_float({quiz,onClose,userInfo,
+                               setChatRoomId,
+                               privacy,setPrivacy,
+                               roomName,setRoomName,
+                               password,setPassword,
+                               maxPlayer,setMaxPlayer,
+                               setFirstCreate,
+                           }) {
     /* 토큰 */
     const {token} = useAuth();
 
-    /* 공개/비공개방 설정 */
-    let [privacy,setPrivacy] = useState('public');
+    const navigate = useNavigate();
+
+    /* 방 생성 요소 */
 
     let handleChange = (e) => {
         setPrivacy(e.target.value);
     }
-
-    /* 방 생성 로직 */
-    let [roomName, setRoomName] = useState(''); // 방 이름 상태
-    let [password, setPassword] = useState(''); // 비밀번호 상태
-    let [maxPlayer, setMaxPlayer] = useState(1); // 최대 플레이어 수 상태
 
     let handleRoomNameChange = (e) => {
         setRoomName(e.target.value);
@@ -36,39 +40,11 @@ function Room_create_float({quiz,onClose,userInfo}) {
         alert("방 이름,또는 비공개방의 비밀번호는 비어있을 수 없습니다."); // 비어 있을 때 경고창 출력
     };
 
-    // 방 생성 처리
-    const handleCreateRoom = async () => {
-        let isPublic = privacy === 'public';
-        const roomData = {
-            roomName: roomName,
-            publicRoom: isPublic,
-            participateAllowed: true, // 참여 허용 여부는 true로 고정
-            password: password,
-            maxPlayer: maxPlayer,
-            quizId: quiz.quizId, // quizId는 필요에 따라 설정
-            userId: userInfo.userId// userId는 필요에 따라 설정
-        };
-
-        try {
-            const response = await fetch('http://localhost:8080/room/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(roomData),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                onClose(); // 방 생성 성공 시 모달 닫기
-            } else {
-                console.error('Error creating room:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Network error:', error);
-        }
-    };
+    let handleMoveRoom = () => {
+        onClose();
+        setFirstCreate(true);
+        navigate('/ingame');
+    }
 
     return <div className="Room_create_float">
         <div className="Room_create_setting">
@@ -146,7 +122,7 @@ function Room_create_float({quiz,onClose,userInfo}) {
         <Button text={"취소"} onClick={onClose} classname={"room_create_cancel"}/>
 
         {(roomName.trim() !== '' && (privacy !== 'private' || password.trim() !== '')) ? (
-            <Button text={"확인"} onClick={handleCreateRoom} classname={"room_create_confirm"} />
+            <Button text={"확인"} onClick={handleMoveRoom} classname={"room_create_confirm"} />
         ) : (
             <Button text={"확인"} onClick={handleEmptyInputClick} classname={"room_create_confirm_notyet"} />
         )}
