@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
+import Header_top from "../components/Public/Header_top.jsx";
+import Header_bottom from "../components/Public/Header_bottom.jsx";
 import MainInfo from "../components/Quiz/Quiz_create_main.jsx";
 import ModeSelection from "../components/Quiz/Quiz_create_mode.jsx";
 import OptionSelection from "../components/Quiz/Quiz_create_option.jsx";
@@ -9,7 +11,7 @@ import styles from "../components/Quiz/CSS/Quiz_create.module.css";
 import { useAuth } from "../components/Login/AuthContext.jsx";
 import spinner from "../img/loading.svg"
 
-function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl }) {
+function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, playListUrl, setPlayListUrl }) {
   // quiz main info
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -35,6 +37,13 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
       setTypeId(1);
     }
   }, [typeId]);
+
+  useEffect(() => {
+    if (token === null) {
+      alert("로그인 후 이용하여 주시기 바랍니다.");
+      navigate('/home'); // 원하는 주소로 변경
+    }
+  }, [token]);
 
   const handleModeSelect = (selectedMode) => setMode(selectedMode);
   const prevStep = () => step > 1 && setStep(step - 1);
@@ -224,6 +233,10 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
 
   return (
     <div className={styles["quiz-container"]}>
+      <Header_top userInfo={userInfo} setUserInfo={setUserInfo} />
+      <Header_bottom
+        quiz={false}
+      />
       {isLoading ? (
         <div className={styles["loading-screen"]}>
           <div className={styles["loading-component"]}>
