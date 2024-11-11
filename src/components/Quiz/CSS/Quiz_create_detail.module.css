@@ -1,3 +1,29 @@
+/* 모달 오버레이 */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.modal-content {
+  background-color: #2d2d2d;
+  border-radius: 10px;
+  padding: 20px;
+  height: calc(700 / 1080 * var(--root--height));
+  width: calc(1200 / 1920 * var(--root--width));
+  /* border: 10px, solid #8ed9c4; */
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+}
+
 .quiz-seting-left {
   display: flex;
   flex-direction: column;
@@ -345,12 +371,18 @@
   background-color: #a0a0a0;
 }
 
+.btn-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  left: calc(-130 / 1920 * var(--root--width));
+  top: calc(560 / 1080 * var(--root--height));
+}
+
 .close-btn {
   background-color: #00FFD9;
   border: none;
   position: relative;
-  left: calc(-30 / 1920 * var(--root--width));
-  top: calc(560 / 1080 * var(--root--height));
   height: calc(60 / 1080 * var(--root--height));
   width: calc(100 / 1920 * var(--root--width));
   font-family: 'Inter';

@@ -64,13 +64,14 @@
 .card-grid {
   margin-top: calc(80 / 1080 * var(--root--height));
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(4, calc(320 / 1920 * var(--root--width)));
+  grid-template-rows: repeat(2, minmax(calc(200 / 1080 * var(--root--height)), auto));
   gap: 20px;
 }
 
 .card {
   background-color: #808080;
-  border-radius: 10px;
+  border-radius: 20px;
   display: flex;
   height: calc(180 / 1080 * var(--root--height));
   width: calc(320 / 1920 * var(--root--width));
@@ -86,9 +87,9 @@
   font-weight: 800;
   background-color: #D9D9D9;
   border-radius: 20px;
-  font-size: calc(36px * var(--root--font--ratio));
-  width: calc(800 / 1920 * var(--root--width));
-  height: calc(160 / 1080 * var(--root--height));
+  font-size: calc(24px * var(--root--font--ratio));
+  width: calc(600 / 1920 * var(--root--width));
+  height: calc(100 / 1080 * var(--root--height));
 }
 
 .add-icon {
@@ -132,6 +133,19 @@
   justify-content: center;
 }
 
+.card-play-btn {
+  height: calc(44 / 1080 * var(--root--height));
+  width: calc(44 / 1080 * var(--root--height));
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #D9D9D9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .card-icon-img {
   height: calc(33 / 1080 * var(--root--height));
   width: calc(33 / 1080 * var(--root--height));
@@ -143,11 +157,71 @@
   font-weight: 900;
   font-size: calc(24px * var(--root--font--ratio));
   display: flex;
-  align-items: center;
-  justify-content: center;
   color: #FFFFFF;
+  overflow: hidden;
+  /* 텍스트가 넘칠 때 숨김 */
+  white-space: nowrap;
+  /* 텍스트를 한 줄로 유지 */
+  text-overflow: ellipsis;
+  /* 말줄임표로 표시 */
+  position: relative;
+  max-width: calc(330 / 1920 * var(--root--width));
+  /* 상위 요소 너비에 맞춤 */
 }
 
+.card-title .scroll-text {
+  display: inline-block;
+  transform: translateX(0);
+  /* 애니메이션 시작 위치를 왼쪽 끝으로 설정 */
+  transition: transform 0.3s ease;
+  /* 마우스 올릴 때 전환 효과 */
+}
+
+.card-title:hover .scroll-text {
+  animation: scroll-text 5s linear infinite;
+  /* 마우스 올렸을 때 애니메이션 */
+}
+
+@keyframes scroll-text {
+  0% {
+    transform: translateX(0);
+    /* 시작 위치 */
+  }
+
+  100% {
+    transform: translateX(-100%);
+    /* 왼쪽으로 텍스트 이동 */
+  }
+}
+
+
+.highlight-border {
+  outline: 1px solid #00FFD9;
+  /* box-shadow: 0 0 8px rgba(0, 247, 255, 0.295); */
+  outline-offset: -1px;
+  /* 테두리가 요소와 겹치도록 설정 */
+}
+
+
+/* separation overlay */
+.overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: 20px;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  color: white;
+  font-size: calc(24px * var(--root--font--ratio));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 900;
+  align-items: center;
+  text-align: center;
+}
 
 /* 모달 오버레이 */
 .modal-overlay {
@@ -193,13 +267,48 @@ textarea {
 .complete-button {
   /* position: absolute; */
   margin-top: calc(60 / 1080 * var(--root--height));
-  width: calc(270 / 1920 * var(--root--width));
-  height: calc(80 / 1080 * var(--root--height));
+  width: calc(600 / 1920 * var(--root--width));
+  height: calc(100 / 1080 * var(--root--height));
   background: #D9D9D9;
   border-radius: 20px;
   font-family: 'inter';
   font-size: calc(24px * var(--root--font--ratio));
   font-weight: 800;
+}
+
+.navigation-buttons {
+  position: fixed;
+  bottom: calc(70 / 1080 * var(--root--height));
+  left: calc(1650 / 1920 * var(--root--width));
+  width: calc(300 / 1920 * var(--root--width));
+  height: calc(70 / 1080 * var(--root--height));
+  display: flex;
+  flex-direction: row;
+}
+
+.nav-button {
+  background-color: #00FFD9;
+  /* Cyan button */
+  color: #000;
+  border: none;
+  padding: 0;
+  width: calc(150 / 1920 * var(--root--width));
+  height: calc(70 / 1080 * var(--root--height));
+  font-size: calc(24px*var(--root--font--ratio));
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+  position: static;
+  /* position: absolute; */
+  z-index: 1;
+}
+
+.nav-button:hover {
+  background-color: #00b3b3;
+}
+
+.nav-button:focus {
+  outline: none;
 }
 
 .navigation-icon {
@@ -283,4 +392,34 @@ textarea {
 .tooltip-icon:hover .tooltip-text {
   visibility: visible;
   opacity: 2;
+}
+
+/* loading */
+
+.loading-screen {
+  /* position:relative; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: calc(230 / 1080 * var(--root--height));
+}
+
+.loading-component {
+  display: flex;
+  height: calc(400 / 1080 * var(--root--height));
+  width: calc(400 / 1080 * var(--root--height));
+  z-index: 1;
+}
+
+.loading-title {
+  display: flex;
+  position: absolute;
+  color: white;
+  font-size: calc(30px * var(--root--font--ratio));
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  bottom: 0;
+  z-index: 2;
 }

@@ -2,7 +2,7 @@
   height: calc(782 / 1080 * var(--root--height));
   position: relative;
   left: calc(360 / 1920 * var(--root--width));
-  width:calc(1200 / 1920 *var(--root--width));
+  width: calc(1200 / 1920 *var(--root--width));
   /* height: calc((668 + 114 - 360) / 1080 * var(--root--height)); */
   display: grid;
   grid-template-columns: calc(400 / 1920 * var(--root--width)) calc(400 / 1920 * var(--root--width));
@@ -13,16 +13,19 @@
 .mode-button {
   background-color: #30645C;
   border-radius: 20px;
-  width: calc(400 / 1920 * var(--root--width));;
-  height: calc(400 / 1080 * var(--root--height));;
+  width: calc(400 / 1920 * var(--root--width));
+  height: calc(400 / 1080 * var(--root--height));
+  font-size: calc(40px *var(--root--font--ratio));
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-family: 'Inter', sans-serif;
   color: white;
   margin-top: 181px;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 900;
 }
 
 .mode-button-basic {
@@ -45,5 +48,5 @@
 }
 
 .mode-button.selected {
-  background-color: rgb(0,255,217,0.7);
+  background-color: rgb(0, 255, 217, 0.7);
 }

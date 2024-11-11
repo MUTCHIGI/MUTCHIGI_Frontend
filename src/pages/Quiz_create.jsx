@@ -1,5 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useNavigate } from 'react-router-dom';
+import Header_top from "../components/Public/Header_top.jsx";
+import Header_bottom from "../components/Public/Header_bottom.jsx";
 import MainInfo from "../components/Quiz/Quiz_create_main.jsx";
 import ModeSelection from "../components/Quiz/Quiz_create_mode.jsx";
 import OptionSelection from "../components/Quiz/Quiz_create_option.jsx";
@@ -7,8 +9,9 @@ import QuizCreateList from "../components/Quiz/Quiz_create_list_basic.jsx";
 import QuizCreateListAi from "../components/Quiz/Quiz_create_list_ai.jsx"
 import styles from "../components/Quiz/CSS/Quiz_create.module.css";
 import { useAuth } from "../components/Login/AuthContext.jsx";
+import spinner from "../img/loading.svg"
 
-function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl }) {
+function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, playListUrl, setPlayListUrl }) {
   // quiz main info
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -34,6 +37,13 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
       setTypeId(1);
     }
   }, [typeId]);
+
+  useEffect(() => {
+    if (token === null) {
+      alert("로그인 후 이용하여 주시기 바랍니다.");
+      navigate('/home'); // 원하는 주소로 변경
+    }
+  }, [token]);
 
   const handleModeSelect = (selectedMode) => setMode(selectedMode);
   const prevStep = () => step > 1 && setStep(step - 1);
@@ -85,35 +95,35 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
 
   const postHints = async (quizIdNumber) => {
     const hintsPayload = hints.map((hint) => {
-        // hint.value = hour * 3600 + minute * 60 + second + '초 후'
-        console.log(hint);
-        const totalSeconds = parseInt(hint.time.replace('초 후', ''), 10);
-        const hour = Math.floor(totalSeconds / 3600);
-        const minute = Math.floor((totalSeconds % 3600) / 60);
-        const second = totalSeconds % 60;
+      // hint.value = hour * 3600 + minute * 60 + second + '초 후'
+      console.log(hint);
+      const totalSeconds = parseInt(hint.time.replace('초 후', ''), 10);
+      const hour = Math.floor(totalSeconds / 3600);
+      const minute = Math.floor((totalSeconds % 3600) / 60);
+      const second = totalSeconds % 60;
 
-        return {
-            hour: hour,
-            minute: minute,
-            second: second,
-            hintType: hint.text,
-        };
+      return {
+        hour: hour,
+        minute: minute,
+        second: second,
+        hintType: hint.text,
+      };
     });
 
     const response = await fetch(`http://localhost:8080/quiz/${quizIdNumber}/hintState`, {
-        method: "POST",
-        headers: {
-            "Accept": "*/*",
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-        },
-        body: JSON.stringify(hintsPayload),
+      method: "POST",
+      headers: {
+        "Accept": "*/*",
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`,
+      },
+      body: JSON.stringify(hintsPayload),
     });
 
     if (!response.ok) {
-        throw new Error("Failed to post hints");
+      throw new Error("Failed to post hints");
     }
-};
+  };
 
 
   const postQuiz = async () => {
@@ -175,21 +185,6 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
         setIsLoading(false);
       }
     }
-    else if (step === 3) {
-      fetch(`http://localhost:8080/quiz/setReady/${quizId}`, {
-        method: "POST",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          "Accept": "*/*",
-        },
-      })
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error("Failed to upload image");
-          }
-          navigate('/home');
-        })
-    }
   };
 
   const getMainInfo = () => {
@@ -226,6 +221,7 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
     ) : (
       <QuizCreateListAi
         quizId={quizId}
+        instrumentId={instrument}
         hintSetting={hints}
         token={token}
       />
@@ -234,30 +230,49 @@ function QuizCreate({ userId, typeId: initialTypeId, playListUrl, setPlayListUrl
 
   const steps = [getMode, getMainInfo, getlist];
 
+
   return (
     <div className={styles["quiz-container"]}>
+      <Header_top userInfo={userInfo} setUserInfo={setUserInfo} />
+      <Header_bottom
+        quiz={false}
+      />
       {isLoading ? (
-        <div className={styles["loading-screen"]}>로딩 중...</div>
+        <div className={styles["loading-screen"]}>
+          <div className={styles["loading-component"]}>
+            <img
+              src={spinner}
+              style={{ width: '100%', height: '100%' }}
+            >
+            </img>
+          </div>
+          <h1 className={styles["loading-title"]}>
+            퀴즈 생성 중...
+          </h1>
+        </div>
       ) : (
         <>
           {steps[step - 1]()}
-          <div className={styles["navigation-buttons"]}>
-            <button
-              type="button"
-              onClick={prevStep}
-              className={styles["nav-button"]}
-              style={{ visibility: (step === 1 || step === 3) ? "hidden" : "visible" }}
-            >
-              {step === 2 ? "모드 선택" : step === 3 ? "기본 설정" : ""}
-            </button>
-            <button
-              type="button"
-              onClick={nextStep}
-              className={styles["nav-button"]}
-            >
-              {step === 1 ? "기본 설정" : step === 2 ? "음악 추가" : step === 3 ? "퀴즈 생성" : ""}
-            </button>
-          </div>
+          {step < 3 ? (
+            <div className={styles["navigation-buttons"]}>
+              <button
+                type="button"
+                onClick={prevStep}
+                className={styles["nav-button"]}
+                style={{ visibility: (step === 2) ? "visible" : "hidden" }}
+              >
+                {step === 2 ? "모드 선택" : step === 3 ? "기본 설정" : ""}
+              </button>
+              <button
+                type="button"
+                onClick={nextStep}
+                className={styles["nav-button"]}
+                style={{ visibility: (step < 3) ? "visible" : "hidden" }}
+              >
+                {step === 1 ? "기본 설정" : step === 2 ? "음악 추가" : ""}
+              </button>
+            </div>
+          ) : ''}
         </>
       )}
     </div>

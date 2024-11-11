@@ -148,3 +148,69 @@ textarea {
   background-color: #1e1e1e;
   color: white;
 }
+
+
+/* loading */
+
+.loading-screen {
+  /* position:relative; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  top: calc(230 / 1080 * var(--root--height));
+}
+
+.loading-component {
+  display: flex;
+  height: calc(400 / 1080 * var(--root--height));
+  width: calc(400 / 1080 * var(--root--height));
+  z-index: 1;
+}
+
+.loading-title {
+  display: flex;
+  position: absolute;
+  color: white;
+  font-size: calc(30px * var(--root--font--ratio));
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  bottom: 0;
+  z-index: 2;
+}
+
+.navigation-buttons {
+  position: fixed;
+  bottom: calc(70 / 1080 * var(--root--height));
+  left: calc(1650 / 1920 * var(--root--width));
+  width: calc(300 / 1920 * var(--root--width));
+  height: calc(70 / 1080 * var(--root--height));
+  display: flex;
+  flex-direction: row;
+}
+
+.nav-button {
+  background-color: #00FFD9;
+  /* Cyan button */
+  color: #000;
+  border: none;
+  padding: 0;
+  width: calc(150 / 1920 * var(--root--width));
+  height: calc(70 / 1080 * var(--root--height));
+  font-size: calc(24px*var(--root--font--ratio));
+  font-family: 'Inter', sans-serif;
+  font-weight: 800;
+  cursor: pointer;
+  position: static;
+  /* position: absolute; */
+  z-index: 1;
+}
+
+.nav-button:hover {
+  background-color: #00b3b3;
+}
+
+.nav-button:focus {
+  outline: none;
+}
