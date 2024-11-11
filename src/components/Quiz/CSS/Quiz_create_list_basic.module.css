@@ -182,7 +182,7 @@ textarea {
 
 .navigation-buttons {
   position: fixed;
-  bottom: calc(140 / 1080 * var(--root--height));
+  bottom: calc(70 / 1080 * var(--root--height));
   left: calc(1650 / 1920 * var(--root--width));
   width: calc(300 / 1920 * var(--root--width));
   height: calc(70 / 1080 * var(--root--height));
