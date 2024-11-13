@@ -3,11 +3,47 @@ import Thumbnail from '../../img/GameitemTest/test_thumbnail.png';
 import Platform from '../../img/GameitemTest/Yt_logo.png';
 import Public from '../../img/GameitemTest/잠금 해제.png';
 import Private from '../../img/GameitemTest/잠금.png';
+import {useNavigate} from "react-router-dom";
+import {useAuth} from "../Login/AuthContext.jsx";
 
-function Game_item({room}) {
+function Game_item({room,setChatRoomId,setFirstCreate}) {
     let mod;
     let type;
     let wait_play;
+    let {token} = useAuth();
+
+    const navigate = useNavigate();
+
+    const handleClick = async () => {
+        if (room.roomId !== null) {  // room.id가 null이 아닐 때
+            try {
+                const response = await fetch(`http://localhost:8080/room/Entities?idList=${room.roomId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+
+                    // participateAllowed가 true일 경우에만 실행
+                    if (data[0].participateAllowed) {
+                        setChatRoomId(room.roomId);
+                        setFirstCreate(false);
+                        navigate('/ingame');  // '/ingame'으로 네비게이션
+                    } else {
+                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        navigate('/home');
+                    }
+                } else {
+                    console.error('데이터를 가져오는 데 실패했습니다.');
+                }
+            } catch (error) {
+                console.error('GET 요청 중 오류 발생:', error);
+            }
+        }
+    };
 
     if(room.roomId !== null) {
         switch (room.quiz.modId) {
@@ -44,7 +80,7 @@ function Game_item({room}) {
         }
     }
 
-    return <div className="Game_item">
+    return <div className="Game_item" onClick={room.id !== null ? handleClick : undefined}>
         {room.roomId !== null && <>
             <img src={room.thumbnailURL} className="Thumbnail"/>
             <img src={Platform} className="Platform"/>

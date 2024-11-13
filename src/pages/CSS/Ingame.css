@@ -1,9 +1,10 @@
 .Ingame {
     display: flex;
+    width: 100%;
 }
 
 .left {
-    width: 76.2%;
+    width: 76.19%;
 }
 
 .main_board {
@@ -100,6 +101,32 @@
     height: 87%;
 
     background-color: rgba(48,100,92,0.3);
+
+    overflow-y : auto;
+}
+
+.my_chat {
+    box-sizing: border-box;
+
+    padding: calc(var(--root--height) * 0.013) calc(var(--root--width) * 0.008);
+
+    display: flex;
+
+    justify-content: flex-end;
+    font-size: calc(18px*var(--root--font--ratio));
+    font-weight: bold;
+    color: #00FFD9;
+}
+
+.other_chat {
+    box-sizing: border-box;
+
+    padding: calc(var(--root--height) * 0.013) calc(var(--root--width) * 0.008);
+
+    font-size: calc(18px*var(--root--font--ratio));
+    font-style: italic;
+    font-weight: lighter;
+    color: springgreen;
 }
 
 .chat_input_submit {

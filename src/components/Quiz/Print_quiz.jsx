@@ -12,12 +12,16 @@ import {useNavigate} from "react-router-dom";
 
 function Print_quiz({quizIds,
                     customOrplaylist,setCustomOrPlaylist,
-    userInfo
+                        selectedQuiz,setSelectedQuiz,
+                        userInfo,setChatRoomId,
+                        privacy,setPrivacy,
+                        roomName,setRoomName,
+                        password,setPassword,
+                        maxPlayer,setMaxPlayer,
+                        setFirstCreate,
 }) {
     let navigate = useNavigate();
     let {token} = useAuth();
-
-    console.log(quizIds)
 
     // 빈 퀴즈 객체 정의
     const emptyQuiz = {
@@ -55,8 +59,6 @@ function Print_quiz({quizIds,
 
     const [quizzes, setQuizzes] = useState(Array.from({ length: 7 }, () => ({ ...emptyQuiz })));
     const [imageSrc, setImageSrc] = useState(null);
-
-    console.log(quizzes)
 
     useEffect(() => {
         const fetchQuizzes = async () => {
@@ -102,7 +104,6 @@ function Print_quiz({quizIds,
 
     /* 방을 생성하기 위한 핸들러 */
     let [showFloat,setShowFloat] = useState(false);
-    const [selectedQuiz, setSelectedQuiz] = useState(null); // 선택된 퀴즈 상태 추가
 
     let handleShowFloat = (quiz) => {
         setSelectedQuiz(quiz);
@@ -190,7 +191,17 @@ function Print_quiz({quizIds,
             <>
                 <div className="backdrop" onClick={handleCloseFloat}></div>
                 <div className="modal">
-                    <Room_create_float userInfo={userInfo} quiz={selectedQuiz} onClose={handleCloseFloat} />
+                    <Room_create_float
+                        userInfo={userInfo}
+                        quiz={selectedQuiz}
+                        onClose={handleCloseFloat}
+                        setChatRoomId={setChatRoomId}
+                        privacy={privacy} setPrivacy={setPrivacy}
+                        roomName={roomName} setRoomName={setRoomName}
+                        password={password} setPassword={setPassword}
+                        maxPlayer={maxPlayer} setMaxPlayer={setMaxPlayer}
+                        setFirstCreate={setFirstCreate}
+                    />
                 </div>
             </>
         )}

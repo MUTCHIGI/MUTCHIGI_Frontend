@@ -9,13 +9,16 @@ import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../components/Login/AuthContext.jsx";
 
-function Home({userInfo,setUserInfo}) {
+function Home({userInfo,setUserInfo,
+    setChatRoomId,setFirstCreate,
+              }) {
     let token = useAuth();
     // API를 통해 받아온 방들의 ID 리스트
     const [roomIds,setRoomIds] = useState([]);
 
     // 페이지 오프셋
     const [offset,setOffset] = useState(6);
+
 
     /* ------------------------------searchbar state------------------------------ */
 
@@ -61,6 +64,7 @@ function Home({userInfo,setUserInfo}) {
         fetchRoomIds();
     }, [currentPage,offset,selectedOption_type,selectedOption_quiztype,quizTitle,selectedOption_privacy]);
 
+
     return <div>
         <Header_top userInfo={userInfo} setUserInfo={setUserInfo}/>
         <Header_bottom/>
@@ -74,7 +78,11 @@ function Home({userInfo,setUserInfo}) {
             setSelectedOption_type={setSelectedOption_type}
             texts={texts}
         />
-        <Print_games roomIds={roomIds}/>
+        <Print_games
+            roomIds={roomIds}
+            setChatRoomId={setChatRoomId}
+            setFirstCreate={setFirstCreate}
+        />
         <Footer
             multiplay={true}
             currentPage={currentPage}

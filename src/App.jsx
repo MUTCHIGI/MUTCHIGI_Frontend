@@ -18,7 +18,18 @@ function App() {
     const [customOrplaylist, setCustomOrPlaylist] = useState(0);
     const [playListUrl, setPlayListUrl] = useState(null);
 
-    let [windowSize, setWindowSize] = useState({
+    // 방 생성에 필요한 요소들
+    const [chatRoomId,setChatRoomId] = useState(-1);
+    const [selectedQuiz, setSelectedQuiz] = useState(null); // 선택된 퀴즈 상태 추가
+    let [privacy,setPrivacy] = useState('public');
+    let [roomName, setRoomName] = useState(''); // 방 이름 상태
+    let [password, setPassword] = useState(''); // 비밀번호 상태
+    let [maxPlayer, setMaxPlayer] = useState(1); // 최대 플레이어 수 상태
+
+    // 최초 생성의 경우 true, 참여하는 경우 false
+    let [firstCreate,setFirstCreate] = useState(true);
+
+    let [windowSize,setWindowSize] = useState({
         width: window.innerWidth,
         height: window.innerHeight,
     });
@@ -47,34 +58,54 @@ function App() {
 
     //Quiz Create에 Playlist URL 입력하기
 
-    return (
-        <div className="App">
-            <WindowSizeContext.Provider value={windowSize}>
-                <AuthProvider>
-                    <Routes>
-                        <Route path="/ingame" element={<Ingame />} />
-                        <Route path="/home" element={<Home userInfo={userInfo} setUserInfo={setUserInfo} />} />
-                        <Route path="/home/quiz" element={<Quiz_page
-                            userInfo={userInfo} setUserInfo={setUserInfo}
-                            customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
-                        />} />
-                        <Route path="/home/quiz/playlist" element={<Quiz_page_Playlist
-                            userInfo={userInfo} setUserInfo={setUserInfo}
-                            playlistUrl={playListUrl} setPlayListUrl={setPlayListUrl}
-                            customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
-                        />} />
-                        <Route path="/home/quiz_create" element={<Quiz_create
+  return (
+      <div className="App">
+          <WindowSizeContext.Provider value={windowSize}>
+              <AuthProvider>
+                  <Routes>
+                      <Route path="/ingame" element={<Ingame
+                          quiz={selectedQuiz}
+                          chatRoomId={chatRoomId} setChatRoomId={setChatRoomId}
+                          privacy={privacy}
+                          roomName={roomName}
+                          password={password}
+                          maxPlayer={maxPlayer}
+                          userInfo={userInfo}
+                          firstCreate={firstCreate} setFirstCreate={setFirstCreate}
+                      />}/>
+                      <Route path="/home" element={<Home
+                          userInfo={userInfo} setUserInfo={setUserInfo}
+                          setChatRoomId={setChatRoomId}
+                          setFirstCreate={setFirstCreate}
+                      />}/>
+                      <Route path="/home/quiz" element={<Quiz_page
+                          userInfo={userInfo} setUserInfo={setUserInfo}
+                          customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
+                          selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
+                          setChatRoomId={setChatRoomId}
+                          privacy={privacy} setPrivacy={setPrivacy}
+                          roomName={roomName} setRoomName={setRoomName}
+                          password={password} setPassword={setPassword}
+                          maxPlayer={maxPlayer} setMaxPlayer={setMaxPlayer}
+                          setFirstCreate={setFirstCreate}
+                      />}/>
+                      <Route path="/home/quiz/playlist" element={<Quiz_page_Playlist
+                          userInfo={userInfo} setUserInfo={setUserInfo}
+                          playlistUrl={playListUrl} setPlayListUrl={setPlayListUrl}
+                          customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
+                      />}/>
+                       <Route path="/home/quiz_create" element={<Quiz_create
                             userInfo={userInfo} setUserInfo={setUserInfo}
                             typeId={customOrplaylist}
                             userId={userInfo ? userInfo.userId : 0}
                             playListUrl={playListUrl}
                             setPlayListUrl={setPlayListUrl}
                         />} />
-                    </Routes>
-                </AuthProvider>
-            </WindowSizeContext.Provider>
-        </div>
-    )
+                  </Routes>
+              </AuthProvider>
+          </WindowSizeContext.Provider>
+      </div>
+  )
 }
 
 export default App
