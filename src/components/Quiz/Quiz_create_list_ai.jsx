@@ -24,22 +24,57 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
     const [inputValue, setInputValue] = useState(currentPage);
 
     useEffect(() => {
-        setIsLoading(true);
-        if (quizId !== -1) {
-            fetch(`http://localhost:8080/song/youtube/songList?quizId=${quizId}`, {
-                method: 'GET',
-                headers: {
-                    'Accept': '*/*',
-                    'Authorization': `Bearer ${token}`,
-                },
-            })
-                .then(async (response) => {
+        const fetchHintSetting = async () => {
+            try {
+                const response = await fetch(`http://localhost:8080/quiz/${quizId}/hintState`, {
+                    method: 'GET',
+                    headers: {
+                        'Accept': '*/*',
+                        'Authorization': `Bearer ${token}`,
+                    },
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to fetch hint setting');
+                }
+                const data = await response.json();
+                const formattedHintSetting = data.map(hint => {
+                    const [hours, minutes, seconds] = hint.hintTime.split(':').map(Number);
+                    const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
+
+                    return {
+                        id: hint.hintStateId,
+                        text: hint.hintType,
+                        time: totalSeconds
+                    };
+                });
+
+                // Update only the `time` property in `hintSetting`
+                formattedHintSetting.forEach((formattedHint, index) => {
+                    if (hintSetting[index]) {
+                        hintSetting[index].time = formattedHint.time;
+                    }
+                });
+
+                console.log(hintSetting);
+            } catch (error) {
+                console.error('Error fetching hint setting:', error);
+            }
+        };
+
+        const fetchData = async () => {
+            try {
+                if (quizId !== -1) {
+                    const response = await fetch(`http://localhost:8080/song/youtube/songList?quizId=${quizId}`, {
+                        method: 'GET',
+                        headers: {
+                            'Accept': '*/*',
+                            'Authorization': `Bearer ${token}`,
+                        },
+                    });
                     if (!response.ok) {
                         throw new Error('Network response was not ok');
                     }
-                    return response.json();
-                })
-                .then(async (data) => {
+                    const data = await response.json();
                     const formattedCards = await Promise.all(data.map(async (item) => {
                         const maxTimeInSeconds = convertToSeconds(item.songTime);
 
@@ -50,13 +85,13 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
 
                         return {
                             url: item.playURL,
-                            answers: answers, // 할당된 answers
+                            answers: answers,
                             hints: hints.map(hint => ({
                                 hintId: hint.hintId,
                                 hintTime: convertToSeconds(hint.hintTime),
                                 hintType: hint.hintType,
                                 hintText: hint.hintText
-                            })), // 할당된 hints
+                            })),
                             startTime: 0,
                             quizRelationId: item.quizSongRelationID,
                             quizUrl: item.playURL,
@@ -65,13 +100,16 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                         };
                     }));
                     setCards(formattedCards);
-                    setIsLoading(false);
-                })
-                .catch((error) => {
-                    console.error('Error fetching song list:', error);
-                    setIsLoading(false);
-                });
-        }
+                }
+            } catch (error) {
+                console.error('Error fetching song list:', error);
+            }
+        };
+
+        setIsLoading(true);
+        fetchHintSetting();
+        fetchData();
+        setIsLoading(false);
     }, [quizId, token]);
 
     const convertToSeconds = (timeString) => {

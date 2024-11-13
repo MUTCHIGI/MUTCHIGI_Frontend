@@ -17,7 +17,7 @@
   display: flex;
   flex-direction: column;
   width: calc(850 / 1920 * var(--root--width));
-  height: calc(400 / 1080 * var(--root--height));
+  height: calc(760 / 1080 * var(--root--height));
   background: #252525;
   outline: 4px solid #00FFD9;
   /* box-shadow: 0 0 8px rgba(0, 247, 255, 0.295); */
