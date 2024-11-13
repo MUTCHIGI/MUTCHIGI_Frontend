@@ -1,15 +1,66 @@
 import React, { startTransition, useState, useEffect } from 'react';
-import './CSS/Quiz_create_list_basic.css';
+import { useNavigate } from 'react-router-dom';
+import styles from './CSS/Quiz_create_list_basic.module.css';
 import editButton from '../../img/edit_button.svg';
 import deleteButton from '../../img/delete_button.svg';
 import QuizCreateDetail from './Quiz_create_detail';
+import spinner from '../../img/loading.svg'
+
+const QuizList = ({ info, handlers }) => {
+    const { isModalOpen, url, cards } = info;
+    const { setUrl, handleAddCard, openModal, handleDeleteCard } = handlers;
+
+    return (
+        <>
+            <div className={`${styles["card-list-container"]} ${isModalOpen ? styles["blur"] : ''}`}>
+                <div className={styles["url-input-section"]}>
+                    <input
+                        type="text"
+                        placeholder="URL을 입력하세요"
+                        value={url}
+                        onChange={(e) => setUrl(e.target.value)}
+                        className={styles["url-input"]}
+                    />
+                    <button onClick={handleAddCard} className={styles["url-input-button"]}>추가</button>
+                </div>
+                <div className={styles["card-grid"]}>
+                    {cards.map((card, index) => (
+                        <div className={styles["card"]}
+                            key={index}
+                            style={{
+                                backgroundImage: `url(${card.quizThumbnail})`,
+                                backgroundSize: 'cover',
+                                backgroundPosition: 'center',
+                                backgroundColor: 'gray',
+                            }}
+                        >
+                            <div className={styles["card-content"]}>
+                                <div className={styles["card-icons"]}>
+                                    <button className={styles["card-edit-btn"]} onClick={() => openModal(index)}>
+                                        <img src={editButton} alt="Edit" className={styles["card-icon-img"]} />
+                                    </button>
+                                    <button
+                                        className={styles["card-delete-btn"]}
+                                        onClick={() => handleDeleteCard(index)}
+                                    >
+                                        <img src={deleteButton} alt="Delete" className={styles["card-icon-img"]} />
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </>
+    );
+}
 
 const QuizCreateList = ({ quizId, hintSetting, token }) => {
     const [url, setUrl] = useState('');
     const [cards, setCards] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCardIndex, setSelectedCardIndex] = useState(null);
-
+    const [isLoading, setIsLoading] = useState(false);
 
     const fetchGetApi = async (url, token) => {
         const response = await fetch(url, {
@@ -26,6 +77,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
     };
 
     useEffect(() => {
+        setIsLoading(true);
         if (quizId !== -1) {
             fetch(`http://localhost:8080/song/youtube/songList?quizId=${quizId}`, {
                 method: 'GET',
@@ -66,9 +118,11 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                         };
                     }));
                     setCards(formattedCards);
+                    setIsLoading(false);
                 })
                 .catch((error) => {
                     console.error('Error fetching song list:', error);
+                    setIsLoading(false);
                 });
         }
     }, [quizId, token]);
@@ -81,7 +135,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
 
     const handleAddCard = async () => {
         if (url.trim() === '') return;
-    
+
         try {
             const response = await fetch('http://localhost:8080/song/youtube', {
                 method: 'POST',
@@ -95,11 +149,11 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                     quizId: quizId,
                 }),
             });
-    
+
             if (!response.ok) {
                 throw new Error('Network response was not ok');
             }
-    
+
             const data = await response.json();
             const maxTimeInSeconds = convertToSeconds(data.songTime);
             // Fetch answers
@@ -114,7 +168,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                 quizThumbnail: data.thumbnailURL,
                 maxTime: maxTimeInSeconds,
             };
-    
+
             setCards((prevCards) => [...prevCards, newCard]);
             setUrl('');
         } catch (error) {
@@ -174,58 +228,71 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
         setCards(updatedCards);
     }
 
+    let navigate = useNavigate();
+
+    const nextStep = async () => {
+        fetch(`http://localhost:8080/quiz/setReady/${quizId}`, {
+            method: "POST",
+            headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "*/*",
+            },
+        })
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error("Failed to upload image");
+                }
+                navigate('/home');
+            })
+    };
 
     const modalHandlers = { setIsModalOpen, setSelectedCardIndex, handleUpdateAnswers, handleUpdateHints, handleUpdateStartTime };
     return (
         <>
-            <div className={`card-list-container ${isModalOpen ? 'blur' : ''}`}>
-                <div className="url-input-section">
-                    <input
-                        type="text"
-                        placeholder="URL을 입력하세요"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
-                        className='url-input'
+            {isLoading ? (
+                <div className={styles["loading-screen"]}>
+                    <div className={styles["loading-component"]}>
+                        <img
+                            src={spinner}
+                            style={{ width: '100%', height: '100%' }}
+                            alt="Loading Spinner"
+                        />
+                    </div>
+                    <h1 className={styles["loading-title"]}>
+                        불러오는 중...
+                    </h1>
+                </div>
+            ) : (
+                <>
+                    <QuizList
+                        info={{ isModalOpen, url, cards }}
+                        handlers={{
+                            setUrl: setUrl,
+                            handleAddCard: handleAddCard,
+                            openModal: openModal,
+                            handleDeleteCard: handleDeleteCard
+                        }}
                     />
-                    <button onClick={handleAddCard} className='url-input-button'>추가</button>
-                </div>
-                <div className="card-grid">
-                    {cards.map((card, index) => (
-                        <div className="card"
-                            key={index}
-                            style={{
-                                backgroundImage: `url(${card.quizThumbnail})`,
-                                backgroundSize: 'cover',
-                                backgroundPosition: 'center',
-                                backgroundColor: 'gray',
-                            }}
+                    <div className={styles["navigation-buttons"]}>
+                        <button
+                            type="button"
+                            onClick={nextStep}
+                            className={styles["nav-button"]}
                         >
-                            <div className="card-content">
-                                <div className="card-icons">
-                                    <button className="card-edit-btn" onClick={() => openModal(index)}>
-                                        <img src={editButton} alt="Edit" className='card-icon-img' />
-                                    </button>
-                                    <button
-                                        className="card-delete-btn"
-                                        onClick={() => handleDeleteCard(index)}
-                                    >
-                                        <img src={deleteButton} alt="Delete" className='card-icon-img' />
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            {isModalOpen && (
-                <QuizCreateDetail
-                    info={{
-                        card: cards[selectedCardIndex],
-                        hintSetting: hintSetting,
-                        token: token,
-                    }}
-                    handlers={modalHandlers}
-                />
+                            퀴즈 생성
+                        </button>
+                    </div>
+                    {isModalOpen && (
+                        <QuizCreateDetail
+                            info={{
+                                card: cards[selectedCardIndex],
+                                hintSetting: hintSetting,
+                                token: token,
+                            }}
+                            handlers={modalHandlers}
+                        />
+                    )}
+                </>
             )}
         </>
     );
