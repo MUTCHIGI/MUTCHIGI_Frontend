@@ -184,11 +184,8 @@ const QuizCreateDetail = ({ info, handlers }) => {
 
     // hintDTOList 
     const hintDTOList = hintSetting.map((setting, index) => ({
-      hour: Math.floor(setting.time / 3600),
-      minute: Math.floor((setting.time % 3600) / 60),
-      second: setting.time % 60,
-      hintType: setting.hintType,
-      hintText: localHints[index] || "", // if input.size < hintSetting.length -> empty string
+      hintStateId: setting.id, // Use setting.id for hintStateId
+      hintText: localHints[index] || "" // Use localHints[index] or an empty string if unavailable
     }));
 
     try {
@@ -260,7 +257,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
           <TimeAdjuster startTime={localTime} onUpdateTime={setLocalTime} maxTime={card.maxTime} />
         </div>
         <div className={styles["btn-container"]}>
-          <button 
+          <button
             className={styles["close-btn"]}
             style={{ borderRight: "1px solid #000000" }}
             onClick={closeModal}
