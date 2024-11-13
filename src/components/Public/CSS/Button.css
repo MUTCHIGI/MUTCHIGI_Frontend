@@ -345,6 +345,20 @@
     cursor: pointer;
 }
 
+.button_game_exit_deactivated {
+    width: calc(var(--root--width)*0.041666666666666);
+    height: calc(var(--root--height)*0.04629629629629);
+
+    font-size: calc(24px*var(--root--font--ratio));
+
+    background-color: rgba(0,255,217,0.2);
+
+    color:white;
+
+    border: none;
+    border-radius: 10px;
+}
+
 .button_game_exit:hover {
     background-color: #00FFD9;
 }
@@ -384,6 +398,17 @@
 
 .button_game_ready:hover {
     border: 5px solid black;
+}
+
+.button_game_wait {
+    width: calc(var(--root--width)*0.33333333333333333);
+    height: calc(var(--root--height)*0.1111111111111111111111);
+
+    font-weight: bolder;
+    font-size: calc(24px*var(--root--font--ratio));
+
+    border-radius: 100px / 100px;
+    border: none;
 }
 
 /* Game_board_playing */

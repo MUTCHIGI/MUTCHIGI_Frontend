@@ -45,6 +45,11 @@
     margin-bottom: auto;
 }
 
+.button_game_exit_deactivated {
+    margin-top: auto;
+    margin-bottom: auto;
+}
+
 .button_game_share {
     margin-top: auto;
     margin-bottom: auto;
@@ -59,6 +64,10 @@
 }
 
 .button_game_ready {
+    margin: auto;
+}
+
+.button_game_wait {
     margin: auto;
 }
 

@@ -1,15 +1,32 @@
 import './CSS/Game_board_playing.css';
 import Button from "../Public/Button.jsx";
+import {useNavigate} from "react-router-dom";
 
-function Game_board_playing() {
+function Game_board_playing({stompClient,setFirstCreate,
+    quiz,hint
+
+}) {
     let timeout = false;
+    let navigate = useNavigate();
+    const handleExit = () => {
+        // 방과의 연결 해제
+        if (stompClient && stompClient.connected) {
+            stompClient.disconnect(() => {
+                console.log("Disconnected from room");
+            });
+        }
+        // /home 경로로 이동
+        setFirstCreate(true);
+        navigate('/home');
+        window.location.reload();
+    };
 
     return <div className="Game_board_waiting">
         <div className="title_exit_share">
             <div className="game_board_title">
                 room title
             </div>
-            <Button text={"exit"} classname={"game_exit"}/>
+            <Button text={"exit"} classname={"game_exit"} onClick={handleExit}/>
             <Button text={"share"} classname={"game_share"}/>
         </div>
         <div className="current_div_total">

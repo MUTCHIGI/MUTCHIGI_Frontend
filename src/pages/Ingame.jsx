@@ -34,9 +34,18 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const [chatMessages, setChatMessages] = useState([]); // 현재까지의 모든 채팅 내역
     const clientRef = useRef(null); // 소켓 client 저장
     const [superUserId,setSuperUserId] = useState(-1);
+    const [timeLimit,setTimeLimit] = useState(0);
+    const [gameStart,setGameStart] = useState(false);
+    const [songIndex,setSongIndex] = useState(-1);
+
+    const [CurrentQuiz, setCurrentQuiz] = useState(null); // 현재 풀고잇는 퀴즈
+    const [CurrentHint,setCurrentHint] = useState(null); // 현재 풀고있는 퀴즈의 힌트
+    const [isSubscribed, setIsSubscribed] = useState(false); // topic/song/songIndex에 구독되어있는지
 
     const socket = new SockJS('http://localhost:8080/room'); //소켓
     const client = Stomp.over(socket); //클라이언트
+
+    const UserCount = userList.filter(user => user.userId !== -1).length;
 
     useEffect(() => {
         if(firstCreate) {
@@ -131,7 +140,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                 const data = await response.json();
                 setChatRoomId(data); // ChatRoomId state에 만들어진 방 id 저장
                 console.log(data)
-                connectToRoom(data)
+                connectToRoom(data);
             } else {
                 console.error('Error creating room:', response.statusText);
             }
@@ -145,7 +154,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             {
             'Authorization': 'Bearer ' + token,
         }, (frame) => {
-            subscribe(client,chatRoomId,userInfo.userId)
+            subscribe(client,chatRoomId,userInfo.userId);
             const joinRoomData = {
                 roomId: chatRoomId,
                 roomPassword: password
@@ -169,9 +178,26 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             setChatMessages((prevMessages) => [...prevMessages, newMessage]);
         });
 
-        stompClient.subscribe('/topic/song/' + roomId);
+        // chatRoomId에 해당하는 구독 생성
+        stompClient.subscribe('/topic/song/' + roomId, (message) => {
+            const received_quiz = JSON.parse(message.body);
+            setCurrentQuiz(received_quiz); // 응답 메시지 데이터를 CurrentQuiz state에 저장
+            setQsRelationId(received_quiz.qsRelationId);
+
+            stompClient.send(
+                `/app/getHint/${roomId}/${received_quiz.qsRelationId}`,
+                {}, // headers, 필요시 설정
+                JSON.stringify({}) // 메시지 본문이 필요 없으므로 빈 객체
+            );
+        });
+        setIsSubscribed(true);
         stompClient.subscribe('/topic/vote/' + roomId);
-        stompClient.subscribe('/topic/hint/' + roomId);
+
+        stompClient.subscribe('/topic/hint/' + roomId, (message) => {
+            const received_Hint = JSON.parse(message.body);
+            setCurrentHint(received_Hint);
+            console.log(received_Hint)
+        });
         stompClient.subscribe('/topic/correct/' + roomId);
         stompClient.subscribe('/topic/kick/' + roomId);
         stompClient.subscribe('/topic/superUser/' + roomId);
@@ -209,6 +235,17 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         setMessageText(''); // 메시지 전송 후 입력 필드 초기화
     };
 
+    useEffect(() => {
+        if (songIndex !== null && clientRef.current && clientRef.current.connected) {
+            // songIndex가 변경될 때마다 웹소켓을 통해 메시지를 보냄
+            clientRef.current.send(
+                `/app/getSong/${chatRoomId}/${songIndex}`,
+                {}, // headers가 필요하면 추가
+                JSON.stringify({}) // 메시지 본문이 필요 없을 경우 빈 객체로 전달
+            );
+        }
+    }, [songIndex]);
+
     // 엔터키 또는 버튼 클릭으로 메시지 전송하기
     const handleKeyPress = (e) => {
         if (e.key === 'Enter') {
@@ -229,14 +266,24 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     return <div className="Ingame">
         <div className="left">
             <div className="main_board">
-                {qsRelationId===-1 ?
+                {!gameStart ?
                     <Game_board_waiting
                         stopmClient={client}
                         setFirstCreate={setFirstCreate}
+                        qsRelationId={qsRelationId}
+                        setSongIndex={setSongIndex}
+                        songIndex={songIndex}
                         roomName={roomName}
                         master={userInfo.userId===superUserId}
+                        UserCount={UserCount}
+                        setGameStart={setGameStart}
                     /> :
-                    <Game_board_playing/>
+                    <Game_board_playing
+                        stompClient={client}
+                        setFirstCreate={setFirstCreate}
+                        quiz={CurrentQuiz}
+                        hint={CurrentHint}
+                    />
                 }
             </div>
             <div className="user_list">
