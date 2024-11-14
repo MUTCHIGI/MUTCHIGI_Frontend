@@ -445,6 +445,28 @@
   background-color: #a0a0a0;
 }
 
+.music-play-container {
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  top: calc(100 / 1080 * var(--root--height));
+}
+
+.card-play-btn {
+  margin-left: 10px;
+  height: calc(44 / 1080 * var(--root--height));
+  width: calc(44 / 1080 * var(--root--height));
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #D9D9D9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .btn-container {
   position: relative;
   display: flex;
@@ -465,3 +487,4 @@
   font-size: calc(24px * var(--root--font--ratio));
   cursor: pointer;
 }
+

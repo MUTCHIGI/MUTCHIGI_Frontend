@@ -1,5 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './CSS/Quiz_create_detail.module.css'
+import playButton from '../../img/music_play_button.svg'
+import pauseButton from '../../img/music_pause_button.svg'
 
 const AnswerInput = ({ answers, onUpdateAnswers }) => {
   const [currentInputValue, setCurrentInputValue] = useState('');
@@ -213,8 +215,136 @@ const TimeAdjuster = ({ startTime, onUpdateTime, maxTime }) => {
   );
 };
 
+const MusicPlayer = ({ startTime, instrumentId, card }) => {
+  const audioRef = useRef(null);
+  const playerRef = useRef(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
+
+  useEffect(() => {
+    if (instrumentId === 0 && window.YT) {
+      loadYouTubePlayer();
+    } else if (instrumentId === 0) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = () => {
+        loadYouTubePlayer();
+      };
+    }
+
+    // Cleanup function
+    return () => {
+      if (playerRef.current && instrumentId === 0) {
+        playerRef.current.destroy();
+      }
+    };
+  }, [instrumentId]);
+
+  const loadYouTubePlayer = () => {
+    const videoId = card.quizUrl.split('v=')[1];
+    playerRef.current = new window.YT.Player('youtube-player', {
+      videoId: videoId,
+      events: {
+        onReady: (event) => {
+          // 플레이어가 준비되었을 때 시작 시간만 설정하고 재생은 하지 않음
+          setPlayerReady(true);
+          if (startTime > 0) {
+            event.target.cueVideoById({
+              videoId: videoId,
+              startSeconds: startTime
+            });
+          }
+        },
+      },
+      playerVars: {
+        autoplay: 0, // 자동 재생 비활성화
+        controls: 0,
+        start: startTime,
+        mute: 0,
+        playsinline: 1
+      }
+    });
+  };
+
+  const handlePlay = async () => {
+    if (instrumentId === 0 && playerRef.current && playerReady) {
+      playerRef.current.seekTo(startTime);
+      playerRef.current.playVideo();
+      setIsPlaying(true);
+    } else if (instrumentId !== 0) {
+      try {
+        const response = await fetch(`http://localhost:8080/GCP/DemucsSong/play?songId=${card.songId}&instrumentId=${instrumentId}`, {
+          method: 'GET',
+          headers: {
+            'accept': '*/*'
+          }
+        });
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          setAudioUrl(url);
+          setIsPlaying(true);
+        } else {
+          console.error('Failed to fetch audio file');
+        }
+      } catch (error) {
+        console.error('Error fetching audio file:', error);
+      }
+    }
+  };
+
+  const handleAudioPlay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = startTime;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (instrumentId === 0 && playerRef.current && playerReady) {
+      playerRef.current.pauseVideo();
+      setIsPlaying(false);
+    } else if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  return (
+    <div className={styles['music-play-container']}>
+      <label className={styles["seting-label"]}>미리 듣기</label>
+      {instrumentId === 0 && (
+        <div id="youtube-player" style={{ display: 'none' }}></div>
+      )}
+      {instrumentId !== 0 && audioUrl && (
+        <audio ref={audioRef} src={audioUrl} />
+      )}
+      <button 
+        className={styles['card-play-btn']} 
+        onClick={isPlaying ? handlePause : handlePlay}
+        disabled={instrumentId === 0 && !playerReady}
+      >
+        {isPlaying ? (
+          <img src={pauseButton} alt="Pause" className={styles['icon-img']} />
+        ) : (
+          <img src={playButton} alt="Play" className={styles['icon-img']} />
+        )}
+      </button>
+      {audioUrl && !isPlaying && instrumentId !== 0 && (
+        <button onClick={handleAudioPlay}>Start from {startTime}s</button>
+      )}
+    </div>
+  );
+};
+
+
 const QuizCreateDetail = ({ info, handlers }) => {
-  const { card, hintSetting, token } = info;
+  const { card, hintSetting, token, instrumentId } = info;
   const { setIsModalOpen, setSelectedCardIndex, handleUpdateAnswers, handleUpdateHints, handleUpdateStartTime } = handlers;
 
   // temporary answers, hints, time until "complete" button click
@@ -323,6 +453,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
         </div>
         <div className={styles['quiz-seting-right']}>
           <TimeAdjuster startTime={localTime} onUpdateTime={setLocalTime} maxTime={card.maxTime} />
+          <MusicPlayer startTime={localTime} instrumentId={instrumentId} card={card} />
         </div>
         <div className={styles["btn-container"]}>
           <button

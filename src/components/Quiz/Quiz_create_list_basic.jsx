@@ -325,6 +325,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                                 card: cards[selectedCardIndex],
                                 hintSetting: hintSetting,
                                 token: token,
+                                instrumentId : 0,
                             }}
                             handlers={modalHandlers}
                         />

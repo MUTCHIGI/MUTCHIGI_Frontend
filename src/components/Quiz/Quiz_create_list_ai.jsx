@@ -273,6 +273,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                         card: cards[selectedCardIndex],
                         hintSetting: hintSetting,
                         token: token,
+                        instrumentId: instrumentId,
                     }}
                     handlers={modalHandlers}
                 />
