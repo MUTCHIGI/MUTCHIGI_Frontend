@@ -103,6 +103,7 @@
   background-color: white;
   border-radius: 15px;
   position: relative;
+  width: 100%;
   top: calc(20 / 1080 * var(--root--height));
   height: calc(156 / 1080 * var(--root--height));
   overflow: auto;
@@ -133,18 +134,17 @@
   margin-left: 5px;
   margin-top: 5px;
   height: calc(30 / 1080 * var(--root--height));
-  padding-left: calc(5 / 1920 * var(--root--width));
+  /* width: 95%; */
   border-radius: 15px;
   position: relative;
   display: flex;
-  justify-content: space-between;
+  flex-direction: row;
   align-items: center;
   transition: none;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 800;
   font-size: calc(24px * var(--root--font--ratio));
-  line-height: calc(44px * var(--root--font--ratio));
   color: #000000;
 }
 
@@ -152,17 +152,74 @@
   background-color: #e0e0e0;
 }
 
+.answer-edit {
+  background-color: transparent;
+  height: 100%;
+  width: 100%;
+  border-radius: 15px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  transition: none;
+  background-color: #e0e0e0;
+  border: 2px solid black;
+}
+
+.answer-edit-input {
+  background-color: transparent;
+  width: 100%;
+  border-radius: 15px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  background-color: transparent;
+  transform-origin: none;
+  outline: none;
+  border: 0;
+}
+
 /* 삭제 버튼 (기본 숨김) */
 .delete-btn {
+  position: relative;
   background: none;
   border: none;
   color: red;
-  margin-right: calc(10 / 1920 * var(--root--width));
+  right: calc(10 / 1920 * var(--root--width));
   font-size: calc(20px * var(--root--font--ratio));
   cursor: pointer;
   visibility: hidden;
-  transition: visibility 0.3s;
 }
+
+.edit-btn {
+  background: none;
+  border: none;
+  color: black;
+  right: 0;
+  margin-left: auto; /* 자동으로 오른쪽으로 이동 */
+  margin-right: calc(10 / 1920 * var(--root--width));
+  font-size: calc(20px * var(--root--font--ratio));
+  line-height: calc(20px * var(--root--font--ratio));
+  cursor: pointer;
+  visibility: hidden;
+}
+
+.check-btn {
+  background: none;
+  border: none;
+  color: green;
+  right: 0;
+  margin-left: auto; /* 자동으로 오른쪽으로 이동 */
+  margin-right: calc(10 / 1920 * var(--root--width));
+  font-size: calc(20px * var(--root--font--ratio));
+  line-height: calc(20px * var(--root--font--ratio));
+  cursor: pointer;
+}
+
 
 .hint-container {
   grid-column: 1;
@@ -188,14 +245,18 @@
 
 .hint-type {
   width : 30%;
+  height: auto;
   display: flex;
-  justify-content: center;
+  /* justify-content: center; */
   align-items: center;
   font-family: 'Inter';
   font-style: normal;
   font-weight: 800;
   font-size: calc(24px * var(--root--font--ratio));
   background-color: #D9D9D9;
+  overflow: hidden; /* 넘치는 내용 숨기기 */
+  white-space: nowrap; /* 한 줄로 제한 */
+  text-overflow: ellipsis; /* 생략 부호(...) 표시 */
 }
 
 .hint-item {
@@ -216,15 +277,19 @@
   line-height: calc(44px * var(--root--font--ratio));
   color: #000000;
   background-color: #D9D9D9;
-}
-
-.hint-item:hover .delete-btn {
-  visibility: visible;
+  overflow: hidden; /* 넘치는 내용 숨기기 */
+  white-space: nowrap; /* 한 줄로 제한 */
+  text-overflow: ellipsis; /* 생략 부호(...) 표시 */
 }
 
 .answer-item:hover .delete-btn {
   visibility: visible;
 }
+
+.answer-item:hover .edit-btn {
+  visibility: visible;
+}
+
 
 /* 컨테이너 스타일 */
 .time-adjuster-container {

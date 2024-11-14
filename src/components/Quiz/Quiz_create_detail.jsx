@@ -2,19 +2,55 @@ import React, { useState } from 'react';
 import styles from './CSS/Quiz_create_detail.module.css'
 
 const AnswerInput = ({ answers, onUpdateAnswers }) => {
-  const [answer, setAnswer] = useState('');
+  const [currentInputValue, setCurrentInputValue] = useState('');
+  const [currentEditValue, setCurrentEditValue] = useState('');
+  const [editingIndex, setEditingIndex] = useState(null);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && answer.trim() !== '') {
-      const newAnswers = [...answers, answer.trim()];
+  const handleEditClick = (index) => {
+    setEditingIndex(index);
+    setCurrentEditValue(answers[index]);
+  };
+
+  const handleEditChange = (e) => {
+    setCurrentEditValue(e.target.value);
+  };
+
+  const handleInputChange = (e) => {
+    setCurrentInputValue(e.target.value);
+  };
+
+  const handleEditKeyDown = (e, index) => {
+    if (e.key === 'Enter' && currentEditValue.trim() !== '') {
+      const newAnswers = answers.map((ans, i) =>
+        i === index ? currentEditValue.trim() : ans
+      );
       onUpdateAnswers(newAnswers);
-      setAnswer('');
+      setEditingIndex(null); // Edit mode 종료
+      setCurrentEditValue('');
+    }
+  };
+
+  const handleEndEdit = (index) => {
+    if (currentEditValue.trim() !== '') {
+      const newAnswers = answers.map((ans, i) =>
+        i === index ? currentEditValue.trim() : ans
+      );
+      onUpdateAnswers(newAnswers);
+      setEditingIndex(null); // Edit mode 종료
+      setCurrentEditValue('');
     }
   };
 
   const handleDelete = (index) => {
     const newAnswers = answers.filter((_, i) => i !== index);
     onUpdateAnswers(newAnswers);
+  };
+
+  const handleAddAnswer = (e) => {
+    if (e.key === 'Enter' && currentInputValue.trim() !== '') {
+      onUpdateAnswers([...answers, currentInputValue.trim()]);
+      setCurrentInputValue('');
+    }
   };
 
   return (
@@ -25,18 +61,48 @@ const AnswerInput = ({ answers, onUpdateAnswers }) => {
           className={styles['input-square-border']}
           type="text"
           placeholder=""
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          onKeyDown={handleKeyDown}
+          value={currentInputValue}
+          onChange={handleInputChange}
+          onKeyDown={(e) => handleAddAnswer(e)}
         />
       </div>
       <div className={styles["answer-list"]}>
         {answers.map((ans, index) => (
           <div key={index} className={styles["answer-item"]}>
-            <span>{ans}</span>
-            <button className={styles["delete-btn"]} onClick={() => handleDelete(index)}>
-              X
-            </button>
+            {editingIndex === index ? (
+              <div className={styles['answer-edit']}>
+                <input
+                  type="text"
+                  value={currentEditValue}
+                  onChange={handleEditChange}
+                  onKeyDown={(e) => handleEditKeyDown(e, index)}
+                  className={styles['answer-edit-input']}
+                  autoFocus
+                />
+                <button
+                  className={styles["check-btn"]}
+                  onClick={() => handleEndEdit(index)}
+                >
+                  ✓
+                </button>
+              </div>
+            ) : (
+              <>
+                <span>{ans}</span>
+                <button
+                  className={styles["edit-btn"]}
+                  onClick={() => handleEditClick(index)}
+                >
+                  ✎
+                </button>
+                <button
+                  className={styles["delete-btn"]}
+                  onClick={() => handleDelete(index)}
+                >
+                  X
+                </button>
+              </>
+            )}
           </div>
         ))}
       </div>
