@@ -367,13 +367,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, token, openModal, ha
 }
 
 function SelectedCandidate({ selectedItems, setSelectedItems, onComplete, onNavigateToSearch }) {
-    const handleDeleteCard = (index) => {
-        setSelectedItems(selectedItems.filter((_, i) => i !== index));
-    };
+    // const handleDeleteCard = (index) => {
+    //     setSelectedItems(selectedItems.filter((_, i) => i !== index));
+    // };
 
     return (
         <div className={styles['card-list-container']}>
-            <button className={styles['complete-button']}>선택 목록</button>
+            <span className={styles['complete-button']}>선택 목록</span>
             <div className={styles['card-grid']}>
                 {selectedItems.map((item, index) => (
                     <div
@@ -385,7 +385,7 @@ function SelectedCandidate({ selectedItems, setSelectedItems, onComplete, onNavi
                             backgroundPosition: 'center',
                             backgroundColor: 'gray',
                         }}
-                        onClick={() => handleDeleteCard(index)}
+                        // onClick={() => handleDeleteCard(index)}
                     >
                     </div>
                 ))}
