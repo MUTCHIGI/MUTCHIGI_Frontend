@@ -44,18 +44,14 @@ const AnswerInput = ({ answers, onUpdateAnswers }) => {
   );
 };
 
-const HintInput = ({ hints, onUpdateHints, maxHintNum }) => {
-  const [hint, setHint] = useState('');
+const HintInput = ({ hints, onUpdateHints, maxHintNum, hintSetting }) => {
+  const [localHints, setLocalHints] = useState(hints);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && hint.trim() !== '') {
-      if (hints.length >= maxHintNum) {
-        return;
-      }
-      const newHints = [...hints, hint.trim()];
-      onUpdateHints(newHints);
-      setHint('');
-    }
+  const handleInputChange = (e, index) => {
+    const newHints = [...localHints];
+    newHints[index] = e.target.value;
+    setLocalHints(newHints);
+    onUpdateHints(newHints);
   };
 
   const handleDelete = (index) => {
@@ -67,22 +63,17 @@ const HintInput = ({ hints, onUpdateHints, maxHintNum }) => {
     <div className={styles["hint-container"]}>
       <div className={styles["input-row"]}>
         <div className={styles["seting-label"]}>힌트</div>
-        <input
-          type="text"
-          placeholder=""
-          className={styles['input-square-white']}
-          value={hint}
-          onChange={(e) => setHint(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
       </div>
       <div className={styles["hint-list"]}>
-        {hints.map((ans, index) => (
+        {Array.from({ length: maxHintNum }).map((_, index) => (
           <div key={index} className={styles["hint-item"]}>
-            <span>{ans}</span>
-            <button className={styles["delete-btn"]} onClick={() => handleDelete(index)}>
-              X
-            </button>
+            <span className={styles['hint-type']}>{hintSetting[index].text}</span>
+            <input
+              type="text"
+              value={localHints[index] || ''}
+              onChange={(e) => handleInputChange(e, index)}
+              className={styles['input-square-white']}
+            />
           </div>
         ))}
       </div>
@@ -177,6 +168,11 @@ const QuizCreateDetail = ({ info, handlers }) => {
       return;
     }
 
+    if (localAnswers.length === 0) {
+      alert("Answer는 최소 1개 이상 필요합니다.");
+      return;
+    }
+
     // Start time
     const hours = Math.floor(localTime / 3600);
     const minutes = Math.floor((localTime % 3600) / 60);
@@ -187,6 +183,12 @@ const QuizCreateDetail = ({ info, handlers }) => {
       hintStateId: setting.id, // Use setting.id for hintStateId
       hintText: localHints[index] || "" // Use localHints[index] or an empty string if unavailable
     }));
+
+    const hasEmptyHint = hintDTOList.some(hint => hint.hintText === "");
+    if (hasEmptyHint) {
+      alert("모든 힌트는 비어 있을 수 없습니다.");
+      return;
+    }
 
     try {
       // 1. Start time setting API
@@ -251,7 +253,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
       <div className={styles["modal-content"]} onClick={(e) => e.stopPropagation()}>
         <div className={styles["quiz-seting-left"]}>
           <AnswerInput answers={localAnswers} onUpdateAnswers={setLocalAnswers} />
-          <HintInput hints={localHints} onUpdateHints={setLocalHints} maxHintNum={hintSetting.length} />
+          <HintInput hints={localHints} onUpdateHints={setLocalHints} maxHintNum={hintSetting.length} hintSetting={hintSetting} />
         </div>
         <div className={styles['quiz-seting-right']}>
           <TimeAdjuster startTime={localTime} onUpdateTime={setLocalTime} maxTime={card.maxTime} />

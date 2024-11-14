@@ -186,6 +186,18 @@
   /* gap: 5px; */
 }
 
+.hint-type {
+  width : 30%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  background-color: #D9D9D9;
+}
+
 .hint-item {
   background-color: white;
   padding-left: calc(10 / 1920 * var(--root--width));
@@ -203,10 +215,7 @@
   font-size: calc(24px * var(--root--font--ratio));
   line-height: calc(44px * var(--root--font--ratio));
   color: #000000;
-}
-
-.hint-item:hover {
-  background-color: #e0e0e0;
+  background-color: #D9D9D9;
 }
 
 .hint-item:hover .delete-btn {
