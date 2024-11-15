@@ -4,10 +4,13 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 
 function Game_board_playing({stompClient,setFirstCreate,
+                                handlSkipVote,
+    setSkip,skipCount,setSkipCount,UserCount,
     quiz,hint,timelimit,
     roomName,
     songIndex,setSongIndex,songCount,
-    answer,answerChat,setAnswerChat
+    answer,answerChat,setAnswerChat,
+    setAnswerUser
 }) {
     const [timeout,setTimeOut] = useState(false);
     const navigate = useNavigate();
@@ -18,6 +21,8 @@ function Game_board_playing({stompClient,setFirstCreate,
     const [originUrl,setOriginUrl] = useState('');
     const ref1 = useRef(null);
     const ref2 = useRef(null);
+
+    const skipRatio = skipCount/UserCount;
 
     const [percentage, setPercentage] = useState(0); // 시간 흐름 표현
     const [progress, setProgress] = useState(-0.2); // 시간 표현 state
@@ -33,14 +38,19 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     const intervalRef1 = useRef(null); // 첫 번째 interval
     const intervalRef2 = useRef(null); // 두 번째 interval
-    const intervalRef3 = useRef(null); // 세 번째 interval
+    const intervalRef3 = useRef(null); // 세 번째
 
     useEffect(() => {
         if(answerChat!==null) {
-            setTimeOut(true);
-            console.log("멸망")
+            setTimeOut(true) ;
         }
     }, [answerChat]);
+
+    useEffect(() => {
+        if(skipRatio>=0.5 && timeout===false && answerChat===null) {
+            setTimeOut(true);
+        }
+    }, [skipRatio,timeout,answerChat]);
 
     useEffect(() => {
         if(whentoend!==null) {
@@ -67,11 +77,18 @@ function Game_board_playing({stompClient,setFirstCreate,
                     setOriginUrl('');
                     setPercentage(0);
                     setProgress(-0.2);
-                    setSongIndex(songIndex+1);
+                    if (intervalRef1.current) {
+                        clearInterval(intervalRef1.current);
+                        intervalRef1.current = null;
+                    }
                     setWhenToEnd(null);
                     setCurrentTime(0);
                     setCurrentHint([]);
                     setIndex(0);
+                    setSkip(false);
+                    setSkipCount(0);
+
+                    setSongIndex(songIndex+1);
                 }
             }, whentoend * 1000); // 초단위로 주어지므로 밀리초로 변환
 
@@ -132,6 +149,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     useEffect(() => {
         if(answerChat !== null) {
             if(timeout === false) {
+                setAnswerUser(answerChat.answerUserName);
                 const videoId_origin = getYouTubeVideoId(originalSongURL);
 
                 if(videoId_origin) {
@@ -156,47 +174,45 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     const duration = convertTimeToSeconds(timelimit);
 
-    // 첫 번째 인터벌: videoUrl이 바뀔 때마다 progress 초기화
     useEffect(() => {
-        setTimeOut(false);
+        // 현재 진행 상태를 초기화
         setProgress(-0.2);
         setPercentage(0);
 
-        const onVideoLoad = () => {
-            if(timeout===false){
+        // onVideoLoad 함수: ref1이 로드되면 실행
+        function onVideoLoad() {
+            if(!intervalRef1.current){
                 intervalRef1.current = setInterval(() => {
                     setProgress((prevProgress) => {
-                        const newProgress = prevProgress + 0.01;
-                        if (newProgress >= duration) {
-                            clearInterval(intervalRef1.current);
-                            setPercentage(100);
-                            setTimeOut(true);
-                            return duration;
-                        } else {
-                            setPercentage((newProgress / duration) * 100);
+                        const newProgress = prevProgress + 0.01; // 1초마다 1씩 증가
+                        if (newProgress <= duration) {
+                            setPercentage((newProgress / duration) * 100); // percentage 계산
                             return newProgress;
+                        } else {
+                            setTimeOut(true);
+                            clearInterval(intervalRef1.current); // duration에 도달하면 interval 종료
+                            return duration; // currentProgress는 duration으로 고정
                         }
                     });
-                }, 10);
+                }, 10); // 1초마다 실행
             }
-        };
+        }
 
+        // ref1이 활성화된 경우에만 onVideoLoad 실행
         if (ref1.current) {
             ref1.current.addEventListener("load", onVideoLoad);
         }
 
-        // 클린업: 컴포넌트 언마운트 시 interval 정리
-        // 컴포넌트 언마운트 시 또는 videoUrl 변경 시 클린업
+        // 클린업 함수: 컴포넌트 언마운트 시 interval 정리
         return () => {
             if (ref1.current) {
                 ref1.current.removeEventListener("load", onVideoLoad);
             }
             if (intervalRef1.current) {
-                clearInterval(intervalRef1.current);
-                intervalRef1.current = null;
+                clearInterval(intervalRef1.current); // interval 종료
             }
         };
-    }, [songIndex]);
+    }, [songIndex, duration]);
 
     // 두 번째 인터벌: timeLeft가 0이 될 때까지 1초마다 감소
     useEffect(() => {
@@ -222,7 +238,7 @@ function Game_board_playing({stompClient,setFirstCreate,
             clearInterval(intervalRef2.current);
             intervalRef2.current=null;
         };
-    }, [songURL]);
+    }, [songIndex]);
 
     // 힌트들을 초로 변환한 배열을 미리 준비
     const hintTimesInSeconds = hint.map(hint => ({
@@ -252,13 +268,12 @@ function Game_board_playing({stompClient,setFirstCreate,
         return () => {
             clearInterval(intervalRef3.current);
         };
-    }, [songURL]);
+    }, [songIndex]);
 
     useEffect(() => {
         // 현재 시간(currentTime)과 힌트의 시간(timeInSeconds)을 비교하여
         // 조건을 만족하는 힌트를 currentHint에 추가
         if ((index < hintTimesInSeconds.length) && (currentTime >= hintTimesInSeconds[index].timeInSeconds)) {
-            console.log(currentTime + " " + hintTimesInSeconds[index].timeInSeconds);
             setCurrentHint(prevHints => [...prevHints, hintTimesInSeconds[index]]);
             setIndex(prevIndex => prevIndex + 1); // 인덱스를 하나씩 증가
         }
@@ -273,7 +288,7 @@ function Game_board_playing({stompClient,setFirstCreate,
             <Button text={"share"} classname={"game_share"}/>
         </div>
         <div className="current_div_total">
-            {songIndex+1} / {songCount} songs
+            {songIndex + 1} / {songCount} songs
         </div>
         {answerChat === null &&
             <div className="remaining_time">
@@ -287,14 +302,14 @@ function Game_board_playing({stompClient,setFirstCreate,
                         {(timeout === false && answerChat === null) ?
                             <iframe
                                 ref={ref1}
-                                className="quiz_playing_frame"
+                                className="quiz_playing_frame_1"
                                 src={videoUrl}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 style={{display: "none"}}
                             /> :
                             <iframe
                                 ref={ref2}
-                                className="quiz_playing_frame"
+                                className="quiz_playing_frame_2"
                                 src={originUrl}
                                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                 style={{display: "none"}}
@@ -318,11 +333,10 @@ function Game_board_playing({stompClient,setFirstCreate,
                                 </div>
                             </div>
                         }
-
                     </div>
                 </div>
             </div>
-            <Button text={"skip!"} classname={"skip"}/>
+            <Button text={`skip!`} classname={"skip"} onClick={handlSkipVote}/>
         </div>
         {timeout === false && answerChat === null &&
             <div className="hint">
@@ -339,6 +353,9 @@ function Game_board_playing({stompClient,setFirstCreate,
                     <span className="correct_bold">정답자</span> : {answerChat.answerUserName}
                 </>
             }
+        </div>
+        <div className="skip_state">
+            {skipCount} / {UserCount} Skip Voted! {skipRatio>=0.5 && <>노래를 생략합니다.</>}
         </div>
     </div>
 }
