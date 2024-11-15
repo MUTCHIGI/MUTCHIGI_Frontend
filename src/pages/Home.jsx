@@ -11,6 +11,7 @@ import {useAuth} from "../components/Login/AuthContext.jsx";
 
 function Home({userInfo,setUserInfo,
     setChatRoomId,setFirstCreate,
+    selectedQuiz,setSelectedQuiz,
               }) {
     let token = useAuth();
     // API를 통해 받아온 방들의 ID 리스트

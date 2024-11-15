@@ -77,6 +77,7 @@ function App() {
                           userInfo={userInfo} setUserInfo={setUserInfo}
                           setChatRoomId={setChatRoomId}
                           setFirstCreate={setFirstCreate}
+                          selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
                       />}/>
                       <Route path="/home/quiz" element={<Quiz_page
                           userInfo={userInfo} setUserInfo={setUserInfo}
