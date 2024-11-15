@@ -66,7 +66,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const [CurrentQuiz, setCurrentQuiz] = useState(null); // 현재 풀고잇는 퀴즈
     const [CurrentHint,setCurrentHint] = useState(null); // 현재 풀고있는 퀴즈의 힌트
 
-    const socket = new SockJS('http://localhost:8080/room'); //소켓
+    const socket = new SockJS(`${import.meta.env.VITE_SERVER_IP}/room`); //소켓
     const client = Stomp.over(socket); //클라이언트
 
     const UserCount = userList.filter(user => user.userId !== -1).length;
@@ -86,13 +86,13 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             try {
                 // 두 fetch 요청을 병렬로 실행
                 const [userListResponse, superUserResponse] = await Promise.all([
-                    fetch(`http://localhost:8080/room/userList?roomId=${chatRoomId}`, {
+                    fetch(`${import.meta.env.VITE_SERVER_IP}/room/userList?roomId=${chatRoomId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
                         },
                     }),
-                    fetch(`http://localhost:8080/room/superUser?roomId=${chatRoomId}`, {
+                    fetch(`${import.meta.env.VITE_SERVER_IP}/room/superUser?roomId=${chatRoomId}`, {
                         method: 'GET',
                         headers: {
                             'Authorization': `Bearer ${token}`,
@@ -151,7 +151,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         };
 
         try {
-            const response = await fetch('http://localhost:8080/room/create', {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -307,7 +307,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         if (qsRelationId!==-1) {
             const fetchAnswer = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8080/song/youtube/${qsRelationId}/answers`, {
+                    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${qsRelationId}/answers`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',
@@ -335,7 +335,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         if (qsRelationId !== -1) {
             const fetchHint = async () => {
                 try {
-                    const response = await fetch(`http://localhost:8080/song/youtube/${qsRelationId}/hint`, {
+                    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${qsRelationId}/hint`, {
                         method: 'GET',
                         headers: {
                             'Content-Type': 'application/json',

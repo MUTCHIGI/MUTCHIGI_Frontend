@@ -72,7 +72,7 @@ function Print_quiz({quizIds,
 
                 // 모든 quizId를 queryString으로 변환하여 요청 URL 구성
                 const queryString = quizIds.map(id => `idList=${id}`).join('&');
-                const response = await fetch(`http://localhost:8080/quiz/Entities?${queryString}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/Entities?${queryString}`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`, // 필요하다면 토큰 포함

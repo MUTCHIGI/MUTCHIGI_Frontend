@@ -17,7 +17,7 @@ function Game_item({room,setChatRoomId,setFirstCreate}) {
     const handleClick = async () => {
         if (room.roomId !== null) {  // room.id가 null이 아닐 때
             try {
-                const response = await fetch(`http://localhost:8080/room/Entities?idList=${room.roomId}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${room.roomId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',

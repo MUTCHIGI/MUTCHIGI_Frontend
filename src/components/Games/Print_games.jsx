@@ -64,7 +64,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate}) {
 
                 // 모든 quizId를 queryString으로 변환하여 요청 URL 구성
                 const queryString = roomIds.map(id => `idList=${id}`).join('&');
-                const response = await fetch(`http://localhost:8080/room/Entities?${queryString}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?${queryString}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json'

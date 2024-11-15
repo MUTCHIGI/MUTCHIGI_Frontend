@@ -48,7 +48,7 @@ function Home({userInfo,setUserInfo,
     useEffect(() => {
         const fetchRoomIds = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/room/idList?page=${currentPage}&offset=${offset}&modId=${selectedOption_type}&typeId=${selectedOption_quiztype}&quizTitle=${quizTitle}&publicRoom=${selectedOption_privacy}`);
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/idList?page=${currentPage}&offset=${offset}&modId=${selectedOption_type}&typeId=${selectedOption_quiztype}&quizTitle=${quizTitle}&publicRoom=${selectedOption_privacy}`);
 
                 if (!response.ok) {
                     throw new Error('Network response was not ok');
