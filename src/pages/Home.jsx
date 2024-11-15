@@ -83,6 +83,8 @@ function Home({userInfo,setUserInfo,
             roomIds={roomIds}
             setChatRoomId={setChatRoomId}
             setFirstCreate={setFirstCreate}
+            selectedQuiz={selectedQuiz}
+            setSelectedQuiz={setSelectedQuiz}
         />
         <Footer
             multiplay={true}
