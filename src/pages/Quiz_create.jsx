@@ -55,7 +55,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     const formData = new FormData();
     formData.append("image", thumbnail); // thumbnail 이미지 파일 추가
 
-    fetch(`http://localhost:8080/quiz/createQuiz/image?quizId=${quizId}`, {
+    fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/createQuiz/image?quizId=${quizId}`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -72,7 +72,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
   }
 
   const postUrl = async (quizIdNumber) => {
-    const response = await fetch(`http://localhost:8080/song/youtube/myPlaylist`, {
+    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/myPlaylist`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -110,7 +110,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       };
     });
 
-    const response = await fetch(`http://localhost:8080/quiz/${quizIdNumber}/hintState`, {
+    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/${quizIdNumber}/hintState`, {
       method: "POST",
       headers: {
         "Accept": "*/*",
@@ -127,7 +127,8 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
 
   const postQuiz = async () => {
-    const response = await fetch("http://localhost:8080/quiz/createQuiz", {
+    console.log(import.meta.env.VITE_SERVER_IP);
+    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/createQuiz`, {
       method: "POST",
       headers: {
         "accept": "*/*",

@@ -26,7 +26,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
     useEffect(() => {
         const fetchHintSetting = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/quiz/${quizId}/hintState`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/${quizId}/hintState`, {
                     method: 'GET',
                     headers: {
                         'Accept': '*/*',
@@ -64,7 +64,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
         const fetchData = async () => {
             try {
                 if (quizId !== -1) {
-                    const response = await fetch(`http://localhost:8080/song/youtube/songList?quizId=${quizId}`, {
+                    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/songList?quizId=${quizId}`, {
                         method: 'GET',
                         headers: {
                             'Accept': '*/*',
@@ -79,9 +79,9 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                         const maxTimeInSeconds = convertToSeconds(item.songTime);
 
                         // Fetch answers
-                        const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/answers`, token);
+                        const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/answers`, token);
                         // Fetch hints
-                        const hints = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/hint`, token);
+                        const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
 
                         return {
                             url: item.playURL,
@@ -139,7 +139,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
             const updatedSelectedItems = await Promise.all(
                 selectedItems.map(async (item) => {
                     const response = await fetch(
-                        `http://localhost:8080/GCP/DemucsSong/SongToQuiz?songIds=${item.songId}&quizId=${quizId}`,
+                        `${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/SongToQuiz?songIds=${item.songId}&quizId=${quizId}`,
                         {
                             method: 'POST',
                             headers: {
@@ -158,7 +158,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
 
                     // 새로운 card 형식으로 반환
                     const maxTimeInSeconds = item.maxTime;
-                    const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${quizSongRelationId}/answers`, token);
+                    const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${quizSongRelationId}/answers`, token);
                     return {
                         url: item.playURL,
                         answers: answers, // answers 초기값으로 빈 배열 설정
@@ -182,7 +182,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
     };
 
     const handleDeleteCard = (index) => {
-        fetch(`http://localhost:8080/song/youtube/${cards[index].quizRelationId}/delSong`, {
+        fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${cards[index].quizRelationId}/delSong`, {
             method: 'DELETE',
             headers: {
                 'Accept': '*/*',
@@ -286,7 +286,7 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, token, openModal, ha
     let navigate = useNavigate();
 
     const nextStep = async () => {
-        fetch(`http://localhost:8080/quiz/setReady/${quizId}`, {
+        fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/setReady/${quizId}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -437,7 +437,7 @@ function SearchPreProcessSong({ selectedItems, setSelectedItems, token, instrume
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`http://localhost:8080/GCP/DemucsSong/List?page=${currentPage}&offset=12&songTitle=${encodeURIComponent(title)}`, {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/List?page=${currentPage}&offset=12&songTitle=${encodeURIComponent(title)}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -546,7 +546,7 @@ function MusicSeparation({ token, onNavigateBack }) {
         if (url.trim() === '') return;
 
         try {
-            const response = await fetch(`http://localhost:8080/GCP/publish?youtubeURL=${encodeURIComponent(url)}`, {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -569,7 +569,7 @@ function MusicSeparation({ token, onNavigateBack }) {
     // Function to fetch the list of songs being processed
     const fetchProcessingSongs = async () => {
         try {
-            const response = await fetch('http://localhost:8080/GCP/DemucsSong/myOrderList', {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/myOrderList`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Accept': '*/*',

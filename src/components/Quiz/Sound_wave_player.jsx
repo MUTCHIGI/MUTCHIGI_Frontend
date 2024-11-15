@@ -44,7 +44,7 @@ function SoundWavePlayer({ songId, onClose, token }) {
       });
 
       // Fetch and load audio
-      fetch(`http://localhost:8080/GCP/DemucsSong/play?songId=${songId}&instrumentId=${instrumentId}`, {
+      fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/play?songId=${songId}&instrumentId=${instrumentId}`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,

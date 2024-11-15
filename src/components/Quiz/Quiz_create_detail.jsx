@@ -277,7 +277,7 @@ const MusicPlayer = ({ startTime, instrumentId, card }) => {
       setIsPlaying(true);
     } else if (instrumentId !== 0) {
       try {
-        const response = await fetch(`http://localhost:8080/GCP/DemucsSong/play?songId=${card.songId}&instrumentId=${instrumentId}`, {
+        const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/play?songId=${card.songId}&instrumentId=${instrumentId}`, {
           method: 'GET',
           headers: {
             'accept': '*/*'
@@ -388,7 +388,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
 
     try {
       // 1. Start time setting API
-      const startTimeResponse = await fetch(`http://localhost:8080/song/youtube/${card.quizRelationId}/startTime`, {
+      const startTimeResponse = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${card.quizRelationId}/startTime`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
@@ -406,7 +406,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
       }
 
       // 2. Hint setting API
-      const hintResponse = await fetch(`http://localhost:8080/song/youtube/${card.quizRelationId}/hint`, {
+      const hintResponse = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${card.quizRelationId}/hint`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
@@ -420,7 +420,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
       }
 
       // 3. Answer setting API
-      const answerResponse = await fetch(`http://localhost:8080/song/youtube/${card.quizRelationId}/answers`, {
+      const answerResponse = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${card.quizRelationId}/answers`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
