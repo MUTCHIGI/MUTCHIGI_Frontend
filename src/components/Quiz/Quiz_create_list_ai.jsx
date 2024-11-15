@@ -236,6 +236,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                     cards={cards}
                     isModalOpen={isModalOpen}
                     isLoading={isLoading}
+                    hintSetting={hintSetting}
                     token={token}
                     openModal={openModal}
                     handleDeleteCard={handleDeleteCard}
@@ -282,10 +283,22 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
     );
 };
 
-function MusicList({ quizId, cards, isModalOpen, isLoading, token, openModal, handleDeleteCard, onNavigate }) {
+function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, token, openModal, handleDeleteCard, onNavigate }) {
     let navigate = useNavigate();
 
     const nextStep = async () => {
+        const hasInvalidHints = cards.some((card) => {
+            return (
+                card.hints.length < hintSetting.length || // Not enough hints
+                card.hints.some((hint) => hint.trim() === '') // Empty hint string
+            );
+        });
+    
+        if (hasInvalidHints) {
+            alert("힌트를 설정하지 않은 항목이 있습니다");
+            return; // Prevent the request from being sent
+        }
+
         fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/setReady/${quizId}`, {
             method: "POST",
             headers: {
