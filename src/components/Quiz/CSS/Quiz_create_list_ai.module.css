@@ -266,6 +266,9 @@ textarea {
 
 .complete-button {
   /* position: absolute; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
   margin-top: calc(60 / 1080 * var(--root--height));
   width: calc(600 / 1920 * var(--root--width));
   height: calc(100 / 1080 * var(--root--height));

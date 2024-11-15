@@ -114,11 +114,28 @@
   top: calc(120 / 1080 * var(--root--height));
 }
 
+
+.instrument-text {
+  /* 재생 */
+  position: relative;
+  display: flex;
+  width: calc(80 / 1920 * var(--root--width));
+  height: calc(40 / 1080 * var(--root--height));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+}
+
 .waveform {
   position: relative;
-  width: calc(700 / 1920 * var(--root--width));
-  height: 80px;
-  margin: 10px 0;
+  width: calc(650 / 1920 * var(--root--width));
+  height: calc(80 / 1080 * var(--root--height));
+  margin: calc(15 / 1080 * var(--root--height)) 0;
   left: calc(20 / 1920 * var(--root--width));
   background-color: transparent;
   position: relative;

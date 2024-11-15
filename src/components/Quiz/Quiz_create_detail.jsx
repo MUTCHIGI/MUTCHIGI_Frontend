@@ -1,20 +1,58 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import styles from './CSS/Quiz_create_detail.module.css'
+import playButton from '../../img/music_play_button.svg'
+import pauseButton from '../../img/music_pause_button.svg'
 
 const AnswerInput = ({ answers, onUpdateAnswers }) => {
-  const [answer, setAnswer] = useState('');
+  const [currentInputValue, setCurrentInputValue] = useState('');
+  const [currentEditValue, setCurrentEditValue] = useState('');
+  const [editingIndex, setEditingIndex] = useState(null);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && answer.trim() !== '') {
-      const newAnswers = [...answers, answer.trim()];
+  const handleEditClick = (index) => {
+    setEditingIndex(index);
+    setCurrentEditValue(answers[index]);
+  };
+
+  const handleEditChange = (e) => {
+    setCurrentEditValue(e.target.value);
+  };
+
+  const handleInputChange = (e) => {
+    setCurrentInputValue(e.target.value);
+  };
+
+  const handleEditKeyDown = (e, index) => {
+    if (e.key === 'Enter' && currentEditValue.trim() !== '') {
+      const newAnswers = answers.map((ans, i) =>
+        i === index ? currentEditValue.trim() : ans
+      );
       onUpdateAnswers(newAnswers);
-      setAnswer('');
+      setEditingIndex(null); // Edit mode 종료
+      setCurrentEditValue('');
+    }
+  };
+
+  const handleEndEdit = (index) => {
+    if (currentEditValue.trim() !== '') {
+      const newAnswers = answers.map((ans, i) =>
+        i === index ? currentEditValue.trim() : ans
+      );
+      onUpdateAnswers(newAnswers);
+      setEditingIndex(null); // Edit mode 종료
+      setCurrentEditValue('');
     }
   };
 
   const handleDelete = (index) => {
     const newAnswers = answers.filter((_, i) => i !== index);
     onUpdateAnswers(newAnswers);
+  };
+
+  const handleAddAnswer = (e) => {
+    if (e.key === 'Enter' && currentInputValue.trim() !== '') {
+      onUpdateAnswers([...answers, currentInputValue.trim()]);
+      setCurrentInputValue('');
+    }
   };
 
   return (
@@ -25,18 +63,48 @@ const AnswerInput = ({ answers, onUpdateAnswers }) => {
           className={styles['input-square-border']}
           type="text"
           placeholder=""
-          value={answer}
-          onChange={(e) => setAnswer(e.target.value)}
-          onKeyDown={handleKeyDown}
+          value={currentInputValue}
+          onChange={handleInputChange}
+          onKeyDown={(e) => handleAddAnswer(e)}
         />
       </div>
       <div className={styles["answer-list"]}>
         {answers.map((ans, index) => (
           <div key={index} className={styles["answer-item"]}>
-            <span>{ans}</span>
-            <button className={styles["delete-btn"]} onClick={() => handleDelete(index)}>
-              X
-            </button>
+            {editingIndex === index ? (
+              <div className={styles['answer-edit']}>
+                <input
+                  type="text"
+                  value={currentEditValue}
+                  onChange={handleEditChange}
+                  onKeyDown={(e) => handleEditKeyDown(e, index)}
+                  className={styles['answer-edit-input']}
+                  autoFocus
+                />
+                <button
+                  className={styles["check-btn"]}
+                  onClick={() => handleEndEdit(index)}
+                >
+                  ✓
+                </button>
+              </div>
+            ) : (
+              <>
+                <span>{ans}</span>
+                <button
+                  className={styles["edit-btn"]}
+                  onClick={() => handleEditClick(index)}
+                >
+                  ✎
+                </button>
+                <button
+                  className={styles["delete-btn"]}
+                  onClick={() => handleDelete(index)}
+                >
+                  X
+                </button>
+              </>
+            )}
           </div>
         ))}
       </div>
@@ -44,18 +112,14 @@ const AnswerInput = ({ answers, onUpdateAnswers }) => {
   );
 };
 
-const HintInput = ({ hints, onUpdateHints, maxHintNum }) => {
-  const [hint, setHint] = useState('');
+const HintInput = ({ hints, onUpdateHints, maxHintNum, hintSetting }) => {
+  const [localHints, setLocalHints] = useState(hints);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && hint.trim() !== '') {
-      if (hints.length >= maxHintNum) {
-        return;
-      }
-      const newHints = [...hints, hint.trim()];
-      onUpdateHints(newHints);
-      setHint('');
-    }
+  const handleInputChange = (e, index) => {
+    const newHints = [...localHints];
+    newHints[index] = e.target.value;
+    setLocalHints(newHints);
+    onUpdateHints(newHints);
   };
 
   const handleDelete = (index) => {
@@ -67,22 +131,17 @@ const HintInput = ({ hints, onUpdateHints, maxHintNum }) => {
     <div className={styles["hint-container"]}>
       <div className={styles["input-row"]}>
         <div className={styles["seting-label"]}>힌트</div>
-        <input
-          type="text"
-          placeholder=""
-          className={styles['input-square-white']}
-          value={hint}
-          onChange={(e) => setHint(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
       </div>
       <div className={styles["hint-list"]}>
-        {hints.map((ans, index) => (
+        {Array.from({ length: maxHintNum }).map((_, index) => (
           <div key={index} className={styles["hint-item"]}>
-            <span>{ans}</span>
-            <button className={styles["delete-btn"]} onClick={() => handleDelete(index)}>
-              X
-            </button>
+            <span className={styles['hint-type']}>{hintSetting[index].text}</span>
+            <input
+              type="text"
+              value={localHints[index] || ''}
+              onChange={(e) => handleInputChange(e, index)}
+              className={styles['input-square-white']}
+            />
           </div>
         ))}
       </div>
@@ -156,8 +215,136 @@ const TimeAdjuster = ({ startTime, onUpdateTime, maxTime }) => {
   );
 };
 
+const MusicPlayer = ({ startTime, instrumentId, card }) => {
+  const audioRef = useRef(null);
+  const playerRef = useRef(null);
+  const [audioUrl, setAudioUrl] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [playerReady, setPlayerReady] = useState(false);
+
+  useEffect(() => {
+    if (instrumentId === 0 && window.YT) {
+      loadYouTubePlayer();
+    } else if (instrumentId === 0) {
+      const tag = document.createElement('script');
+      tag.src = 'https://www.youtube.com/iframe_api';
+      const firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+      window.onYouTubeIframeAPIReady = () => {
+        loadYouTubePlayer();
+      };
+    }
+
+    // Cleanup function
+    return () => {
+      if (playerRef.current && instrumentId === 0) {
+        playerRef.current.destroy();
+      }
+    };
+  }, [instrumentId]);
+
+  const loadYouTubePlayer = () => {
+    const videoId = card.quizUrl.split('v=')[1];
+    playerRef.current = new window.YT.Player('youtube-player', {
+      videoId: videoId,
+      events: {
+        onReady: (event) => {
+          // 플레이어가 준비되었을 때 시작 시간만 설정하고 재생은 하지 않음
+          setPlayerReady(true);
+          if (startTime > 0) {
+            event.target.cueVideoById({
+              videoId: videoId,
+              startSeconds: startTime
+            });
+          }
+        },
+      },
+      playerVars: {
+        autoplay: 0, // 자동 재생 비활성화
+        controls: 0,
+        start: startTime,
+        mute: 0,
+        playsinline: 1
+      }
+    });
+  };
+
+  const handlePlay = async () => {
+    if (instrumentId === 0 && playerRef.current && playerReady) {
+      playerRef.current.seekTo(startTime);
+      playerRef.current.playVideo();
+      setIsPlaying(true);
+    } else if (instrumentId !== 0) {
+      try {
+        const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/play?songId=${card.songId}&instrumentId=${instrumentId}`, {
+          method: 'GET',
+          headers: {
+            'accept': '*/*'
+          }
+        });
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = URL.createObjectURL(blob);
+          setAudioUrl(url);
+          setIsPlaying(true);
+        } else {
+          console.error('Failed to fetch audio file');
+        }
+      } catch (error) {
+        console.error('Error fetching audio file:', error);
+      }
+    }
+  };
+
+  const handleAudioPlay = () => {
+    if (audioRef.current) {
+      audioRef.current.currentTime = startTime;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (instrumentId === 0 && playerRef.current && playerReady) {
+      playerRef.current.pauseVideo();
+      setIsPlaying(false);
+    } else if (audioRef.current) {
+      audioRef.current.pause();
+      setIsPlaying(false);
+    }
+  };
+
+  return (
+    <div className={styles['music-play-container']}>
+      <label className={styles["seting-label"]}>미리 듣기</label>
+      {instrumentId === 0 && (
+        <div id="youtube-player" style={{ display: 'none' }}></div>
+      )}
+      {instrumentId !== 0 && audioUrl && (
+        <audio ref={audioRef} src={audioUrl} />
+      )}
+      <button 
+        className={styles['card-play-btn']} 
+        onClick={isPlaying ? handlePause : handlePlay}
+        disabled={instrumentId === 0 && !playerReady}
+      >
+        {isPlaying ? (
+          <img src={pauseButton} alt="Pause" className={styles['icon-img']} />
+        ) : (
+          <img src={playButton} alt="Play" className={styles['icon-img']} />
+        )}
+      </button>
+      {audioUrl && !isPlaying && instrumentId !== 0 && (
+        <button onClick={handleAudioPlay}>Start from {startTime}s</button>
+      )}
+    </div>
+  );
+};
+
+
 const QuizCreateDetail = ({ info, handlers }) => {
-  const { card, hintSetting, token } = info;
+  const { card, hintSetting, token, instrumentId } = info;
   const { setIsModalOpen, setSelectedCardIndex, handleUpdateAnswers, handleUpdateHints, handleUpdateStartTime } = handlers;
 
   // temporary answers, hints, time until "complete" button click
@@ -177,6 +364,11 @@ const QuizCreateDetail = ({ info, handlers }) => {
       return;
     }
 
+    if (localAnswers.length === 0) {
+      alert("Answer는 최소 1개 이상 필요합니다.");
+      return;
+    }
+
     // Start time
     const hours = Math.floor(localTime / 3600);
     const minutes = Math.floor((localTime % 3600) / 60);
@@ -188,9 +380,15 @@ const QuizCreateDetail = ({ info, handlers }) => {
       hintText: localHints[index] || "" // Use localHints[index] or an empty string if unavailable
     }));
 
+    const hasEmptyHint = hintDTOList.some(hint => hint.hintText === "");
+    if (hasEmptyHint) {
+      alert("모든 힌트는 비어 있을 수 없습니다.");
+      return;
+    }
+
     try {
       // 1. Start time setting API
-      const startTimeResponse = await fetch(`http://localhost:8080/song/youtube/${card.quizRelationId}/startTime`, {
+      const startTimeResponse = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${card.quizRelationId}/startTime`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
@@ -208,7 +406,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
       }
 
       // 2. Hint setting API
-      const hintResponse = await fetch(`http://localhost:8080/song/youtube/${card.quizRelationId}/hint`, {
+      const hintResponse = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${card.quizRelationId}/hint`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
@@ -222,7 +420,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
       }
 
       // 3. Answer setting API
-      const answerResponse = await fetch(`http://localhost:8080/song/youtube/${card.quizRelationId}/answers`, {
+      const answerResponse = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${card.quizRelationId}/answers`, {
         method: 'POST',
         headers: {
           'Accept': '*/*',
@@ -251,10 +449,11 @@ const QuizCreateDetail = ({ info, handlers }) => {
       <div className={styles["modal-content"]} onClick={(e) => e.stopPropagation()}>
         <div className={styles["quiz-seting-left"]}>
           <AnswerInput answers={localAnswers} onUpdateAnswers={setLocalAnswers} />
-          <HintInput hints={localHints} onUpdateHints={setLocalHints} maxHintNum={hintSetting.length} />
+          <HintInput hints={localHints} onUpdateHints={setLocalHints} maxHintNum={hintSetting.length} hintSetting={hintSetting} />
         </div>
         <div className={styles['quiz-seting-right']}>
           <TimeAdjuster startTime={localTime} onUpdateTime={setLocalTime} maxTime={card.maxTime} />
+          <MusicPlayer startTime={localTime} instrumentId={instrumentId} card={card} />
         </div>
         <div className={styles["btn-container"]}>
           <button
