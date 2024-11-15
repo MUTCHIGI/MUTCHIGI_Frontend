@@ -9,7 +9,7 @@ import Profile_logout_floating from "./Profile_logout_floating.jsx";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Login/AuthContext.jsx";
 
-function Header_top({userInfo,setUserInfo}) {
+function Header_top({userInfo,setUserInfo,setFirstCreate}) {
     const {token,setToken} = useAuth();
 
     const handleLogin = () => {
@@ -54,6 +54,7 @@ function Header_top({userInfo,setUserInfo}) {
                 className="logo"
                 src={Logo}
                 onClick={() => {
+                    setFirstCreate(true);
                     navigator('/home');
                     window.location.reload();
                 }}

@@ -16,7 +16,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     userInfo,
     firstCreate,setFirstCreate,
 }) {
-
     let {token} = useAuth();
     let [qsRelationId,setQsRelationId] = useState(-1);
     const [userList, setUserList] = useState(
@@ -37,10 +36,35 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const [timeLimit,setTimeLimit] = useState(0);
     const [gameStart,setGameStart] = useState(false);
     const [songIndex,setSongIndex] = useState(-1);
+    const [answer,setAnswer] = useState(null);
+
+    const [skip,setSkip] = useState(false);
+    const [skipCount,setSkipCount] = useState(0);
+
+    const [answerChat,setAnswerChat] = useState(null);
+
+    const [AnswerUser,setAnswerUser] = useState("");
+    const [answerCount, setAnswerCount] = useState({});
+
+    useEffect(() => {
+        // AnswerUser가 변할 때마다 실행되는 로직
+        if (AnswerUser) {
+            setAnswerCount((prevCount) => {
+                // prevCount에서 AnswerUser 키값에 해당하는 값 가져오고 없으면 0으로 시작
+                const newCount = prevCount[AnswerUser] ? prevCount[AnswerUser] + 1 : 1;
+
+                // 새로 업데이트된 값 반환
+                return {
+                    ...prevCount,
+                    [AnswerUser]: newCount
+                };
+            });
+        }
+    }, [AnswerUser]); // AnswerUser가 변할 때마다 실행됨
+
 
     const [CurrentQuiz, setCurrentQuiz] = useState(null); // 현재 풀고잇는 퀴즈
     const [CurrentHint,setCurrentHint] = useState(null); // 현재 풀고있는 퀴즈의 힌트
-    const [isSubscribed, setIsSubscribed] = useState(false); // topic/song/songIndex에 구독되어있는지
 
     const socket = new SockJS('http://localhost:8080/room'); //소켓
     const client = Stomp.over(socket); //클라이언트
@@ -113,7 +137,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         }
     }, [chatMessages, token, chatRoomId]);
 
-    // 방 생성 처리 < 이거 ingame으로 옮기기
+    // 방 생성 처리
     const handleCreateRoom = async () => {
         let isPublic = privacy === 'public';
         const roomData = {
@@ -139,7 +163,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (response.ok) {
                 const data = await response.json();
                 setChatRoomId(data); // ChatRoomId state에 만들어진 방 id 저장
-                console.log(data)
                 connectToRoom(data);
             } else {
                 console.error('Error creating room:', response.statusText);
@@ -190,15 +213,20 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                 JSON.stringify({}) // 메시지 본문이 필요 없으므로 빈 객체
             );
         });
-        setIsSubscribed(true);
-        stompClient.subscribe('/topic/vote/' + roomId);
+        stompClient.subscribe('/topic/vote/' + roomId, (message) => {
+            const received_skipCount = JSON.parse(message.body);
+            console.log(received_skipCount)
+            setSkipCount(received_skipCount.voteNum);
+        });
 
         stompClient.subscribe('/topic/hint/' + roomId, (message) => {
             const received_Hint = JSON.parse(message.body);
             setCurrentHint(received_Hint);
-            console.log(received_Hint)
         });
-        stompClient.subscribe('/topic/correct/' + roomId);
+        stompClient.subscribe('/topic/correct/' + roomId, (message) => {
+            const received_answerChat = JSON.parse(message.body);
+            setAnswerChat(received_answerChat);
+        });
         stompClient.subscribe('/topic/kick/' + roomId);
         stompClient.subscribe('/topic/superUser/' + roomId);
 
@@ -235,6 +263,24 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         setMessageText(''); // 메시지 전송 후 입력 필드 초기화
     };
 
+    // 메시지를 보내는 함수
+    const handleSkipVote = () => {
+        if (!skip) {
+            // skip 상태를 true로 변경
+            setSkip(true);
+            const sendVoteData = {
+                voteNum: skipCount,
+            }
+
+            clientRef.current.send(`/app/skipVote/${chatRoomId}`,{}, JSON.stringify(sendVoteData))
+        }
+    };
+
+    useEffect(() => {
+        setSkip(false);
+    }, [qsRelationId]);
+
+    // 현재 index 퀴즈 불러오기
     useEffect(() => {
         if (songIndex !== null && clientRef.current && clientRef.current.connected) {
             // songIndex가 변경될 때마다 웹소켓을 통해 메시지를 보냄
@@ -256,12 +302,68 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
 
     const chatListRef = useRef(null); // chat_list div를 참조하는 Ref
 
+    // 정답 호출
+    useEffect(() => {
+        if (qsRelationId!==-1) {
+            const fetchAnswer = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8080/song/youtube/${qsRelationId}/answers`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+
+                    const data = await response.json();
+                    setAnswer(data); // 응답 데이터를 answer state에 저장
+                } catch (error) {
+                    console.error("Error fetching answer:", error);
+                }
+            };
+            fetchAnswer();
+        }
+    }, [qsRelationId]);
+
+    // 힌트 호출
+    useEffect(() => {
+        // qsRelationId가 -1이 아니면 GET 요청을 보냄
+        if (qsRelationId !== -1) {
+            const fetchHint = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8080/song/youtube/${qsRelationId}/hint`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.ok) {
+                        const hintData = await response.json();
+                        setCurrentHint(hintData); // currentHint state에 데이터 저장
+                    } else {
+                        console.error('Hint 요청 실패:', response.status);
+                    }
+                } catch (error) {
+                    console.error('오류 발생:', error);
+                }
+            };
+            fetchHint();
+        }
+    }, [qsRelationId]); // qsRelationId가 변경될 때마다 실행
+
     useEffect(() => {
         if (chatListRef.current) {
             // chat_list div가 존재하면 스크롤을 맨 아래로 이동
             chatListRef.current.scrollTop = chatListRef.current.scrollHeight;
         }
     }, [chatMessages]); // chatMessages가 변경될 때마다 실행
+
+
 
     return <div className="Ingame">
         <div className="left">
@@ -281,8 +383,22 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                     <Game_board_playing
                         stompClient={client}
                         setFirstCreate={setFirstCreate}
+                        chatRoomId={chatRoomId}
+                        setSkip={setSkip}
+                        skipCount={skipCount} setSkipCount={setSkipCount}
+                        UserCount={UserCount}
+                        handlSkipVote={handleSkipVote}
                         quiz={CurrentQuiz}
                         hint={CurrentHint}
+                        timelimit={quiz.songPlayTime}
+                        roomName={roomName}
+                        songIndex={songIndex}
+                        setSongIndex={setSongIndex}
+                        songCount={quiz.songCount}
+                        answer={answer}
+                        answerChat={answerChat}
+                        setAnswerChat={setAnswerChat}
+                        setAnswerUser={setAnswerUser}
                     />
                 }
             </div>
@@ -304,32 +420,72 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                 <div className="user_score_left">
                     <div className="left_box">
                         <div className="name">
-                            <span style={{color: 'red'}}>username1</span> : 0
+                            {userList[0].userId !== -1
+                            &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[0].name}</span> : {answerCount[userList[0].name]}
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'orange'}}>username2</span> : 0
+                            {userList[1].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[1].name}</span> : {answerCount[userList[1].name]}
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'yellow'}}>username3</span> : 0
+                            {userList[2].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[2].name}</span> : {answerCount[userList[2].name]}
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'lightgreen'}}>username4</span> : 0
+                            {userList[3].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[3].name}</span> : {answerCount[userList[3].name]}
+                                </>
+                            }
                         </div>
                     </div>
                 </div>
                 <div className="user_score_right">
                     <div className="right_box">
                         <div className="name">
-                            <span style={{color: 'lightblue'}}>username5</span> : 0
+                            {userList[4].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[4].name}</span> : {answerCount[userList[4].name]}
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'magenta'}}>username6</span> : 0
+                            {userList[5].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[5].name}</span> : {answerCount[userList[5].name]}
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'mediumpurple'}}>username7</span> : 0
+                            {userList[6].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[6].name}</span> : {answerCount[userList[6].name]}
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'ivory'}}>username8</span> : 0
+                            {userList[7].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[7].name}</span> : {answerCount[userList[7].name]}
+                                </>
+                            }
                         </div>
                     </div>
                 </div>
