@@ -66,7 +66,7 @@ function Home({userInfo,setUserInfo,
 
 
     return <div>
-        <Header_top userInfo={userInfo} setUserInfo={setUserInfo}/>
+        <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate}/>
         <Header_bottom/>
         <SearchBar
             multiplay={true}

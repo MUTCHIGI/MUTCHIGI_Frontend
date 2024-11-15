@@ -4,7 +4,7 @@ import Home from "./pages/Home.jsx";
 import { createContext, useContext, useEffect, useState } from "react";
 import Quiz_page from "./pages/Quiz_page.jsx";
 import Footer from "./components/Public/Footer.jsx";
-import Ingame from "./components/InGame/Ingame.jsx";
+import Ingame from "./pages/Ingame.jsx";
 import { AuthProvider, useAuth } from "./components/Login/AuthContext.jsx";
 import { Route, Routes } from "react-router-dom";
 import Quiz_create from "./pages/Quiz_create.jsx";
@@ -93,6 +93,7 @@ function App() {
                           userInfo={userInfo} setUserInfo={setUserInfo}
                           playlistUrl={playListUrl} setPlayListUrl={setPlayListUrl}
                           customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
+                          setFirstCreate={setFirstCreate}
                       />}/>
                        <Route path="/home/quiz_create" element={<Quiz_create
                             userInfo={userInfo} setUserInfo={setUserInfo}

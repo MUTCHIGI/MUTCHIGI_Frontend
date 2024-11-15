@@ -16,7 +16,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     userInfo,
     firstCreate,setFirstCreate,
 }) {
-
     let {token} = useAuth();
     let [qsRelationId,setQsRelationId] = useState(-1);
     const [userList, setUserList] = useState(
@@ -37,10 +36,12 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const [timeLimit,setTimeLimit] = useState(0);
     const [gameStart,setGameStart] = useState(false);
     const [songIndex,setSongIndex] = useState(-1);
+    const [answer,setAnswer] = useState(null);
+
+    const [answerChat,setAnswerChat] = useState(null);
 
     const [CurrentQuiz, setCurrentQuiz] = useState(null); // 현재 풀고잇는 퀴즈
     const [CurrentHint,setCurrentHint] = useState(null); // 현재 풀고있는 퀴즈의 힌트
-    const [isSubscribed, setIsSubscribed] = useState(false); // topic/song/songIndex에 구독되어있는지
 
     const socket = new SockJS('http://localhost:8080/room'); //소켓
     const client = Stomp.over(socket); //클라이언트
@@ -139,7 +140,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (response.ok) {
                 const data = await response.json();
                 setChatRoomId(data); // ChatRoomId state에 만들어진 방 id 저장
-                console.log(data)
                 connectToRoom(data);
             } else {
                 console.error('Error creating room:', response.statusText);
@@ -190,15 +190,16 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                 JSON.stringify({}) // 메시지 본문이 필요 없으므로 빈 객체
             );
         });
-        setIsSubscribed(true);
         stompClient.subscribe('/topic/vote/' + roomId);
 
         stompClient.subscribe('/topic/hint/' + roomId, (message) => {
             const received_Hint = JSON.parse(message.body);
             setCurrentHint(received_Hint);
-            console.log(received_Hint)
         });
-        stompClient.subscribe('/topic/correct/' + roomId);
+        stompClient.subscribe('/topic/correct/' + roomId, (message) => {
+            const received_answerChat = JSON.parse(message.body);
+            setAnswerChat(received_answerChat);
+        });
         stompClient.subscribe('/topic/kick/' + roomId);
         stompClient.subscribe('/topic/superUser/' + roomId);
 
@@ -235,6 +236,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         setMessageText(''); // 메시지 전송 후 입력 필드 초기화
     };
 
+    // 현재 index 퀴즈 불러오기
     useEffect(() => {
         if (songIndex !== null && clientRef.current && clientRef.current.connected) {
             // songIndex가 변경될 때마다 웹소켓을 통해 메시지를 보냄
@@ -255,6 +257,60 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     };
 
     const chatListRef = useRef(null); // chat_list div를 참조하는 Ref
+
+    // 정답 호출
+    useEffect(() => {
+        if (qsRelationId!==-1) {
+            const fetchAnswer = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8080/song/youtube/${qsRelationId}/answers`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+
+                    const data = await response.json();
+                    setAnswer(data); // 응답 데이터를 answer state에 저장
+                } catch (error) {
+                    console.error("Error fetching answer:", error);
+                }
+            };
+            fetchAnswer();
+        }
+    }, [qsRelationId]);
+
+    // 힌트 호출
+    useEffect(() => {
+        // qsRelationId가 -1이 아니면 GET 요청을 보냄
+        if (qsRelationId !== -1) {
+            const fetchHint = async () => {
+                try {
+                    const response = await fetch(`http://localhost:8080/song/youtube/${qsRelationId}/hint`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    if (response.ok) {
+                        const hintData = await response.json();
+                        setCurrentHint(hintData); // currentHint state에 데이터 저장
+                    } else {
+                        console.error('Hint 요청 실패:', response.status);
+                    }
+                } catch (error) {
+                    console.error('오류 발생:', error);
+                }
+            };
+            fetchHint();
+        }
+    }, [qsRelationId]); // qsRelationId가 변경될 때마다 실행
 
     useEffect(() => {
         if (chatListRef.current) {
@@ -283,6 +339,14 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                         setFirstCreate={setFirstCreate}
                         quiz={CurrentQuiz}
                         hint={CurrentHint}
+                        timelimit={quiz.songPlayTime}
+                        roomName={roomName}
+                        songIndex={songIndex}
+                        setSongIndex={setSongIndex}
+                        songCount={quiz.songCount}
+                        answer={answer}
+                        answerChat={answerChat}
+                        setAnswerChat={setAnswerChat}
                     />
                 }
             </div>
@@ -304,32 +368,72 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                 <div className="user_score_left">
                     <div className="left_box">
                         <div className="name">
-                            <span style={{color: 'red'}}>username1</span> : 0
+                            {userList[0].userId !== -1
+                            &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[0].name}</span> : 0
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'orange'}}>username2</span> : 0
+                            {userList[1].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[1].name}</span> : 0
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'yellow'}}>username3</span> : 0
+                            {userList[2].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[2].name}</span> : 0
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'lightgreen'}}>username4</span> : 0
+                            {userList[3].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[3].name}</span> : 0
+                                </>
+                            }
                         </div>
                     </div>
                 </div>
                 <div className="user_score_right">
                     <div className="right_box">
                         <div className="name">
-                            <span style={{color: 'lightblue'}}>username5</span> : 0
+                            {userList[4].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[4].name}</span> : 0
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'magenta'}}>username6</span> : 0
+                            {userList[5].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[5].name}</span> : 0
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'mediumpurple'}}>username7</span> : 0
+                            {userList[6].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[6].name}</span> : 0
+                                </>
+                            }
                         </div>
                         <div className="name">
-                            <span style={{color: 'ivory'}}>username8</span> : 0
+                            {userList[7].userId !== -1
+                                &&
+                                <>
+                                    <span style={{color: 'red'}}>{userList[7].name}</span> : 0
+                                </>
+                            }
                         </div>
                     </div>
                 </div>

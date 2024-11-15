@@ -5,12 +5,13 @@ import Playlist from "../components/Quiz/Playlist.jsx";
 function Quiz_page_Playlist({
                                 playlistUrl,setPlayListUrl,
     userInfo,setUserInfo,
-    customOrplaylist,setCustomOrPlaylist
+    customOrplaylist,setCustomOrPlaylist,
+    setFirstCreate
 }) {
 
 
     return <div>
-        <Header_top userInfo={userInfo} setUserInfo={setUserInfo}/>
+        <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate}/>
         <Header_bottom
             quiz={false}
         />

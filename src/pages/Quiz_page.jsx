@@ -93,7 +93,7 @@ function Quiz_page({
     }, [token]);
 
     return <div>
-        <Header_top userInfo={userInfo} setUserInfo={setUserInfo}/>
+        <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate}/>
         <Header_bottom
             quiz={true}
             customOrplaylist={customOrplaylist}

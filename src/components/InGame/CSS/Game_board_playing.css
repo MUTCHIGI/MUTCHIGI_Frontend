@@ -69,12 +69,22 @@
 }
 
 .current_answer {
-    display: flex;
-
-    justify-content: center;
-    align-items: center;
-
     font-size: calc(20px*var(--root--font--ratio));
+}
+
+.answer_top {
+    text-align: center;
+    width: 100%;
+}
+
+.get_next {
+    text-align: center;
+
+    margin-top: calc(var(--root--height)*0.01);
+
+    font-style: italic;
+    font-weight: lighter;
+    font-size: calc(14px*var(--root--font--ratio));
 }
 
 .ans {
@@ -134,4 +144,22 @@
 
 .correct_bold {
     font-weight: bold;
+}
+
+.play_bar_time_outer {
+    width: calc(var(--root--width)*0.25520833333333333333333333333333);
+    height: calc(var(--root--height)*0.05555555555555555555555555555556);
+
+    background-color: #002520;
+
+    border-radius: 20px;
+}
+
+.play_bar_time_inner {
+    height: 100%;
+
+    background-color: #00FFD9;
+    opacity: 0.6;
+
+    border-radius: 20px;
 }
