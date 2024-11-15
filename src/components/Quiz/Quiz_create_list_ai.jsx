@@ -22,6 +22,8 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
     // song search page info
     const [currentPage, setCurrentPage] = useState(1);
     const [inputValue, setInputValue] = useState(currentPage);
+    // api info
+    const [orderCount, setOrderCount] = useState(0);
 
     useEffect(() => {
         const fetchHintSetting = async () => {
@@ -109,6 +111,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
         setIsLoading(true);
         fetchHintSetting();
         fetchData();
+        getOrderCount();
         setIsLoading(false);
     }, [quizId, token]);
 
@@ -133,6 +136,17 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
         }
         return response.json();
     };
+
+    const getOrderCount = async () => {
+        try {
+            const response = fetchGetApi('http://localhost:8080/GCP/userDemcusCount', token);
+            const data = await response.json();
+            setOrderCount(data.orderCount);
+        } catch (error) {
+            console.error("Error fetching current count:", error);
+        }
+    };
+
 
     const confirmCandidate = async () => {
         try {
@@ -263,8 +277,9 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
             )}
             {currentScreen === 4 && (
                 <MusicSeparation
+                    orderCount={orderCount}
                     token={token}
-                    quizId={quizId}
+                    setOrderCount={setOrderCount}
                     onNavigateBack={() => switchScreen(3)}
                 />
             )}
@@ -550,14 +565,19 @@ function SearchPreProcessSong({ selectedItems, setSelectedItems, token, instrume
     );
 }
 
-function MusicSeparation({ token, onNavigateBack }) {
+function MusicSeparation({ orderCount, token, setOrderCount, onNavigateBack }) {
     const [cards, setCards] = useState([]);
     const [url, setUrl] = useState('');
 
     // Function to initiate song conversion
     const handleSearch = async () => {
         if (url.trim() === '') return;
-
+        if (orderCount === 10) {
+            alert("최대 요청 횟수를 넘겼습니다");
+            setUrl('');
+            return;
+        }
+        setOrderCount(orderCount + 1);
         try {
             const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`, {
                 method: 'POST',
@@ -577,6 +597,7 @@ function MusicSeparation({ token, onNavigateBack }) {
         } catch (error) {
             console.error('Error initiating song conversion:', error);
         }
+        setUrl('');
     };
 
     // Function to fetch the list of songs being processed
