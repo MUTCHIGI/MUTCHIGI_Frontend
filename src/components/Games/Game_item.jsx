@@ -6,7 +6,9 @@ import Private from '../../img/GameitemTest/잠금.png';
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Login/AuthContext.jsx";
 
-function Game_item({room,setChatRoomId,setFirstCreate}) {
+function Game_item({room,setChatRoomId,setFirstCreate,
+    selectedQuiz,setSelectedQuiz,
+                   }) {
     let mod;
     let type;
     let wait_play;
@@ -26,11 +28,13 @@ function Game_item({room,setChatRoomId,setFirstCreate}) {
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("dd");
 
                     // participateAllowed가 true일 경우에만 실행
                     if (data[0].participateAllowed) {
                         setChatRoomId(room.roomId);
                         setFirstCreate(false);
+                        setSelectedQuiz(room.quiz);
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
                         window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
