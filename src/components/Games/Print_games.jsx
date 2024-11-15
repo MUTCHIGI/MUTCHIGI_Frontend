@@ -32,6 +32,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate}) {
             },
             thumbnailURL: '',
             instrumentId: 0,
+            readyToPlay: true,
             user: {
                 userId: null,
                 platformUserId: '',
