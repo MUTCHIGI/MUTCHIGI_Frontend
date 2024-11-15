@@ -4,7 +4,9 @@ import {useEffect, useState} from "react";
 
 /* 만약 room이 null값이면 출력안하는게 아니라 그만큼 빈자리에 빈 div를 출력함 */
 /* Footer 버튼 방 생성 버튼으로 바꾸는거 추가 */
-function Print_games({roomIds,setChatRoomId,setFirstCreate}) {
+function Print_games({roomIds,setChatRoomId,setFirstCreate,
+    selectedQuiz,setSelectedQuiz,
+                     }) {
     // 방의 기본값 설정
     const emptyRoomTemplate = {
         roomId: null,
@@ -95,12 +97,12 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate}) {
     return <div className="Print_games">
         <div className="dash_line"/>
         <div className="games_centerbox">
-            <Game_item room={rooms[0]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate}/>
-            <Game_item room={rooms[1]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate}/>
-            <Game_item room={rooms[2]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate}/>
-            <Game_item room={rooms[3]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate}/>
-            <Game_item room={rooms[4]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate}/>
-            <Game_item room={rooms[5]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate}/>
+            <Game_item room={rooms[0]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate} selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}/>
+            <Game_item room={rooms[1]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate} selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}/>
+            <Game_item room={rooms[2]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate} selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}/>
+            <Game_item room={rooms[3]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate} selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}/>
+            <Game_item room={rooms[4]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate} selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}/>
+            <Game_item room={rooms[5]} setChatRoomId={setChatRoomId} setFirstCreate={setFirstCreate} selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}/>
         </div>
     </div>
 }
