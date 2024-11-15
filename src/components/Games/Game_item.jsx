@@ -28,6 +28,7 @@ function Game_item({room,setChatRoomId,setFirstCreate,
 
                 if (response.ok) {
                     const data = await response.json();
+                    console.log("dd");
 
                     // participateAllowed가 true일 경우에만 실행
                     if (data[0].participateAllowed) {
