@@ -194,19 +194,33 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
             const data = await response.json();
             const maxTimeInSeconds = convertToSeconds(data.songTime);
             // Fetch answers
-            const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${data.quizSongRelationID}/answers`, token);
-            const newCard = {
-                url: data.playURL,
-                answers: answers, // 할당된 answers
-                hints: [],
-                startTime: 0,
-                quizRelationId: data.quizSongRelationID,
-                quizUrl: data.playURL,
-                quizThumbnail: data.thumbnailURL,
-                maxTime: maxTimeInSeconds,
-            };
-
-            setCards((prevCards) => [...prevCards, newCard]);
+            try {
+                const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${data.quizSongRelationID}/answers`, token);
+                const newCard = {
+                    url: data.playURL,
+                    answers: answers, // 할당된 answers
+                    hints: [],
+                    startTime: 0,
+                    quizRelationId: data.quizSongRelationID,
+                    quizUrl: data.playURL,
+                    quizThumbnail: data.thumbnailURL,
+                    maxTime: maxTimeInSeconds,
+                };
+                setCards((prevCards) => [...prevCards, newCard]);
+            }
+            catch (error) {
+                const newCard = {
+                    url: data.playURL,
+                    answers: [], // 할당된 answers
+                    hints: [],
+                    startTime: 0,
+                    quizRelationId: data.quizSongRelationID,
+                    quizUrl: data.playURL,
+                    quizThumbnail: data.thumbnailURL,
+                    maxTime: maxTimeInSeconds,
+                };
+                setCards((prevCards) => [...prevCards, newCard]);
+            }
             setUrl('');
         } catch (error) {
             console.error('Error:', error);
