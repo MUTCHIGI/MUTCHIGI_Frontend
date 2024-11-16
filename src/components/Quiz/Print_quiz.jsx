@@ -2,7 +2,7 @@ import './CSS/Print_quiz.css';
 import Quiz_item from "./Quiz_item.jsx";
 import Button from "../Public/Button.jsx";
 import Yt_logo from "../../img/Yt_logo.png"
-import Thumbnail from '../../img/QuizItemTest/test_thumbnail.png';
+import Thumbnail from '../../img/QuizItemTest/no_img.png';
 import Logo from '../../img/Yt_logo.png';
 import {useEffect, useState} from "react";
 import Room_create_float from "./Room_create_float.jsx";
@@ -61,7 +61,6 @@ function Print_quiz({quizIds,
     const [quizThumbURL, setQuizThumbURL] = useState([]); // thumbnailURL을 저장할 상태 배열
     const [imageSrc, setImageSrc] = useState([]);
 
-
     useEffect(() => {
         // quizzes 배열이 변할 때마다 quizThumbURL 배열을 업데이트
         const newQuizThumbURL = quizzes.map(quiz => quiz.thumbnailURL);
@@ -70,7 +69,7 @@ function Print_quiz({quizIds,
 
     useEffect(() => {
         const fetchImage = async (url) => {
-            if (url === "") {
+            if (url === "" || url === null) {
                 // 빈 문자열이면 그냥 빈 문자열 저장
                 return "";
             }
@@ -78,8 +77,11 @@ function Print_quiz({quizIds,
             try {
                 const response = await fetch(`/quiz/images/${url}`);
                 if (response.ok) {
-                    const data = await response.json();
-                    return data.imageUrl || ""; // 데이터에서 imageUrl을 추출하여 반환
+                    const data = await response.blob();
+                    console.log(data);
+                    // Blob URL을 생성하여 반환
+                    const image = URL.createObjectURL(data);
+                    return image; // 생성된 이미지 URL 반환
                 } else {
                     console.error("Failed to fetch image:", response.status);
                     return ""; // 실패한 경우 빈 문자열 반환
@@ -93,10 +95,12 @@ function Print_quiz({quizIds,
         const updateImageSrc = async () => {
             const newImageSrc = [];
 
-            for (let i = 0; i < quizThumbURL.length; i++) {
-                const image = await fetchImage(quizThumbURL[i]);
-                newImageSrc.push(image);
-            }
+            // for (let i = 0; i < quizThumbURL.length; i++) {
+            //     const image = await fetchImage(quizThumbURL[i]);
+            //     newImageSrc.push(image);
+            // }
+            console.log(quizThumbURL[0])
+            const image = await fetchImage(quizThumbURL)
 
             setImageSrc(newImageSrc);
         };
@@ -105,6 +109,7 @@ function Print_quiz({quizIds,
             updateImageSrc(); // quizThumbURL이 업데이트될 때마다 이미지 데이터 요청
         }
     }, [quizThumbURL]); // quizThumbURL이 변경될 때마다 실행
+
 
     useEffect(() => {
         const fetchQuizzes = async () => {
@@ -178,49 +183,49 @@ function Print_quiz({quizIds,
                 quizId={quizzes[0].quizId}
                 quiz_title={quizzes[0].quizName}
                 quiz_description={quizzes[0].quizDescription}
-                Thumbnail={imageSrc[0]}
+                Thumbnail={imageSrc[0]!=="" ? imageSrc[0] : Thumbnail}
                 onClick={() => handleShowFloat(quizzes[0])} // 클릭 시 quizzes[0] 정보를 전달
             />
             <Quiz_item
                 quizId={quizzes[1].quizId}
                 quiz_title={quizzes[1].quizName}
                 quiz_description={quizzes[1].quizDescription}
-                Thumbnail={imageSrc[1]}
+                Thumbnail={imageSrc[1]!=="" ? imageSrc[1] : Thumbnail}
                 onClick={() => handleShowFloat(quizzes[1])} // 클릭 시 quizzes[0] 정보를 전달
             />
             <Quiz_item
                 quizId={quizzes[2].quizId}
                 quiz_title={quizzes[2].quizName}
                 quiz_description={quizzes[2].quizDescription}
-                Thumbnail={imageSrc[2]}
+                Thumbnail={imageSrc[2]!=="" ? imageSrc[2] : Thumbnail}
                 onClick={() => handleShowFloat(quizzes[2])} // 클릭 시 quizzes[0] 정보를 전달
             />
             <Quiz_item
                 quizId={quizzes[3].quizId}
                 quiz_title={quizzes[3].quizName}
                 quiz_description={quizzes[3].quizDescription}
-                Thumbnail={imageSrc[3]}
+                Thumbnail={imageSrc[3]!=="" ? imageSrc[3] : Thumbnail}
                 onClick={() => handleShowFloat(quizzes[3])} // 클릭 시 quizzes[0] 정보를 전달
             />
             <Quiz_item
                 quizId={quizzes[4].quizId}
                 quiz_title={quizzes[4].quizName}
                 quiz_description={quizzes[4].quizDescription}
-                Thumbnail={imageSrc[4]}
+                Thumbnail={imageSrc[4]!=="" ? imageSrc[4] : Thumbnail}
                 onClick={() => handleShowFloat(quizzes[4])} // 클릭 시 quizzes[0] 정보를 전달
             />
             <Quiz_item
                 quizId={quizzes[5].quizId}
                 quiz_title={quizzes[5].quizName}
                 quiz_description={quizzes[5].quizDescription}
-                Thumbnail={imageSrc[5]}
+                Thumbnail={imageSrc[5]!=="" ? imageSrc[5] : Thumbnail}
                 onClick={() => handleShowFloat(quizzes[5])} // 클릭 시 quizzes[0] 정보를 전달
             />
             <Quiz_item
                 quizId={quizzes[6].quizId}
                 quiz_title={quizzes[6].quizName}
                 quiz_description={quizzes[6].quizDescription}
-                Thumbnail={imageSrc[6]}
+                Thumbnail={imageSrc[6]!=="" ? imageSrc[6] : Thumbnail}
                 onClick={() => handleShowFloat(quizzes[6])} // 클릭 시 quizzes[0] 정보를 전달
             />
             <div className="create_new_quiz" onClick={handleDivClick}>

@@ -4,8 +4,8 @@ import User from "../components/InGame/User.jsx";
 import Button from "../components/Public/Button.jsx";
 import ChatSubmit from "../img/채팅 전송.png";
 import Game_board_playing from "../components/InGame/Game_board_playing.jsx";
-import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 import test_profile from '../img/프로필1.png';
 import {useEffect, useRef, useState} from "react";
 import {useNavigate} from "react-router-dom";
@@ -34,7 +34,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             provider: { id: 0, providerName: '' }
         })
     );
-    console.log(roomName)
     const [messageText, setMessageText] = useState(''); // 서버로 전송하는 내 입력 채팅
     const [chatMessages, setChatMessages] = useState([]); // 현재까지의 모든 채팅 내역
     const clientRef = useRef(null); // 소켓 client 저장
@@ -43,6 +42,8 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const [gameStart,setGameStart] = useState(false);
     const [songIndex,setSongIndex] = useState(-1);
     const [answer,setAnswer] = useState(null);
+
+    const [ai_songurl,setAi_songUrl] = useState(null);
 
     const [skip,setSkip] = useState(false);
     const [skipCount,setSkipCount] = useState(0);
@@ -72,12 +73,12 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const [CurrentQuiz, setCurrentQuiz] = useState(null); // 현재 풀고잇는 퀴즈
     const [CurrentHint,setCurrentHint] = useState(null); // 현재 풀고있는 퀴즈의 힌트
 
-    const socket = new SockJS(`${import.meta.env.VITE_SERVER_IP}/room`); //소켓
-    const client = Stomp.over(socket); //클라이언트
-
+    const client = useRef(null);
     const UserCount = userList.filter(user => user.userId !== -1).length;
 
     useEffect(() => {
+        let socket=new SockJS(`${import.meta.env.VITE_SERVER_IP}/room`);
+        client.current = Stomp.over(socket);
         if(firstCreate) {
             handleCreateRoom();
             setFirstCreate(false);
@@ -85,6 +86,12 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         else {
             connectToRoom(chatRoomId);
         }
+        return () => {
+            if (client.current) {
+                // 연결 종료 등의 클린업 처리
+                client.current.disconnect(); // 예시: 연결 종료
+            }
+        };
     }, []);
 
     useEffect(() => {
@@ -179,16 +186,16 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     };
 
     const connectToRoom = (chatRoomId) => {
-        client.connect(
+        client.current.connect(
             {
             'Authorization': 'Bearer ' + token,
         }, (frame) => {
-            subscribe(client,chatRoomId,userInfo.userId);
+            subscribe(client.current,chatRoomId,userInfo.userId);
             const joinRoomData = {
                 roomId: chatRoomId,
                 roomPassword: firstCreate ? createPassword : joinPassword,
             };
-            client.send(`/app/joinRoom/${chatRoomId}`, {}, JSON.stringify(joinRoomData));
+            client.current.send(`/app/joinRoom/${chatRoomId}`, {}, JSON.stringify(joinRoomData));
         }, (error) => {
             console.error("STOMP 연결 실패:", error);  // 연결 실패 시 오류 로그 추가
         });
@@ -210,6 +217,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // chatRoomId에 해당하는 구독 생성
         stompClient.subscribe('/topic/song/' + roomId, (message) => {
             const received_quiz = JSON.parse(message.body);
+            console.log(received_quiz)
             setCurrentQuiz(received_quiz); // 응답 메시지 데이터를 CurrentQuiz state에 저장
             setQsRelationId(received_quiz.qsRelationId);
 
@@ -221,7 +229,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         });
         stompClient.subscribe('/topic/vote/' + roomId, (message) => {
             const received_skipCount = JSON.parse(message.body);
-            console.log(received_skipCount)
             setSkipCount(received_skipCount.voteNum);
         });
 
@@ -269,7 +276,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             qsRelationId: qsRelationId, // 기본값 -1 설정
         };
 
-        clientRef.current.send(`/app/send/${chatRoomId}`, {}, JSON.stringify(sendMessageData));
+        client.current.send(`/app/send/${chatRoomId}`, {}, JSON.stringify(sendMessageData));
         setMessageText(''); // 메시지 전송 후 입력 필드 초기화
     };
 
@@ -282,7 +289,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                 voteNum: skipCount,
             }
 
-            clientRef.current.send(`/app/skipVote/${chatRoomId}`,{}, JSON.stringify(sendVoteData))
+            client.current.send(`/app/skipVote/${chatRoomId}`,{}, JSON.stringify(sendVoteData))
         }
     };
 
@@ -292,9 +299,10 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
 
     // 현재 index 퀴즈 불러오기
     useEffect(() => {
-        if (songIndex !== null && clientRef.current && clientRef.current.connected) {
+        console.log(songIndex)
+        if (songIndex !== null && client.current && client.current.connected) {
             // songIndex가 변경될 때마다 웹소켓을 통해 메시지를 보냄
-            clientRef.current.send(
+            client.current.send(
                 `/app/getSong/${chatRoomId}/${songIndex}`,
                 {}, // headers가 필요하면 추가
                 JSON.stringify({}) // 메시지 본문이 필요 없을 경우 빈 객체로 전달
@@ -454,13 +462,12 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         }
     };
 
-
     return <div className="Ingame">
         <div className="left">
             <div className="main_board">
                 {!gameStart ?
                     <Game_board_waiting
-                        stopmClient={client}
+                        stopmClient={client.current}
                         setFirstCreate={setFirstCreate}
                         qsRelationId={qsRelationId}
                         setSongIndex={setSongIndex}
@@ -471,7 +478,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                         setGameStart={setGameStart}
                     /> :
                     <Game_board_playing
-                        stompClient={client}
+                        stompClient={client.current}
                         userInfo={userInfo}
                         setFirstCreate={setFirstCreate}
                         chatRoomId={chatRoomId}
@@ -490,6 +497,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                         answerChat={answerChat}
                         setAnswerChat={setAnswerChat}
                         setAnswerUser={setAnswerUser}
+                        qsRelationId={qsRelationId}
                     />
                 }
             </div>
