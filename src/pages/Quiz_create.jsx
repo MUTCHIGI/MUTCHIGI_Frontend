@@ -50,7 +50,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
   let navigate = useNavigate()
 
-  const postThumbnail = () => {
+  const postThumbnail = (quizId) => {
     const formData = new FormData();
     formData.append("image", thumbnail); // thumbnail 이미지 파일 추가
 
@@ -158,7 +158,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       await postHints(quizIdNumber);
     }
     if (thumbnail) {
-      postThumbnail();
+      postThumbnail(quizIdNumber);
     }
     if (playListUrl) {
       await postUrl(quizIdNumber);

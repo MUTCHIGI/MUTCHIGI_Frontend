@@ -147,7 +147,6 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
         }
     };
 
-
     const confirmCandidate = async () => {
         try {
             const updatedSelectedItems = await Promise.all(
