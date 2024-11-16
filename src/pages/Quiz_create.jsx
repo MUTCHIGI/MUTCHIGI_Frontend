@@ -137,8 +137,8 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       body: JSON.stringify({
         quizName: title,
         quizDescription: description,
-        typeId: typeId,
-        modId: mode,
+        typeId: mode,
+        modId: typeId,
         hintCount: hints.length,
         hour: Math.floor(timeLimit / 3600),
         minute: Math.floor((timeLimit % 3600) / 60),
