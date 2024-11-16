@@ -139,7 +139,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
 
     const getOrderCount = async () => {
         try {
-            const response = await fetchGetApi('http://localhost:8080/GCP/userDemcusCount', token);
+            const response = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/GCP/userDemcusCount`, token);
             const data = await response.json();
             setOrderCount(data.orderCount);
         } catch (error) {
