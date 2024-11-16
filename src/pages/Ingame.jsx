@@ -34,7 +34,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             provider: { id: 0, providerName: '' }
         })
     );
-    console.log(roomName)
+    console.log(quiz);
     const [messageText, setMessageText] = useState(''); // 서버로 전송하는 내 입력 채팅
     const [chatMessages, setChatMessages] = useState([]); // 현재까지의 모든 채팅 내역
     const clientRef = useRef(null); // 소켓 client 저장
@@ -43,6 +43,8 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const [gameStart,setGameStart] = useState(false);
     const [songIndex,setSongIndex] = useState(-1);
     const [answer,setAnswer] = useState(null);
+
+    const [ai_songurl,setAi_songUrl] = useState()
 
     const [skip,setSkip] = useState(false);
     const [skipCount,setSkipCount] = useState(0);
@@ -490,6 +492,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                         answerChat={answerChat}
                         setAnswerChat={setAnswerChat}
                         setAnswerUser={setAnswerUser}
+                        qsRelationId={qsRelationId}
                     />
                 }
             </div>

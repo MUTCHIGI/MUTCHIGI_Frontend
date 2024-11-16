@@ -2,9 +2,11 @@ import './CSS/Game_board_playing.css';
 import Button from "../Public/Button.jsx";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
+import {useAuth} from "../Login/AuthContext.jsx";
 
 function Game_board_playing({stompClient,setFirstCreate,
                                 handlSkipVote,userInfo,
+    qsRelationId,
     setSkip,skipCount,setSkipCount,UserCount,
     quiz,hint,timelimit,
     roomName,
@@ -12,6 +14,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     answer,answerChat,setAnswerChat,
     setAnswerUser
 }) {
+    console.log(roomName)
     const [timeout,setTimeOut] = useState(false);
     const navigate = useNavigate();
     const timeStamp = quiz.timeStamp;
@@ -22,6 +25,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     const ref1 = useRef(null);
     const ref2 = useRef(null);
     const [songType,setSongType] = useState(true);
+    let {token} = useAuth()
 
     const skipRatio = skipCount/UserCount;
 
@@ -111,6 +115,28 @@ function Game_board_playing({stompClient,setFirstCreate,
         window.location.reload();
     };
 
+    const fetchAudio = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/play/inRoom?qsRelationId=${qsRelationId}` , {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'accept': '*/*'
+                }
+            });
+            if(response.ok) {
+                const blob = await response.blob();
+                if(blob.size>0) {
+                    const url = URL.createObjectURL(blob);
+                    setVideoUrl(url);
+                }
+            }
+
+        } catch (error) {
+            console.log("error fectching audio file :",error);
+        }
+    }
+
     // YouTube 비디오 ID 추출 함수
     const getYouTubeVideoId = (url) => {
         const videoId = url.split('v=')[1];
@@ -137,6 +163,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     const endTime = startTime + convertTimeToSeconds(timelimit);
 
     useEffect(() => {
+        console.log(songURL)
         const videoId = getYouTubeVideoId(songURL);
         if (videoId) {
             const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&end=${endTime}&rel=0`;
@@ -144,9 +171,11 @@ function Game_board_playing({stompClient,setFirstCreate,
             setSongType(true);
         }
         else {
-            setVideoUrl(songURL);
+            fetchAudio();
             setSongType(false);
         }
+        fetchAudio();
+        setSongType(false);
     }, [songURL]);
 
     useEffect(() => {
@@ -203,20 +232,8 @@ function Game_board_playing({stompClient,setFirstCreate,
             }
         }
 
-        // // ref1이 활성화된 경우에만 onVideoLoad 실행
-        // if (ref1.current) {
-        //     ref1.current.addEventListener("load", onVideoLoad);
-        // }
-        //
-        // // 클린업 함수: 컴포넌트 언마운트 시 interval 정리
-        // return () => {
-        //     if (ref1.current) {
-        //         ref1.current.removeEventListener("load", onVideoLoad);
-        //     }
-        //     if (intervalRef1.current) {
-        //         clearInterval(intervalRef1.current); // interval 종료
-        //     }
-        // };
+        console.log(ref1.current)
+        console.log(ref1.current.tagName)
         // ref1이 iframe일 때의 처리
         if (ref1.current && ref1.current.tagName === "IFRAME") {
             ref1.current.addEventListener("load", onVideoLoad);
@@ -357,7 +374,7 @@ function Game_board_playing({stompClient,setFirstCreate,
                                         autoPlay // 자동 재생
                                         onLoadedMetadata={handleLoadedMetadata} // 메타데이터 로드 시 시작 시간 설정
                                         onTimeUpdate={handleTimeUpdate} // 현재 시간 업데이트 시 종료 시간 확인
-                                        controls // 사용자 컨트롤 표시 (원하면 제거 가능)
+                                        style={{display:"none"}}
                                     />
                             )
                             :
