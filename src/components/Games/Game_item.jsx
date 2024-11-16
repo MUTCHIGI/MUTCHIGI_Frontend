@@ -7,7 +7,8 @@ import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Login/AuthContext.jsx";
 
 function Game_item({room,setChatRoomId,setFirstCreate,
-    selectedQuiz,setSelectedQuiz,
+    selectedQuiz,setSelectedQuiz,selectedOption_privacy,
+    setPassword,onClick_public,onClick_private
                    }) {
     let mod;
     let type;
@@ -15,39 +16,6 @@ function Game_item({room,setChatRoomId,setFirstCreate,
     let {token} = useAuth();
 
     const navigate = useNavigate();
-
-    const handleClick = async () => {
-        if (room.roomId !== null) {  // room.id가 null이 아닐 때
-            try {
-                const response = await fetch(`http://localhost:8080/room/Entities?idList=${room.roomId}`, {
-                    method: 'GET',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    }
-                });
-
-                if (response.ok) {
-                    const data = await response.json();
-                    console.log("dd");
-
-                    // participateAllowed가 true일 경우에만 실행
-                    if (data[0].participateAllowed) {
-                        setChatRoomId(room.roomId);
-                        setFirstCreate(false);
-                        setSelectedQuiz(room.quiz);
-                        navigate('/ingame');  // '/ingame'으로 네비게이션
-                    } else {
-                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
-                        navigate('/home');
-                    }
-                } else {
-                    console.error('데이터를 가져오는 데 실패했습니다.');
-                }
-            } catch (error) {
-                console.error('GET 요청 중 오류 발생:', error);
-            }
-        }
-    };
 
     if(room.roomId !== null) {
         switch (room.quiz.modId) {
@@ -84,7 +52,7 @@ function Game_item({room,setChatRoomId,setFirstCreate,
         }
     }
 
-    return <div className="Game_item" onClick={room.id !== null ? handleClick : undefined}>
+    return <div className="Game_item" onClick={selectedOption_privacy ? onClick_public : onClick_private}>
         {room.roomId !== null && <>
             <img src={room.thumbnailURL} className="Thumbnail"/>
             <img src={Platform} className="Platform"/>
