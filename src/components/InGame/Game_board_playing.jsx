@@ -14,7 +14,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     answer,answerChat,setAnswerChat,
     setAnswerUser
 }) {
-    console.log(roomName)
+    console.log(quiz)
     const [timeout,setTimeOut] = useState(false);
     const navigate = useNavigate();
     const timeStamp = quiz.timeStamp;
@@ -44,6 +44,10 @@ function Game_board_playing({stompClient,setFirstCreate,
     const intervalRef1 = useRef(null); // 첫 번째 interval
     const intervalRef2 = useRef(null); // 두 번째 interval
     const intervalRef3 = useRef(null); // 세 번째
+
+    useEffect(() => {
+        console.log(quiz)
+    }, [qsRelationId]);
 
     useEffect(() => {
         if(answerChat!==null) {
@@ -92,7 +96,6 @@ function Game_board_playing({stompClient,setFirstCreate,
                     setIndex(0);
                     setSkip(false);
                     setSkipCount(0);
-
                     setSongIndex(songIndex+1);
                 }
             }, whentoend * 1000); // 초단위로 주어지므로 밀리초로 변환
@@ -116,6 +119,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     };
 
     const fetchAudio = async () => {
+        console.log("이거 실행되긴함")
         try {
             const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/play/inRoom?qsRelationId=${qsRelationId}` , {
                 method: 'GET',
@@ -163,20 +167,19 @@ function Game_board_playing({stompClient,setFirstCreate,
     const endTime = startTime + convertTimeToSeconds(timelimit);
 
     useEffect(() => {
-        console.log(songURL)
         const videoId = getYouTubeVideoId(songURL);
+        console.log(videoId)
         if (videoId) {
             const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&end=${endTime}&rel=0`;
             setVideoUrl(url);
             setSongType(true);
         }
         else {
+            console.log("이거 실행됨")
             fetchAudio();
             setSongType(false);
         }
-        fetchAudio();
-        setSongType(false);
-    }, [songURL]);
+    }, [qsRelationId]);
 
     useEffect(() => {
         if(answerChat !== null) {
@@ -194,9 +197,6 @@ function Game_board_playing({stompClient,setFirstCreate,
         else {
             if(timeout === true) {
                 const videoId_origin = getYouTubeVideoId(originalSongURL);
-                console.log(startTime)
-                console.log(progress)
-
                 if(videoId_origin) {
                     const url_origin = `https://www.youtube.com/embed/${videoId_origin}?autoplay=1&start=${Math.floor(startTime + progress)}&end=${Math.floor(startTime + progress)+5}&rel=0`;
                     setOriginUrl(url_origin);
@@ -208,57 +208,84 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     const duration = convertTimeToSeconds(timelimit);
 
+    function onVideoLoad() {
+        console.log("로딩됨!")
+        if(!intervalRef1.current){
+            intervalRef1.current = setInterval(() => {
+                setProgress((prevProgress) => {
+                    const newProgress = prevProgress + 0.01; // 1초마다 1씩 증가
+                    if (newProgress <= duration) {
+                        setPercentage((newProgress / duration) * 100); // percentage 계산
+                        return newProgress;
+                    } else {
+                        setTimeOut(true);
+                        clearInterval(intervalRef1.current); // duration에 도달하면 interval 종료
+                        return duration; // currentProgress는 duration으로 고정
+                    }
+                });
+            }, 10); // 1초마다 실행
+        }
+    }
+
     useEffect(() => {
-        // 현재 진행 상태를 초기화
+        setTimeOut(false);
         setProgress(-0.2);
         setPercentage(0);
-
-        // onVideoLoad 함수: ref1이 로드되면 실행
-        function onVideoLoad() {
-            if(!intervalRef1.current){
-                intervalRef1.current = setInterval(() => {
-                    setProgress((prevProgress) => {
-                        const newProgress = prevProgress + 0.01; // 1초마다 1씩 증가
-                        if (newProgress <= duration) {
-                            setPercentage((newProgress / duration) * 100); // percentage 계산
-                            return newProgress;
-                        } else {
-                            setTimeOut(true);
-                            clearInterval(intervalRef1.current); // duration에 도달하면 interval 종료
-                            return duration; // currentProgress는 duration으로 고정
-                        }
-                    });
-                }, 10); // 1초마다 실행
-            }
-        }
-
-        console.log(ref1.current)
-        console.log(ref1.current.tagName)
-        // ref1이 iframe일 때의 처리
-        if (ref1.current && ref1.current.tagName === "IFRAME") {
-            ref1.current.addEventListener("load", onVideoLoad);
-        }
-
-        // ref1이 audio일 때의 처리
-        if (ref1.current && ref1.current.tagName === "AUDIO") {
-            ref1.current.addEventListener("play", onVideoLoad);
-        }
-
-        // 클린업 함수: 컴포넌트 언마운트 시 interval 정리
-        return () => {
-            if (ref1.current) {
-                if (ref1.current.tagName === "IFRAME") {
-                    ref1.current.removeEventListener("load", onVideoLoad);
-                }
-                if (ref1.current.tagName === "AUDIO") {
-                    ref1.current.removeEventListener("play", onVideoLoad);
-                }
-            }
-            if (intervalRef1.current) {
-                clearInterval(intervalRef1.current); // interval 종료
-            }
-        };
-    }, [songIndex]);
+        clearInterval(intervalRef1.current)
+    }, [qsRelationId]);
+    // useEffect(() => {
+    //     // 현재 진행 상태를 초기화
+    //     setTimeOut(false)
+    //     setProgress(-0.2);
+    //     setPercentage(0);
+    //
+    //     // onVideoLoad 함수: ref1이 로드되면 실행
+    //     function onVideoLoad() {
+    //         if(!intervalRef1.current){
+    //             intervalRef1.current = setInterval(() => {
+    //                 setProgress((prevProgress) => {
+    //                     const newProgress = prevProgress + 0.01; // 1초마다 1씩 증가
+    //                     if (newProgress <= duration) {
+    //                         setPercentage((newProgress / duration) * 100); // percentage 계산
+    //                         return newProgress;
+    //                     } else {
+    //                         setTimeOut(true);
+    //                         clearInterval(intervalRef1.current); // duration에 도달하면 interval 종료
+    //                         return duration; // currentProgress는 duration으로 고정
+    //                     }
+    //                 });
+    //             }, 10); // 1초마다 실행
+    //         }
+    //     }
+    //
+    //     console.log(ref1.current)
+    //     // ref1이 iframe일 때의 처리
+    //     if (ref1.current && ref1.current.tagName === "IFRAME") {
+    //         console.log("프레임")
+    //         ref1.current.addEventListener("load", onVideoLoad);
+    //     }
+    //
+    //     // ref1이 audio일 때의 처리
+    //     if (ref1.current && ref1.current.tagName === "AUDIO") {
+    //         console.log("오디오")
+    //         ref1.current.addEventListener("play", onVideoLoad);
+    //     }
+    //
+    //     // 클린업 함수: 컴포넌트 언마운트 시 interval 정리
+    //     return () => {
+    //         if (ref1.current) {
+    //             if (ref1.current.tagName === "IFRAME") {
+    //                 ref1.current.removeEventListener("load", onVideoLoad);
+    //             }
+    //             if (ref1.current.tagName === "AUDIO") {
+    //                 ref1.current.removeEventListener("play", onVideoLoad);
+    //             }
+    //         }
+    //         if (intervalRef1.current) {
+    //             clearInterval(intervalRef1.current); // interval 종료
+    //         }
+    //     };
+    // }, [songIndex]);
 
     // 두 번째 인터벌: timeLeft가 0이 될 때까지 1초마다 감소
     useEffect(() => {
@@ -284,7 +311,7 @@ function Game_board_playing({stompClient,setFirstCreate,
             clearInterval(intervalRef2.current);
             intervalRef2.current=null;
         };
-    }, [songIndex]);
+    }, [qsRelationId]);
 
     // 힌트들을 초로 변환한 배열을 미리 준비
     const hintTimesInSeconds = hint.map(hint => ({
@@ -314,7 +341,7 @@ function Game_board_playing({stompClient,setFirstCreate,
         return () => {
             clearInterval(intervalRef3.current);
         };
-    }, [songIndex]);
+    }, [qsRelationId]);
 
     useEffect(() => {
         // 현재 시간(currentTime)과 힌트의 시간(timeInSeconds)을 비교하여
@@ -361,17 +388,20 @@ function Game_board_playing({stompClient,setFirstCreate,
                     <div>
                         {(timeout === false && answerChat === null) ? (
                                 songType ? <iframe
+                                    key={videoUrl}
                                     ref={ref1}
                                     className="quiz_playing_frame_1"
                                     src={videoUrl}
                                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                                     style={{display: "none"}}
+                                    onLoad={onVideoLoad}
                                 /> :
                                     <audio
                                         ref={ref1}
                                         src={videoUrl}
                                         preload="auto"
                                         autoPlay // 자동 재생
+                                        onPlay={onVideoLoad}
                                         onLoadedMetadata={handleLoadedMetadata} // 메타데이터 로드 시 시작 시간 설정
                                         onTimeUpdate={handleTimeUpdate} // 현재 시간 업데이트 시 종료 시간 확인
                                         style={{display:"none"}}
