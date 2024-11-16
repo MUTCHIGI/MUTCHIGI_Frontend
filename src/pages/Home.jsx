@@ -12,6 +12,7 @@ import {useAuth} from "../components/Login/AuthContext.jsx";
 function Home({userInfo,setUserInfo,
     setChatRoomId,setFirstCreate,
     selectedQuiz,setSelectedQuiz,
+    password,setPassword,setRoomName,
               }) {
     let token = useAuth();
     // API를 통해 받아온 방들의 ID 리스트
@@ -65,7 +66,6 @@ function Home({userInfo,setUserInfo,
         fetchRoomIds();
     }, [currentPage,offset,selectedOption_type,selectedOption_quiztype,quizTitle,selectedOption_privacy]);
 
-
     return <div>
         <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate}/>
         <Header_bottom/>
@@ -85,6 +85,9 @@ function Home({userInfo,setUserInfo,
             setFirstCreate={setFirstCreate}
             selectedQuiz={selectedQuiz}
             setSelectedQuiz={setSelectedQuiz}
+            selectedOption_privacy={selectedOption_privacy}
+            password={password} setPassword={setPassword}
+            setRoomName={setRoomName}
         />
         <Footer
             multiplay={true}

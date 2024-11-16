@@ -52,6 +52,7 @@ function Game_board_waiting({stompClient,
 
     useEffect(() => {
         if (qsRelationId!==-1 && !master) { // qsRelationId가 존재할 때만 실행
+            setSongIndex(songIndex+1);
             setSecondsRemaining(5); // 카운트다운을 5초로 초기화
             setCountdown(`${secondsRemaining}초 뒤 시작합니다`); // 카운트다운 초기 메시지
 
