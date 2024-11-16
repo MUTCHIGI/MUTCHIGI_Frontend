@@ -50,11 +50,11 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
   let navigate = useNavigate()
 
-  const postThumbnail = (quizId) => {
+  const postThumbnail = (quizIdNumber) => {
     const formData = new FormData();
     formData.append("image", thumbnail); // thumbnail 이미지 파일 추가
 
-    fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/createQuiz/image?quizId=${quizId}`, {
+    fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/createQuiz/image?quizId=${quizIdNumber}`, {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${token}`,
@@ -137,8 +137,8 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       body: JSON.stringify({
         quizName: title,
         quizDescription: description,
-        typeId: typeId,
-        modId: mode,
+        typeId: mode,
+        modId: typeId,
         hintCount: hints.length,
         hour: Math.floor(timeLimit / 3600),
         minute: Math.floor((timeLimit % 3600) / 60),

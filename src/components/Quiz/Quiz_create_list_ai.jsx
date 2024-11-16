@@ -139,7 +139,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
 
     const getOrderCount = async () => {
         try {
-            const response = fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/GCP/userDemcusCount`, token);
+            const response = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/GCP/userDemcusCount`, token);
             const data = await response.json();
             setOrderCount(data.orderCount);
         } catch (error) {
@@ -171,17 +171,33 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
 
                     // 새로운 card 형식으로 반환
                     const maxTimeInSeconds = item.maxTime;
-                    const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${quizSongRelationId}/answers`, token);
-                    return {
-                        url: item.playURL,
-                        answers: answers, // answers 초기값으로 빈 배열 설정
-                        hints: [],
-                        startTime: 0,
-                        quizRelationId: quizSongRelationId,
-                        quizUrl: item.quizUrl,
-                        quizThumbnail: item.quizThumbnail,
-                        maxTime: maxTimeInSeconds,
-                    };
+                    try {
+                        const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${quizSongRelationId}/answers`, token);
+                        return {
+                            url: item.playURL,
+                            answers: answers, // answers succesful
+                            hints: [],
+                            startTime: 0,
+                            songId: item.songId,
+                            quizRelationId: quizSongRelationId,
+                            quizUrl: item.quizUrl,
+                            quizThumbnail: item.quizThumbnail,
+                            maxTime: maxTimeInSeconds,
+                        };
+                    }
+                    catch (error) {
+                        return {
+                            url: item.playURL,
+                            answers: [], // on failure answers 초기값으로 빈 배열 설정
+                            hints: [],
+                            startTime: 0,
+                            songId: item.songId,
+                            quizRelationId: quizSongRelationId,
+                            quizUrl: item.quizUrl,
+                            quizThumbnail: item.quizThumbnail,
+                            maxTime: maxTimeInSeconds,
+                        };
+                    }
                 })
             );
 
@@ -307,7 +323,7 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, token, 
                 card.hints.some((hint) => hint.trim() === '') // Empty hint string
             );
         });
-    
+
         if (hasInvalidHints) {
             alert("힌트를 설정하지 않은 항목이 있습니다");
             return; // Prevent the request from being sent
@@ -413,7 +429,7 @@ function SelectedCandidate({ selectedItems, setSelectedItems, onComplete, onNavi
                             backgroundPosition: 'center',
                             backgroundColor: 'gray',
                         }}
-                        // onClick={() => handleDeleteCard(index)}
+                    // onClick={() => handleDeleteCard(index)}
                     >
                     </div>
                 ))}
