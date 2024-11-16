@@ -23,8 +23,10 @@ function App() {
     const [selectedQuiz, setSelectedQuiz] = useState(null); // 선택된 퀴즈 상태 추가
     let [privacy,setPrivacy] = useState('public');
     let [roomName, setRoomName] = useState(''); // 방 이름 상태
-    let [password, setPassword] = useState(''); // 비밀번호 상태
+    let [createpassword, setCreatePassword] = useState(''); // 비밀번호 상태
     let [maxPlayer, setMaxPlayer] = useState(1); // 최대 플레이어 수 상태
+
+    const [joinPassword,setJoinPassword] = useState('');
 
     // 최초 생성의 경우 true, 참여하는 경우 false
     let [firstCreate,setFirstCreate] = useState(true);
@@ -68,7 +70,8 @@ function App() {
                           chatRoomId={chatRoomId} setChatRoomId={setChatRoomId}
                           privacy={privacy}
                           roomName={roomName}
-                          password={password}
+                          createPassword={createpassword}
+                          joinPassword={joinPassword}
                           maxPlayer={maxPlayer}
                           userInfo={userInfo}
                           firstCreate={firstCreate} setFirstCreate={setFirstCreate}
@@ -78,6 +81,8 @@ function App() {
                           setChatRoomId={setChatRoomId}
                           setFirstCreate={setFirstCreate}
                           selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
+                          password={joinPassword} setPassword={setJoinPassword}
+                          setRoomName={setRoomName}
                       />}/>
                       <Route path="/home/quiz" element={<Quiz_page
                           userInfo={userInfo} setUserInfo={setUserInfo}
@@ -86,7 +91,7 @@ function App() {
                           setChatRoomId={setChatRoomId}
                           privacy={privacy} setPrivacy={setPrivacy}
                           roomName={roomName} setRoomName={setRoomName}
-                          password={password} setPassword={setPassword}
+                          password={createpassword} setPassword={setCreatePassword}
                           maxPlayer={maxPlayer} setMaxPlayer={setMaxPlayer}
                           setFirstCreate={setFirstCreate}
                       />}/>

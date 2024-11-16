@@ -157,8 +157,10 @@
     height: 25%;
 }
 
-.profile_name_1 {
-    color: red;
+.name {
+    display: flex;
+    align-items: center;
+    font-size: calc(16px*var(--root--font--ratio));
 }
 
 .profile_name_1 {

@@ -147,7 +147,6 @@ function Print_quiz({quizIds,
         fetchQuizzes();
     }, [quizIds, token]);
 
-
     /* 방을 생성하기 위한 핸들러 */
     let [showFloat,setShowFloat] = useState(false);
 

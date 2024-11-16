@@ -1,7 +1,7 @@
 import '../InGame/CSS/User.css';
 import {useEffect, useState} from "react";
 
-function User({userInfo,chat,number,master,ready}) {
+function User({userInfo,chat,number,master,onClick}) {
     // chat의 상태를 localChat으로 복사해 사용
     const [localChat, setLocalChat] = useState(chat);
 
@@ -15,7 +15,7 @@ function User({userInfo,chat,number,master,ready}) {
         }
     }, [chat, userInfo.name]);
 
-    return <div className="User">
+    return <div className="User" onClick={onClick}>
         {localChat && userInfo.name === localChat.username && (
             <>
                 <div className="chat_box_body">
@@ -33,11 +33,6 @@ function User({userInfo,chat,number,master,ready}) {
                     </div>
                 </>
             )}
-            {ready && (<>
-                <div className="ready_div">
-                    Ready!
-                </div>
-            </>)}
             <div className="profile_image">
                 {userInfo.profileImageURL && <img src={userInfo.profileImageURL} className="user_img"/>}
             </div>

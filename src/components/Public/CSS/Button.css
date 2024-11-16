@@ -499,3 +499,26 @@
 
     cursor: pointer;
 }
+
+/* Password_input */
+
+.button_pwd_exit {
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+
+    width: calc(var(--root--width)*0.02083333333333333333333333333333);
+    height: calc(var(--root--height)*0.03703703703703703703703703703704);
+
+    font-weight: bold;
+    font-size: calc(var(--root--font--ratio)*20px);
+}
+
+.button_pwd_input_confirm {
+    width: calc(var(--root--width)*0.04);
+    height: calc(var(--root--height)*0.04);
+
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+}

@@ -4,7 +4,7 @@ import {useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 
 function Game_board_playing({stompClient,setFirstCreate,
-                                handlSkipVote,
+                                handlSkipVote,userInfo,
     setSkip,skipCount,setSkipCount,UserCount,
     quiz,hint,timelimit,
     roomName,
@@ -21,6 +21,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     const [originUrl,setOriginUrl] = useState('');
     const ref1 = useRef(null);
     const ref2 = useRef(null);
+    const [songType,setSongType] = useState(true);
 
     const skipRatio = skipCount/UserCount;
 
@@ -140,9 +141,11 @@ function Game_board_playing({stompClient,setFirstCreate,
         if (videoId) {
             const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&end=${endTime}&rel=0`;
             setVideoUrl(url);
+            setSongType(true);
         }
         else {
-            setVideoUrl(songURL)
+            setVideoUrl(songURL);
+            setSongType(false);
         }
     }, [songURL]);
 
@@ -153,20 +156,22 @@ function Game_board_playing({stompClient,setFirstCreate,
                 const videoId_origin = getYouTubeVideoId(originalSongURL);
 
                 if(videoId_origin) {
-                    const url_origin = `https://www.youtube.com/embed/${videoId_origin}?autoplay=1&start=${Math.floor(startTime + progress)}&end=${endTime}&rel=0`;
+                    const url_origin = `https://www.youtube.com/embed/${videoId_origin}?autoplay=1&start=${Math.floor(startTime + progress)}&end=${Math.floor(startTime + progress)+5}&rel=0`;
                     setOriginUrl(url_origin);
-                    setWhenToEnd(endTime-(Math.floor(startTime+progress))+1);
+                    setWhenToEnd(6);
                 }
             }
         }
         else {
             if(timeout === true) {
                 const videoId_origin = getYouTubeVideoId(originalSongURL);
+                console.log(startTime)
+                console.log(progress)
 
                 if(videoId_origin) {
-                    const url_origin = `https://www.youtube.com/embed/${videoId_origin}?autoplay=1&start=${startTime+progress}&end=${endTime+10}&rel=0`;
+                    const url_origin = `https://www.youtube.com/embed/${videoId_origin}?autoplay=1&start=${Math.floor(startTime + progress)}&end=${Math.floor(startTime + progress)+5}&rel=0`;
                     setOriginUrl(url_origin);
-                    setWhenToEnd(endTime-(startTime+progress)+11);
+                    setWhenToEnd(7);
                 }
             }
         }
@@ -198,21 +203,45 @@ function Game_board_playing({stompClient,setFirstCreate,
             }
         }
 
-        // ref1이 활성화된 경우에만 onVideoLoad 실행
-        if (ref1.current) {
+        // // ref1이 활성화된 경우에만 onVideoLoad 실행
+        // if (ref1.current) {
+        //     ref1.current.addEventListener("load", onVideoLoad);
+        // }
+        //
+        // // 클린업 함수: 컴포넌트 언마운트 시 interval 정리
+        // return () => {
+        //     if (ref1.current) {
+        //         ref1.current.removeEventListener("load", onVideoLoad);
+        //     }
+        //     if (intervalRef1.current) {
+        //         clearInterval(intervalRef1.current); // interval 종료
+        //     }
+        // };
+        // ref1이 iframe일 때의 처리
+        if (ref1.current && ref1.current.tagName === "IFRAME") {
             ref1.current.addEventListener("load", onVideoLoad);
+        }
+
+        // ref1이 audio일 때의 처리
+        if (ref1.current && ref1.current.tagName === "AUDIO") {
+            ref1.current.addEventListener("play", onVideoLoad);
         }
 
         // 클린업 함수: 컴포넌트 언마운트 시 interval 정리
         return () => {
             if (ref1.current) {
-                ref1.current.removeEventListener("load", onVideoLoad);
+                if (ref1.current.tagName === "IFRAME") {
+                    ref1.current.removeEventListener("load", onVideoLoad);
+                }
+                if (ref1.current.tagName === "AUDIO") {
+                    ref1.current.removeEventListener("play", onVideoLoad);
+                }
             }
             if (intervalRef1.current) {
                 clearInterval(intervalRef1.current); // interval 종료
             }
         };
-    }, [songIndex, duration]);
+    }, [songIndex]);
 
     // 두 번째 인터벌: timeLeft가 0이 될 때까지 1초마다 감소
     useEffect(() => {
@@ -279,12 +308,26 @@ function Game_board_playing({stompClient,setFirstCreate,
         }
     }, [currentTime]);
 
+    const handleLoadedMetadata = (e) => {
+        const audio = e.target;
+        // 오디오가 로드된 후 시작 시간 설정
+        audio.currentTime = startTime;
+    };
+
+    const handleTimeUpdate = (e) => {
+        const audio = e.target;
+        // 종료 시간에 도달하면 일시정지
+        if (audio.currentTime >= endTime) {
+            audio.pause();
+        }
+    };
+
     return <div className="Game_board_waiting">
         <div className="title_exit_share">
             <div className="game_board_title">
                 {roomName}
             </div>
-            <Button text={"exit"} classname={"game_exit"} onClick={handleExit}/>
+            {/*<Button text={"exit"} classname={"game_exit"} onClick={handleExit}/>*/}
             <Button text={"share"} classname={"game_share"}/>
         </div>
         <div className="current_div_total">
@@ -299,14 +342,25 @@ function Game_board_playing({stompClient,setFirstCreate,
             <div className="play_bar">
                 <div className="current_song_ratio">
                     <div>
-                        {(timeout === false && answerChat === null) ?
-                            <iframe
-                                ref={ref1}
-                                className="quiz_playing_frame_1"
-                                src={videoUrl}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                style={{display: "none"}}
-                            /> :
+                        {(timeout === false && answerChat === null) ? (
+                                songType ? <iframe
+                                    ref={ref1}
+                                    className="quiz_playing_frame_1"
+                                    src={videoUrl}
+                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                    style={{display: "none"}}
+                                /> :
+                                    <audio
+                                        ref={ref1}
+                                        src={videoUrl}
+                                        preload="auto"
+                                        autoPlay // 자동 재생
+                                        onLoadedMetadata={handleLoadedMetadata} // 메타데이터 로드 시 시작 시간 설정
+                                        onTimeUpdate={handleTimeUpdate} // 현재 시간 업데이트 시 종료 시간 확인
+                                        controls // 사용자 컨트롤 표시 (원하면 제거 가능)
+                                    />
+                            )
+                            :
                             <iframe
                                 ref={ref2}
                                 className="quiz_playing_frame_2"
@@ -336,7 +390,10 @@ function Game_board_playing({stompClient,setFirstCreate,
                     </div>
                 </div>
             </div>
-            <Button text={`skip!`} classname={"skip"} onClick={handlSkipVote}/>
+            {timeout === false ?
+                <Button text={`skip!`} classname={"skip"} onClick={handlSkipVote}/> :
+                <Button text={`skip!`} classname={"skip"}/>
+            }
         </div>
         {timeout === false && answerChat === null &&
             <div className="hint">
@@ -348,7 +405,7 @@ function Game_board_playing({stompClient,setFirstCreate,
             </div>
         }
         <div className="user_correct">
-            {(timeout === false && answerChat !== null) &&
+            {(answerChat !== null) &&
                 <>
                     <span className="correct_bold">정답자</span> : {answerChat.answerUserName}
                 </>

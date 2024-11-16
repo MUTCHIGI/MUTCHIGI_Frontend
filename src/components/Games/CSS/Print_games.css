@@ -1,3 +1,19 @@
+/* 화면 전체를 덮는 오버레이 배경 */
+.overlay {
+    position: fixed; /* 화면 전체를 덮도록 고정 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5); /* 반투명 배경 */
+    backdrop-filter: blur(5px); /* 블러 효과 */
+    z-index: 999; /* 다른 요소들 위에 오도록 설정 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: auto; /* 외부 클릭 방지 */
+}
+
 .Print_games {
     display: grid;
 
