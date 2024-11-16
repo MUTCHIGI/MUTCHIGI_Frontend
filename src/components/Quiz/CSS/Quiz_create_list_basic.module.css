@@ -23,18 +23,18 @@
   height: calc(81 / 1080 * var(--root--height));
   align-items: center;
   justify-content: center;
-  font-family: 'Inter';
-  font-style: normal;
-  font-weight: 800;
-  font-size: calc(36px * var(--root--font--ratio));
-  line-height: calc(44px / 1080 * var(--root--height));;
   color: rgba(0, 0, 0, 0.5);
 }
 
 .url-input {
+  display: flex;
   margin-left: calc(15 / 1920 * var(--root--width));
   width: calc(1082 / 1920 * var(--root--width));
   height: calc(65 / 1080 * var(--root--height));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
   background: #FFFFFF;
   border-radius: 20px;
   padding: 0px;

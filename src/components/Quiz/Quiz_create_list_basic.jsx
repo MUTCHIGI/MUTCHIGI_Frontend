@@ -80,7 +80,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
     useEffect(() => {
         const fetchHintSetting = async () => {
             try {
-                const response = await fetch(`http://localhost:8080/quiz/${quizId}/hintState`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/${quizId}/hintState`, {
                     method: 'GET',
                     headers: {
                         'Accept': '*/*',
@@ -117,7 +117,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
         const fetchData = async () => {
             try {
                 if (quizId !== -1) {
-                    const response = await fetch(`http://localhost:8080/song/youtube/songList?quizId=${quizId}`, {
+                    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/songList?quizId=${quizId}`, {
                         method: 'GET',
                         headers: {
                             'Accept': '*/*',
@@ -132,9 +132,9 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                         const maxTimeInSeconds = convertToSeconds(item.songTime);
 
                         // Fetch answers
-                        const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/answers`, token);
+                        const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/answers`, token);
                         // Fetch hints
-                        const hints = await fetchGetApi(`http://localhost:8080/song/youtube/${item.quizSongRelationID}/hint`, token);
+                        const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
 
                         return {
                             url: item.playURL,
@@ -174,7 +174,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
         if (url.trim() === '') return;
 
         try {
-            const response = await fetch('http://localhost:8080/song/youtube', {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube`, {
                 method: 'POST',
                 headers: {
                     'Accept': '*/*',
@@ -194,7 +194,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
             const data = await response.json();
             const maxTimeInSeconds = convertToSeconds(data.songTime);
             // Fetch answers
-            const answers = await fetchGetApi(`http://localhost:8080/song/youtube/${data.quizSongRelationID}/answers`, token);
+            const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${data.quizSongRelationID}/answers`, token);
             const newCard = {
                 url: data.playURL,
                 answers: answers, // 할당된 answers
@@ -214,7 +214,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
     };
 
     const handleDeleteCard = (index) => {
-        fetch(`http://localhost:8080/song/youtube/${cards[index].quizRelationId}/delSong`, {
+        fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${cards[index].quizRelationId}/delSong`, {
             method: 'DELETE',
             headers: {
                 'Accept': '*/*',
@@ -268,7 +268,19 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
     let navigate = useNavigate();
 
     const nextStep = async () => {
-        fetch(`http://localhost:8080/quiz/setReady/${quizId}`, {
+        const hasInvalidHints = cards.some((card) => {
+            return (
+                card.hints.length < hintSetting.length || // Not enough hints
+                card.hints.some((hint) => hint.trim() === '') // Empty hint string
+            );
+        });
+    
+        if (hasInvalidHints) {
+            alert("힌트를 설정하지 않은 항목이 있습니다");
+            return; // Prevent the request from being sent
+        }
+
+        fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/setReady/${quizId}`, {
             method: "POST",
             headers: {
                 "Authorization": `Bearer ${token}`,
@@ -325,6 +337,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                                 card: cards[selectedCardIndex],
                                 hintSetting: hintSetting,
                                 token: token,
+                                instrumentId : 0,
                             }}
                             handlers={modalHandlers}
                         />

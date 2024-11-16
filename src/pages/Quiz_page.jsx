@@ -63,7 +63,7 @@ function Quiz_page({
         const fetchQuizIds = async () => {
             try {
                 // URL 구성
-                const response = await fetch(`http://localhost:8080/quiz/idList?page=${currentPage}&offset=${offset}&sort=${selectedOption_quizOrder}&quizTitle=${quizTitle}&modId=${customOrplaylist}&typeId=${selectedOption_quiztype}`,{
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/idList?page=${currentPage}&offset=${offset}&sort=${selectedOption_quizOrder}&quizTitle=${quizTitle}&modId=${customOrplaylist}&typeId=${selectedOption_quiztype}`,{
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`, // JWT 토큰 포함
