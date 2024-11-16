@@ -139,7 +139,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
 
     const getOrderCount = async () => {
         try {
-            const response = fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/GCP/userDemcusCount`, token);
+            const response = fetchGetApi('http://localhost:8080/GCP/userDemcusCount', token);
             const data = await response.json();
             setOrderCount(data.orderCount);
         } catch (error) {
@@ -178,6 +178,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                         answers: answers, // answers 초기값으로 빈 배열 설정
                         hints: [],
                         startTime: 0,
+                        songId: item.songId,
                         quizRelationId: quizSongRelationId,
                         quizUrl: item.quizUrl,
                         quizThumbnail: item.quizThumbnail,
