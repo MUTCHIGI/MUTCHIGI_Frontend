@@ -10,6 +10,7 @@ import { Route, Routes } from "react-router-dom";
 import Quiz_create from "./pages/Quiz_create.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Quiz_page_Playlist from "./pages/Quiz_page_Playlist.jsx";
+import Login from "./pages/Login.jsx"
 
 export let WindowSizeContext = createContext();
 
@@ -65,6 +66,7 @@ function App() {
           <WindowSizeContext.Provider value={windowSize}>
               <AuthProvider>
                   <Routes>
+                      <Route path="/" element={<Login />} />
                       <Route path="/ingame" element={<Ingame
                           quiz={selectedQuiz}
                           chatRoomId={chatRoomId} setChatRoomId={setChatRoomId}
@@ -107,6 +109,7 @@ function App() {
                             userId={userInfo ? userInfo.userId : 0}
                             playListUrl={playListUrl}
                             setPlayListUrl={setPlayListUrl}
+                            setFirstCreate={setFirstCreate}
                         />} />
                   </Routes>
               </AuthProvider>
