@@ -157,6 +157,9 @@
 }
 
 .Room_create_description_innerbox {
+    color: white;
+    font-size: calc(20px*var(--root--font--ratio));
+
     width: calc(var(--root--width)*0.16822916666666666666666666666667);
     height: calc(var(--root--height)*0.28148148148148148148148148148148);
 }

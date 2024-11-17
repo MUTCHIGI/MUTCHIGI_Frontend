@@ -13,8 +13,6 @@ function Quiz_item({quizId,quiz_title,quiz_description,Thumbnail,onClick}) {
             displayDescription=quiz_description;
         }
     }
-
-
     return <div className="Quiz_item">
         <div>
             {allPropsProvided ? (<>

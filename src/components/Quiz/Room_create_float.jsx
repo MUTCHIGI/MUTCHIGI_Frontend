@@ -2,7 +2,7 @@ import '../Quiz/CSS/Room_create_float.css';
 import Button from "../Public/Button.jsx";
 import {useEffect, useState} from "react";
 import {useAuth} from "../Login/AuthContext.jsx";
-import Thumbnail from "../../img/QuizItemTest/test_thumbnail.png";
+import Thumbnail from "../../img/QuizItemTest/no_img.png";
 import {useNavigate} from "react-router-dom";
 
 function Room_create_float({quiz,onClose,userInfo,
@@ -15,6 +15,7 @@ function Room_create_float({quiz,onClose,userInfo,
                            }) {
     /* 토큰 */
     const {token} = useAuth();
+    const [img,setImg] = useState(null);
 
     const navigate = useNavigate();
 
@@ -45,6 +46,36 @@ function Room_create_float({quiz,onClose,userInfo,
         setFirstCreate(true);
         navigate('/ingame');
     }
+
+    const fetchThumbnail = async (url) => {
+        if(url === "" || url === null) {
+            return "";
+        }
+        try {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/images/${url}`);
+            if (response.ok) {
+                const data = await response.blob();
+                // Blob URL을 생성하여 반환
+                const image = URL.createObjectURL(data);
+                return image; // 생성된 이미지 URL 반환
+            } else {
+                console.error("Failed to fetch image:", response.status);
+                return ""; // 실패한 경우 빈 문자열 반환
+            }
+        } catch (error) {
+            console.error("Error fetching image:", error);
+            return ""; // 오류 발생시 빈 문자열 반환
+        }
+    }
+
+    const updateImg = async () => {
+        const newImg = await fetchThumbnail(quiz.thumbnailURL);
+        setImg(newImg);
+    }
+
+    useEffect(() => {
+        updateImg();
+    }, [quiz]);
 
     return <div className="Room_create_float">
         <div className="Room_create_setting">
@@ -111,11 +142,11 @@ function Room_create_float({quiz,onClose,userInfo,
         </div>
         <div className="Room_create_info">
             <div className="Room_create_img">
-                {/*<img src={quiz.thumbnailURL} className="Room_create_img_src"/>*/}
+                <img src={img!=="" ? img : Thumbnail} className="Room_create_img_src"/>
             </div>
             <div className="Room_create_description">
                 <div className={"Room_create_description_innerbox"}>
-                    {/*{quiz.quizDescription}*/}
+                    {quiz.quizDescription}
                 </div>
             </div>
         </div>
