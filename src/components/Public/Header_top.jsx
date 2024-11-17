@@ -13,6 +13,7 @@ function Header_top({userInfo,setUserInfo,setFirstCreate}) {
     const {token,setToken} = useAuth();
 
     const handleLogin = () => {
+        console.log(`${import.meta.env.VITE_SERVER_IP}/oauth2/authorization/google`)
         window.location.href = `${import.meta.env.VITE_SERVER_IP}/oauth2/authorization/google`;
     };
 

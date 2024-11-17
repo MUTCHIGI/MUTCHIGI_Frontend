@@ -75,7 +75,9 @@ function Print_quiz({quizIds,
             }
 
             try {
-                const response = await fetch(`/quiz/images/${url}`);
+                console.log(url);
+                console.log(`${import.meta.env.VITE_SERVER_IP}/quiz/images/${url}`);
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/images/${url}`);
                 if (response.ok) {
                     const data = await response.blob();
                     console.log(data);
@@ -100,9 +102,9 @@ function Print_quiz({quizIds,
             //     newImageSrc.push(image);
             // }
             console.log(quizThumbURL[0])
-            const image = await fetchImage(quizThumbURL)
+            const image = await fetchImage(quizThumbURL[0])
 
-            setImageSrc(newImageSrc);
+            setImageSrc(image);
         };
 
         if (quizThumbURL.length > 0) {

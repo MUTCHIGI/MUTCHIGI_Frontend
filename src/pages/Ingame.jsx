@@ -50,25 +50,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
 
     const [answerChat,setAnswerChat] = useState(null);
 
-    const [AnswerUser,setAnswerUser] = useState("");
     const [answerCount, setAnswerCount] = useState({});
-
-    useEffect(() => {
-        // AnswerUser가 변할 때마다 실행되는 로직
-        if (AnswerUser) {
-            setAnswerCount((prevCount) => {
-                // prevCount에서 AnswerUser 키값에 해당하는 값 가져오고 없으면 0으로 시작
-                const newCount = prevCount[AnswerUser] ? prevCount[AnswerUser] + 1 : 1;
-
-                // 새로 업데이트된 값 반환
-                return {
-                    ...prevCount,
-                    [AnswerUser]: newCount
-                };
-            });
-        }
-    }, [AnswerUser]); // AnswerUser가 변할 때마다 실행됨
-
 
     const [CurrentQuiz, setCurrentQuiz] = useState(null); // 현재 풀고잇는 퀴즈
     const [CurrentHint,setCurrentHint] = useState(null); // 현재 풀고있는 퀴즈의 힌트
@@ -239,6 +221,18 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         stompClient.subscribe('/topic/correct/' + roomId, (message) => {
             const received_answerChat = JSON.parse(message.body);
             setAnswerChat(received_answerChat);
+
+            //정답 맞춘 개수 업데이트
+            setAnswerCount((prevAnswerCount) => {
+                // 이전 상태 복사
+                const updatedAnswerCount = { ...prevAnswerCount };
+
+                // 사용자의 정답 횟수 증가
+                const userName = received_answerChat.answerUserName;
+                updatedAnswerCount[userName] = (updatedAnswerCount[userName] || 0) + 1;
+
+                return updatedAnswerCount;
+            });
         });
         stompClient.subscribe('/topic/kick/' + roomId);
         stompClient.subscribe('/topic/superUser/' + roomId);
@@ -496,7 +490,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                         answer={answer}
                         answerChat={answerChat}
                         setAnswerChat={setAnswerChat}
-                        setAnswerUser={setAnswerUser}
                         qsRelationId={qsRelationId}
                     />
                 }
@@ -522,7 +515,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                             {userList[0].userId !== -1
                             &&
                                 <>
-                                    <span style={{color: 'red'}}>{userList[0].name}</span> &nbsp;:&nbsp;{answerCount[userList[0].name]}
+                                    <span style={{color: 'red'}}>{userList[0].name}</span> &nbsp;:&nbsp;{answerCount[userList[0].name] ? answerCount[userList[0].name] : 0}
                                 </>
                             }
                         </div>
@@ -530,7 +523,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                             {userList[1].userId !== -1
                                 &&
                                 <>
-                                    <span style={{color: 'orange'}}>{userList[1].name}</span> &nbsp;:&nbsp; {answerCount[userList[1].name]}
+                                    <span style={{color: 'orange'}}>{userList[1].name}</span> &nbsp;:&nbsp; {answerCount[userList[1].name] ? answerCount[userList[1].name] : 0}
                                 </>
                             }
                         </div>
@@ -538,7 +531,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                             {userList[2].userId !== -1
                                 &&
                                 <>
-                                    <span style={{color: 'yellow'}}>{userList[2].name}</span> &nbsp;:&nbsp; {answerCount[userList[2].name]}
+                                    <span style={{color: 'yellow'}}>{userList[2].name}</span> &nbsp;:&nbsp; {answerCount[userList[2].name] ? answerCount[userList[2].name] : 0}
                                 </>
                             }
                         </div>
@@ -546,7 +539,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                             {userList[3].userId !== -1
                                 &&
                                 <>
-                                    <span style={{color: 'lightgreen'}}>{userList[3].name}</span> &nbsp;:&nbsp; {answerCount[userList[3].name]}
+                                    <span style={{color: 'lightgreen'}}>{userList[3].name}</span> &nbsp;:&nbsp; {answerCount[userList[3].name] ? answerCount[userList[3].name] : 0}
                                 </>
                             }
                         </div>
@@ -558,7 +551,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                             {userList[4].userId !== -1
                                 &&
                                 <>
-                                    <span style={{color: 'lightblue'}}>{userList[4].name}</span> &nbsp;:&nbsp; {answerCount[userList[4].name]}
+                                    <span style={{color: 'lightblue'}}>{userList[4].name}</span> &nbsp;:&nbsp; {answerCount[userList[4].name] ? answerCount[userList[4].name] : 0}
                                 </>
                             }
                         </div>
@@ -566,7 +559,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                             {userList[5].userId !== -1
                                 &&
                                 <>
-                                    <span style={{color: 'magenta'}}>{userList[5].name}</span> &nbsp;:&nbsp; {answerCount[userList[5].name]}
+                                    <span style={{color: 'magenta'}}>{userList[5].name}</span> &nbsp;:&nbsp; {answerCount[userList[5].name] ? answerCount[userList[5].name] : 0}
                                 </>
                             }
                         </div>
@@ -574,7 +567,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                             {userList[6].userId !== -1
                                 &&
                                 <>
-                                    <span style={{color: 'mediumpurple'}}>{userList[6].name}</span> &nbsp;:&nbsp; {answerCount[userList[6].name]}
+                                    <span style={{color: 'mediumpurple'}}>{userList[6].name}</span> &nbsp;:&nbsp; {answerCount[userList[6].name] ? answerCount[userList[6].name] : 0}
                                 </>
                             }
                         </div>
@@ -582,7 +575,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                             {userList[7].userId !== -1
                                 &&
                                 <>
-                                    <span style={{color: 'ivory'}}>{userList[7].name}</span> &nbsp;:&nbsp;{answerCount[userList[7].name]}
+                                    <span style={{color: 'ivory'}}>{userList[7].name}</span> &nbsp;:&nbsp;{answerCount[userList[7].name] ? answerCount[userList[7].name] : 0}
                                 </>
                             }
                         </div>
