@@ -84,7 +84,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
                         const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
                         // fetch startTime
                         let startTime;
-                        try{
+                        try {
                             startTime = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/startTime`, token);
                         }
                         catch {
@@ -100,11 +100,13 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
                                 hintType: hint.hintType,
                                 hintText: hint.hintText
                             })),
+                            songId: item.songId,
                             startTime: convertToSeconds(startTime),
                             quizRelationId: item.quizSongRelationID,
                             quizUrl: item.playURL,
                             quizThumbnail: item.thumbnailURL,
                             maxTime: maxTimeInSeconds,
+                            isConverted: false,
                         };
                     }));
                     setCards(formattedCards);
@@ -122,8 +124,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
     }, [quizId, token]);
 
     const convertToSeconds = (timeString) => {
-        if (timeString === null)
-        {
+        if (timeString === null) {
             return -1;
         }
         const [hours, minutes, seconds] = timeString.split(':').map(Number);
@@ -347,11 +348,9 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
             const data = await response.json();
             const notConvertedIds = data.notConvertedQsRelationIDInQuizList || [];
             const allIds = data.allQsRelationIDInQuizList || [];
-
             const updatedCards = cards.map(card => {
                 const isInAllIds = allIds.includes(card.quizRelationId);
                 const isInNotConvertedIds = notConvertedIds.includes(card.quizRelationId);
-
                 // isConverted 값을 업데이트하고 나머지 속성은 그대로 유지
                 return {
                     ...card,
@@ -372,11 +371,12 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
 
     // Initial feth and set up interval for periodic fetching
     useEffect(() => {
+
         fetchProcessingSongs(); // Initial fetch
         const intervalId = setInterval(fetchProcessingSongs, 120000); // Fetch every 2 minutes
 
         return () => clearInterval(intervalId); // Cleanup on component unmount
-    }, [token]);
+    }, [token, JSON.stringify(cards)]);
 
 
     const convertToSeconds = (timeString) => {
@@ -453,6 +453,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
     };
 
     const nextStep = async () => {
+        const hasUnconvertedCards = cards.some((card) => !card.isConverted);
+
+        if (hasUnconvertedCards) {
+            alert("변환되지 않은 항목이 있습니다");
+            return; // Prevent the request from being sent
+        }
+
         const hasInvalidHints = cards.some((card) => {
             return (
                 card.hints.length < hintSetting.length || // Not enough hints
@@ -467,13 +474,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
 
         const hasInvalidTime = cards.some((card) => {
             return (
-                (card.startTime === -1) 
+                (card.startTime === -1)
             );
         });
 
         if (hasInvalidTime) {
             alert("시작 시간을 설정하지 않은 항목이 있습니다");
-            return; 
+            return;
         }
 
         const hasInvalidAnswer = cards.some((card) => {
