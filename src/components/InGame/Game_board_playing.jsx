@@ -13,7 +13,6 @@ function Game_board_playing({stompClient,setFirstCreate,
     songIndex,setSongIndex,songCount,
     answer,answerChat,setAnswerChat,
 }) {
-    console.log(quiz)
     const [timeout,setTimeOut] = useState(false);
     const navigate = useNavigate();
     const timeStamp = quiz.timeStamp;
@@ -27,6 +26,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     let {token} = useAuth()
 
     const skipRatio = skipCount/UserCount;
+    const [answerChatList,setAnswerChatList] = useState([]);
 
     const [percentage, setPercentage] = useState(0); // 시간 흐름 표현
     const [progress, setProgress] = useState(-0.2); // 시간 표현 state
@@ -36,21 +36,17 @@ function Game_board_playing({stompClient,setFirstCreate,
     const [whentoend,setWhenToEnd] = useState(null);
 
     const [currentHint, setCurrentHint] = useState([]); // 추가된 힌트들
-    const [currentTime, setCurrentTime] = useState(0);  // 현재 시간 상태
-    const [index, setIndex] = useState(0);             // 힌트 배열의 인덱스
-    const [intervalId, setIntervalId] = useState(null); // 타이머 ID
 
     const intervalRef1 = useRef(null); // 첫 번째 interval
     const intervalRef2 = useRef(null); // 두 번째 interval
     const intervalRef3 = useRef(null); // 세 번째
 
     useEffect(() => {
-        console.log(quiz)
-    }, [qsRelationId]);
-
-    useEffect(() => {
         if(answerChat!==null) {
-            setTimeOut(true) ;
+            setAnswerChatList((prevChat) => [...prevChat,answerChat])
+            if(timeout===false){
+                setTimeOut(true);
+            }
         }
     }, [answerChat]);
 
@@ -90,11 +86,10 @@ function Game_board_playing({stompClient,setFirstCreate,
                         intervalRef1.current = null;
                     }
                     setWhenToEnd(null);
-                    setCurrentTime(0);
                     setCurrentHint([]);
-                    setIndex(0);
                     setSkip(false);
                     setSkipCount(0);
+                    setAnswerChatList([]);
                     setSongIndex(songIndex+1);
                 }
             }, whentoend * 1000); // 초단위로 주어지므로 밀리초로 변환
@@ -104,21 +99,7 @@ function Game_board_playing({stompClient,setFirstCreate,
         }
     }, [whentoend]);
 
-    const handleExit = () => {
-        // 방과의 연결 해제
-        if (stompClient && stompClient.connected) {
-            stompClient.disconnect(() => {
-                console.log("Disconnected from room");
-            });
-        }
-        // /home 경로로 이동
-        setFirstCreate(true);
-        navigate('/home');
-        window.location.reload();
-    };
-
     const fetchAudio = async () => {
-        console.log("이거 실행되긴함")
         try {
             const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/play/inRoom?qsRelationId=${qsRelationId}` , {
                 method: 'GET',
@@ -167,14 +148,12 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     useEffect(() => {
         const videoId = getYouTubeVideoId(songURL);
-        console.log(videoId)
         if (videoId) {
             const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&end=${endTime}&rel=0`;
             setVideoUrl(url);
             setSongType(true);
         }
         else {
-            console.log("이거 실행됨")
             fetchAudio();
             setSongType(false);
         }
@@ -207,7 +186,6 @@ function Game_board_playing({stompClient,setFirstCreate,
     const duration = convertTimeToSeconds(timelimit);
 
     function onVideoLoad() {
-        console.log("로딩됨!")
         if(!intervalRef1.current){
             intervalRef1.current = setInterval(() => {
                 setProgress((prevProgress) => {
@@ -231,59 +209,6 @@ function Game_board_playing({stompClient,setFirstCreate,
         setPercentage(0);
         clearInterval(intervalRef1.current)
     }, [qsRelationId]);
-    // useEffect(() => {
-    //     // 현재 진행 상태를 초기화
-    //     setTimeOut(false)
-    //     setProgress(-0.2);
-    //     setPercentage(0);
-    //
-    //     // onVideoLoad 함수: ref1이 로드되면 실행
-    //     function onVideoLoad() {
-    //         if(!intervalRef1.current){
-    //             intervalRef1.current = setInterval(() => {
-    //                 setProgress((prevProgress) => {
-    //                     const newProgress = prevProgress + 0.01; // 1초마다 1씩 증가
-    //                     if (newProgress <= duration) {
-    //                         setPercentage((newProgress / duration) * 100); // percentage 계산
-    //                         return newProgress;
-    //                     } else {
-    //                         setTimeOut(true);
-    //                         clearInterval(intervalRef1.current); // duration에 도달하면 interval 종료
-    //                         return duration; // currentProgress는 duration으로 고정
-    //                     }
-    //                 });
-    //             }, 10); // 1초마다 실행
-    //         }
-    //     }
-    //
-    //     console.log(ref1.current)
-    //     // ref1이 iframe일 때의 처리
-    //     if (ref1.current && ref1.current.tagName === "IFRAME") {
-    //         console.log("프레임")
-    //         ref1.current.addEventListener("load", onVideoLoad);
-    //     }
-    //
-    //     // ref1이 audio일 때의 처리
-    //     if (ref1.current && ref1.current.tagName === "AUDIO") {
-    //         console.log("오디오")
-    //         ref1.current.addEventListener("play", onVideoLoad);
-    //     }
-    //
-    //     // 클린업 함수: 컴포넌트 언마운트 시 interval 정리
-    //     return () => {
-    //         if (ref1.current) {
-    //             if (ref1.current.tagName === "IFRAME") {
-    //                 ref1.current.removeEventListener("load", onVideoLoad);
-    //             }
-    //             if (ref1.current.tagName === "AUDIO") {
-    //                 ref1.current.removeEventListener("play", onVideoLoad);
-    //             }
-    //         }
-    //         if (intervalRef1.current) {
-    //             clearInterval(intervalRef1.current); // interval 종료
-    //         }
-    //     };
-    // }, [songIndex]);
 
     // 두 번째 인터벌: timeLeft가 0이 될 때까지 1초마다 감소
     useEffect(() => {
@@ -311,44 +236,37 @@ function Game_board_playing({stompClient,setFirstCreate,
         };
     }, [qsRelationId]);
 
-    // 힌트들을 초로 변환한 배열을 미리 준비
-    const hintTimesInSeconds = hint.map(hint => ({
-        ...hint,
-        timeInSeconds: convertTimeToSeconds(hint.hintTime)
-    }));
+
 
     // 세 번째 인터벌: currentTime을 1초마다 증가시키기
     useEffect(() => {
+        let index=0;
+        let currentTime = 0;
+        // 힌트들을 초로 변환한 배열을 미리 준비
+        const hintTimesInSeconds = hint.map(hint => ({
+            ...hint,
+            timeInSeconds: convertTimeToSeconds(hint.hintTime)
+        }));
+
         // 컴포넌트가 렌더링될 때마다 이전 interval을 클리어
         if (intervalRef3.current) {
             clearInterval(intervalRef3.current);
         }
 
         intervalRef3.current = setInterval(() => {
-            setCurrentTime((prevTime) => {
-                const newTime = prevTime + 1;
-                if (newTime <= duration) {
-                    return newTime;
-                } else {
-                    clearInterval(intervalRef3.current); // duration을 넘으면 타이머 종료
-                    return newTime;
-                }
-            });
+            if(index<hintTimesInSeconds.length && currentTime >= hintTimesInSeconds[index].timeInSeconds) {
+                setCurrentHint((prevHints) => [...prevHints,hintTimesInSeconds[index]]);
+                setTimeout(() => {
+                    index += 1; // `setCurrentHint` 이후에 증가
+                }, 0);
+            }
+            currentTime = currentTime+1;
         }, 1000);
 
         return () => {
             clearInterval(intervalRef3.current);
         };
-    }, [qsRelationId]);
-
-    useEffect(() => {
-        // 현재 시간(currentTime)과 힌트의 시간(timeInSeconds)을 비교하여
-        // 조건을 만족하는 힌트를 currentHint에 추가
-        if ((index < hintTimesInSeconds.length) && (currentTime >= hintTimesInSeconds[index].timeInSeconds)) {
-            setCurrentHint(prevHints => [...prevHints, hintTimesInSeconds[index]]);
-            setIndex(prevIndex => prevIndex + 1); // 인덱스를 하나씩 증가
-        }
-    }, [currentTime]);
+    }, [hint]);
 
     const handleLoadedMetadata = (e) => {
         const audio = e.target;
@@ -450,9 +368,9 @@ function Game_board_playing({stompClient,setFirstCreate,
             </div>
         }
         <div className="user_correct">
-            {(answerChat !== null) &&
+            {(answerChat !== null) && (answerChatList.length > 0) &&
                 <>
-                    <span className="correct_bold">정답자</span> : {answerChat.answerUserName}
+                    <span className="correct_bold">정답자</span> : {answerChatList[0].answerUserName}
                 </>
             }
         </div>

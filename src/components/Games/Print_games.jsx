@@ -3,6 +3,7 @@ import Game_item from "./Game_item.jsx";
 import {useEffect, useState} from "react";
 import {useNavigate} from "react-router-dom";
 import Password_input from "../Public/Password_input.jsx";
+import Thumbnail from '../../img/QuizItemTest/no_img.png';
 
 /* 만약 room이 null값이면 출력안하는게 아니라 그만큼 빈자리에 빈 div를 출력함 */
 /* Footer 버튼 방 생성 버튼으로 바꾸는거 추가 */
@@ -58,6 +59,8 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     const [rooms, setRooms] = useState(Array(6).fill(emptyRoomTemplate)); // 초기값을 6개의 빈 방으로 설정
     const [selectedRoom,setSelectedRoom] = useState(null);
 
+    const [thumbnailURL,setThumbnailURL] = useState([]);
+    const [imageSrc,setImageSrc] = useState([]);
     const navigate = useNavigate();
     const [showPasswordInput,setShowPasswordInput] = useState(false);
 
@@ -102,10 +105,55 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
         fetchRooms();
     }, [roomIds]);
 
+    useEffect(() => {
+        const urls = rooms.map((room) => room.quiz.thumbnailURL);
+        setThumbnailURL(urls);
+    }, [rooms]);
+
+    useEffect(() => {
+        const fetchImage = async (url) => {
+            if (url === "" || url === null) {
+                // 빈 문자열이면 그냥 빈 문자열 저장
+                return "";
+            }
+
+            try {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/images/${url}`);
+                if (response.ok) {
+                    const data = await response.blob();
+                    // Blob URL을 생성하여 반환
+                    const image = URL.createObjectURL(data);
+                    return image; // 생성된 이미지 URL 반환
+                } else {
+                    console.error("Failed to fetch image:", response.status);
+                    return ""; // 실패한 경우 빈 문자열 반환
+                }
+            } catch (error) {
+                console.error("Error fetching image:", error);
+                return ""; // 오류 발생시 빈 문자열 반환
+            }
+        };
+
+        const updateImageSrc = async () => {
+            const newImageSrc = [];
+
+            for (let i = 0; i < thumbnailURL.length; i++) {
+                const image = await fetchImage(thumbnailURL[i]);
+                newImageSrc.push(image);
+            }
+            setImageSrc(newImageSrc)
+        }
+
+        if (thumbnailURL.length > 0) {
+            updateImageSrc(); // quizThumbURL이 업데이트될 때마다 이미지 데이터 요청
+        }
+    }, [thumbnailURL]); // quizThumbURL이 변경될 때마다 실행
+
+
     const handleClick_0 = async () => {
         if (rooms[0].roomId !== null) {  // room.id가 null이 아닐 때
             try {
-                const response = await fetch(`$/room/Entities?idList=${rooms[0].roomId}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${rooms[0].roomId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -138,7 +186,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     const handleClick_1 = async () => {
         if (rooms[1].roomId !== null) {  // room.id가 null이 아닐 때
             try {
-                const response = await fetch(`http://localhost:8080/room/Entities?idList=${rooms[1].roomId}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${rooms[1].roomId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -204,7 +252,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     const handleClick_3 = async () => {
         if (rooms[3].roomId !== null) {  // room.id가 null이 아닐 때
             try {
-                const response = await fetch(`http://localhost:8080/room/Entities?idList=${rooms[3].roomId}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${rooms[3].roomId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -237,7 +285,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     const handleClick_4 = async () => {
         if (rooms[4].roomId !== null) {  // room.id가 null이 아닐 때
             try {
-                const response = await fetch(`http://localhost:8080/room/Entities?idList=${rooms[4].roomId}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${rooms[4].roomId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -270,7 +318,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     const handleClick_5 = async () => {
         if (rooms[5].roomId !== null) {  // room.id가 null이 아닐 때
             try {
-                const response = await fetch(`http://localhost:8080/room/Entities?idList=${rooms[5].roomId}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${rooms[5].roomId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -304,7 +352,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     const handleConfirmPassword = async () => {
         if(selectedRoom.roomId!==null) {
             try {
-                const response = await fetch(`http://localhost:8080/room/Entities?idList=${selectedRoom.roomId}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${selectedRoom.roomId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
@@ -346,6 +394,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
                 selectedOption_privacy={selectedOption_privacy}
                 setPassword={setPassword}
+                src={imageSrc[0] ? imageSrc[0] : Thumbnail}
                 onClick_private={() => {
                     if(rooms[0].roomId!==null) {
                         setSelectedRoom(rooms[0]);
@@ -362,6 +411,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
                 selectedOption_privacy={selectedOption_privacy}
                 setPassword={setPassword}
+                src={imageSrc[1] ? imageSrc[1] : Thumbnail}
                 onClick_private={() => {
                     if(rooms[1].roomId!==null) {
                         setSelectedRoom(rooms[0]);
@@ -378,6 +428,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
                 selectedOption_privacy={selectedOption_privacy}
                 setPassword={setPassword}
+                src={imageSrc[2] ? imageSrc[2] : Thumbnail}
                 onClick_private={() => {
                     if(rooms[2].roomId!==null) {
                         setSelectedRoom(rooms[0]);
@@ -394,6 +445,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
                 selectedOption_privacy={selectedOption_privacy}
                 setPassword={setPassword}
+                src={imageSrc[3] ? imageSrc[3] : Thumbnail}
                 onClick_private={() => {
                     if(rooms[3].roomId!==null) {
                         setSelectedRoom(rooms[0]);
@@ -410,6 +462,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
                 selectedOption_privacy={selectedOption_privacy}
                 setPassword={setPassword}
+                src={imageSrc[4] ? imageSrc[4] : Thumbnail}
                 onClick_private={() => {
                     if(rooms[4].roomId!==null) {
                         setSelectedRoom(rooms[0]);
@@ -426,6 +479,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
                 selectedOption_privacy={selectedOption_privacy}
                 setPassword={setPassword}
+                src={imageSrc[5] ? imageSrc[5] : Thumbnail}
                 onClick_private={() => {
                     if(rooms[5].roomId!==null) {
                         setSelectedRoom(rooms[0]);

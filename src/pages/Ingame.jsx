@@ -43,7 +43,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const [songIndex,setSongIndex] = useState(-1);
     const [answer,setAnswer] = useState(null);
 
-    const [ai_songurl,setAi_songUrl] = useState(null);
+    const [answerChatList,setAnswerChatList] = useState([]);
 
     const [skip,setSkip] = useState(false);
     const [skipCount,setSkipCount] = useState(0);
@@ -59,8 +59,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const UserCount = userList.filter(user => user.userId !== -1).length;
 
     useEffect(() => {
-        let socket=new SockJS(`${import.meta.env.VITE_SERVER_IP}/room`);
-        client.current = Stomp.over(socket);
         if(firstCreate) {
             handleCreateRoom();
             setFirstCreate(false);
@@ -168,6 +166,8 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     };
 
     const connectToRoom = (chatRoomId) => {
+        const socket=new SockJS(`${import.meta.env.VITE_SERVER_IP}/room`);
+        client.current = Stomp.over(socket);
         client.current.connect(
             {
             'Authorization': 'Bearer ' + token,
@@ -199,7 +199,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // chatRoomId에 해당하는 구독 생성
         stompClient.subscribe('/topic/song/' + roomId, (message) => {
             const received_quiz = JSON.parse(message.body);
-            console.log(received_quiz)
             setCurrentQuiz(received_quiz); // 응답 메시지 데이터를 CurrentQuiz state에 저장
             setQsRelationId(received_quiz.qsRelationId);
 
@@ -216,30 +215,17 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
 
         stompClient.subscribe('/topic/hint/' + roomId, (message) => {
             const received_Hint = JSON.parse(message.body);
-            setCurrentHint(received_Hint);
         });
         stompClient.subscribe('/topic/correct/' + roomId, (message) => {
             const received_answerChat = JSON.parse(message.body);
             setAnswerChat(received_answerChat);
-
-            //정답 맞춘 개수 업데이트
-            setAnswerCount((prevAnswerCount) => {
-                // 이전 상태 복사
-                const updatedAnswerCount = { ...prevAnswerCount };
-
-                // 사용자의 정답 횟수 증가
-                const userName = received_answerChat.answerUserName;
-                updatedAnswerCount[userName] = (updatedAnswerCount[userName] || 0) + 1;
-
-                return updatedAnswerCount;
-            });
+            setAnswerChatList((prevChat) => [...prevChat,received_answerChat]);
         });
         stompClient.subscribe('/topic/kick/' + roomId);
         stompClient.subscribe('/topic/superUser/' + roomId);
 
         // 오류 메시지 수신 구독
         stompClient.subscribe('/userDisconnect/' + chatUserId + '/queue/errors', (message) => {
-            console.log("Received error message:", message.body);
             if (message.body === "INVALID_PASSWORD") {
                 alert("비밀번호가 틀렸습니다.");
                 stompClient.disconnect(); // STOMP 연결 종료
@@ -260,6 +246,22 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             }
         });
     }
+
+    useEffect(() => {
+        if(answerChatList.length===1) {
+            //정답 맞춘 개수 업데이트
+            setAnswerCount((prevAnswerCount) => {
+                // 이전 상태 복사
+                const updatedAnswerCount = { ...prevAnswerCount };
+
+                // 사용자의 정답 횟수 증가
+                const userName = answerChatList[0].answerUserName;
+                updatedAnswerCount[userName] = (updatedAnswerCount[userName] || 0) + 1;
+
+                return updatedAnswerCount;
+            });
+        }
+    }, [answerChatList]);
 
     // 메시지 전송 함수
     const sendMessage = () => {
@@ -289,11 +291,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
 
     useEffect(() => {
         setSkip(false);
+        setAnswerChatList([]);
     }, [qsRelationId]);
 
     // 현재 index 퀴즈 불러오기
     useEffect(() => {
-        console.log(songIndex)
         if (songIndex !== null && client.current && client.current.connected) {
             // songIndex가 변경될 때마다 웹소켓을 통해 메시지를 보냄
             client.current.send(
@@ -391,7 +393,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (userInfo.userId === superUserId && userInfo.userId !== userList[1].userId) {
                 // 메시지를 전송
                 const messageData = {}; // 빈 메시지
-                clientRef.current.send(`/app/kickMember/${chatRoomId}/${userList[1].userId}`, {}, JSON.stringify(messageData));
+                client.current.send(`/app/kickMember/${chatRoomId}/${userList[1].userId}`, {}, JSON.stringify(messageData));
             }
         }
     };
@@ -401,7 +403,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (userInfo.userId === superUserId && userInfo.userId !== userList[2].userId) {
                 // 메시지를 전송
                 const messageData = {}; // 빈 메시지
-                clientRef.current.send(`/app/kickMember/${chatRoomId}/${userList[2].userId}`, {}, JSON.stringify(messageData));
+                client.current.send(`/app/kickMember/${chatRoomId}/${userList[2].userId}`, {}, JSON.stringify(messageData));
             }
         }
     };
@@ -411,7 +413,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (userInfo.userId === superUserId && userInfo.userId !== userList[3].userId) {
                 // 메시지를 전송
                 const messageData = {}; // 빈 메시지
-                clientRef.current.send(`/app/kickMember/${chatRoomId}/${userList[3].userId}`, {}, JSON.stringify(messageData));
+                client.current.send(`/app/kickMember/${chatRoomId}/${userList[3].userId}`, {}, JSON.stringify(messageData));
             }
         }
     };
@@ -421,7 +423,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (userInfo.userId === superUserId && userInfo.userId !== userList[4].userId) {
                 // 메시지를 전송
                 const messageData = {}; // 빈 메시지
-                clientRef.current.send(`/app/kickMember/${chatRoomId}/${userList[4].userId}`, {}, JSON.stringify(messageData));
+                client.current.send(`/app/kickMember/${chatRoomId}/${userList[4].userId}`, {}, JSON.stringify(messageData));
             }
         }
     };
@@ -431,7 +433,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (userInfo.userId === superUserId && userInfo.userId !== userList[5].userId) {
                 // 메시지를 전송
                 const messageData = {}; // 빈 메시지
-                clientRef.current.send(`/app/kickMember/${chatRoomId}/${userList[5].userId}`, {}, JSON.stringify(messageData));
+                client.current.send(`/app/kickMember/${chatRoomId}/${userList[5].userId}`, {}, JSON.stringify(messageData));
             }
         }
     };
@@ -441,7 +443,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (userInfo.userId === superUserId && userInfo.userId !== userList[6].userId) {
                 // 메시지를 전송
                 const messageData = {}; // 빈 메시지
-                clientRef.current.send(`/app/kickMember/${chatRoomId}/${userList[6].userId}`, {}, JSON.stringify(messageData));
+                client.current.send(`/app/kickMember/${chatRoomId}/${userList[6].userId}`, {}, JSON.stringify(messageData));
             }
         }
     };
@@ -451,10 +453,12 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             if (userInfo.userId === superUserId && userInfo.userId !== userList[7].userId) {
                 // 메시지를 전송
                 const messageData = {}; // 빈 메시지
-                clientRef.current.send(`/app/kickMember/${chatRoomId}/${userList[7].userId}`, {}, JSON.stringify(messageData));
+                client.current.send(`/app/kickMember/${chatRoomId}/${userList[7].userId}`, {}, JSON.stringify(messageData));
             }
         }
     };
+
+    console.log(CurrentQuiz)
 
     return <div className="Ingame">
         <div className="left">

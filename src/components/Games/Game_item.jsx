@@ -9,13 +9,13 @@ import {useEffect, useState} from "react";
 
 function Game_item({room,setChatRoomId,setFirstCreate,
     selectedQuiz,setSelectedQuiz,selectedOption_privacy,
-    setPassword,onClick_public,onClick_private
+    setPassword,onClick_public,onClick_private,
+    src,
                    }) {
     let mod;
     let type;
     let wait_play;
     let {token} = useAuth();
-    const [imageSrc,setImageSrc] = useState(null);
 
     const navigate = useNavigate();
 
@@ -76,7 +76,7 @@ function Game_item({room,setChatRoomId,setFirstCreate,
 
     return <div className="Game_item" onClick={selectedOption_privacy ? onClick_public : onClick_private}>
         {room.roomId !== null && <>
-            <img src={imageSrc} className="Thumbnail"/>
+            <img src={src} className="Thumbnail"/>
             <img src={Platform} className="Platform"/>
             <div className="room_number">
                 {room.roomId}
@@ -102,7 +102,7 @@ function Game_item({room,setChatRoomId,setFirstCreate,
 
                 </div>
                 <div className="room_info2_mid">
-                    {room.maxPlayer}
+                    1 / {room.maxPlayer}
                 </div>
                 <div className="room_info2_bottom">
                     <img src={room.publicRoom ? Public : Private} className="public_or_private"/>

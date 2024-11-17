@@ -59,7 +59,7 @@ function Print_quiz({quizIds,
 
     const [quizzes, setQuizzes] = useState(Array.from({ length: 7 }, () => ({ ...emptyQuiz })));
     const [quizThumbURL, setQuizThumbURL] = useState([]); // thumbnailURL을 저장할 상태 배열
-    const [imageSrc, setImageSrc] = useState([]);
+    const [imageSrc, setImageSrc] = useState(Array(7).fill(''));
 
     useEffect(() => {
         // quizzes 배열이 변할 때마다 quizThumbURL 배열을 업데이트
@@ -73,14 +73,10 @@ function Print_quiz({quizIds,
                 // 빈 문자열이면 그냥 빈 문자열 저장
                 return "";
             }
-
             try {
-                console.log(url);
-                console.log(`${import.meta.env.VITE_SERVER_IP}/quiz/images/${url}`);
                 const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/images/${url}`);
                 if (response.ok) {
                     const data = await response.blob();
-                    console.log(data);
                     // Blob URL을 생성하여 반환
                     const image = URL.createObjectURL(data);
                     return image; // 생성된 이미지 URL 반환
@@ -97,21 +93,15 @@ function Print_quiz({quizIds,
         const updateImageSrc = async () => {
             const newImageSrc = [];
 
-            // for (let i = 0; i < quizThumbURL.length; i++) {
-            //     const image = await fetchImage(quizThumbURL[i]);
-            //     newImageSrc.push(image);
-            // }
-            console.log(quizThumbURL[0])
-            const image = await fetchImage(quizThumbURL[0])
-
-            setImageSrc(image);
-        };
-
-        if (quizThumbURL.length > 0) {
-            updateImageSrc(); // quizThumbURL이 업데이트될 때마다 이미지 데이터 요청
+            for (let i = 0; i < quizThumbURL.length; i++) {
+                const image = await fetchImage(quizThumbURL[i]);
+                newImageSrc.push(image);
+            }
+            setImageSrc(newImageSrc);
         }
-    }, [quizThumbURL]); // quizThumbURL이 변경될 때마다 실행
 
+        updateImageSrc(); // quizThumbURL이 업데이트될 때마다 이미지 데이터 요청
+    }, [quizThumbURL]); // quizThumbURL이 변경될 때마다 실행)
 
     useEffect(() => {
         const fetchQuizzes = async () => {

@@ -25,7 +25,7 @@ function App() {
     let [privacy,setPrivacy] = useState('public');
     let [roomName, setRoomName] = useState(''); // 방 이름 상태
     let [createpassword, setCreatePassword] = useState(''); // 비밀번호 상태
-    let [maxPlayer, setMaxPlayer] = useState(1); // 최대 플레이어 수 상태
+    let [maxPlayer, setMaxPlayer] = useState(8); // 최대 플레이어 수 상태
 
     const [joinPassword,setJoinPassword] = useState('');
 
