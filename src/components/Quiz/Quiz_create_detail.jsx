@@ -354,7 +354,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
   // temporary answers, hints, time until "complete" button click
   const [localAnswers, setLocalAnswers] = useState(card.answers);
   const [localHints, setLocalHints] = useState(card.hints);
-  const [localTime, setLocalTime] = useState(card.startTime);
+  const [localTime, setLocalTime] = useState(card.startTime === -1 ? 0 : card.startTime);
 
   useEffect(() => {
     console.log(card);
