@@ -15,29 +15,6 @@ function Game_item({room,setChatRoomId,setFirstCreate,
     let mod;
     let type;
     let wait_play;
-    let {token} = useAuth();
-
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        const fetchImage = async () => {
-            try {
-                const response = await fetch(`/quiz/images/${room.thumbnailURL}`);
-                if (response.ok) {
-                    const data = await response.blob();
-                    // Blob URL을 생성하여 반환
-                    const image = URL.createObjectURL(data);
-                } else {
-                    console.error("Failed to fetch image:", response.status);
-                }
-            } catch (error) {
-                console.error("Error fetching image:", error);
-                return ""; // 오류 발생시 빈 문자열 반환
-            }
-        };
-
-        fetchImage();
-    }, []);
 
     if(room.roomId !== null) {
         switch (room.quiz.modId) {
