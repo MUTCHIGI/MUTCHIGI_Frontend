@@ -222,7 +222,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       }),
     })
     if (!response.ok) {
-      throw new Error("Failed to create quiz");
+      throw new Error("동일한 이름의 퀴즈가 존재합니다");
     }
     const id = await response.text();
     const quizIdNumber = parseInt(id, 10);
@@ -254,7 +254,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         }
       }
       catch (error) {
-        console.error("Error in postQuiz:", error);
+        alert("동일한 이름의 퀴즈가 존재합니다!");
         setIsLoading(false);
       }
     }
