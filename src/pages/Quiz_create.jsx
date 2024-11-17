@@ -11,7 +11,7 @@ import styles from "../components/Quiz/CSS/Quiz_create.module.css";
 import { useAuth } from "../components/Login/AuthContext.jsx";
 import spinner from "../img/loading.svg"
 
-function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, playListUrl, setPlayListUrl }) {
+function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, playListUrl, setPlayListUrl, setFirstCreate }) {
   // quiz main info
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -233,7 +233,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
   return (
     <div className={styles["quiz-container"]}>
-      <Header_top userInfo={userInfo} setUserInfo={setUserInfo} />
+      <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate} />
       <Header_bottom
         quiz={false}
       />

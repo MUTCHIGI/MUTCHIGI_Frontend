@@ -1,0 +1,96 @@
+.login-container {
+    position: relative;
+    display: flex;
+    flex-direction: row;
+    height: var(--root--height);
+    width: var(--root--width);
+}
+
+.login-left {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    height: 100%;
+    width: calc(1175 / 1920 * var(--root--width));
+}
+
+.logo {
+    width:  min(calc(800 / 1920 * var(--root--width)), calc(800 / 1080 * var(--root--height)));
+    height: min(calc(200 / 1920 * var(--root--width)), calc(200 / 1080 * var(--root--height)));
+    position: relative;
+    left: calc(240 / 1920 * var(--root--width));
+    top: calc(200 / 1080 * var(--root--height));
+}
+
+.main-text {
+    position: relative;
+    width: calc(800 / 1920 * var(--root--width));
+    height: calc(200 / 1080 * var(--root--height));
+    left: calc(290 / 1920 * var(--root--width));
+    top: calc(330 / 1080 * var(--root--height));
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: calc(64px * var(--root--font--ratio));
+    color: #FFFFFF;
+}
+
+.login-div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    width: calc(480 / 1920 * var(--root--width));
+    background: #00251F;
+}
+
+.login-text {
+    display: flex;
+    /* align-items: center; */
+    justify-content: center;
+    position: relative;
+    width: calc(240 / 1920 * var(--root--width));
+    height: calc(110 / 1080 * var(--root--height));
+    top: calc(275 / 1080 * var(--root--height));
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: calc(64px * var(--root--font--ratio));
+    color: #FFFFFF;
+}
+
+.login-round {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    width: calc(435 / 1920 * var(--root--width));
+    height: calc(280 / 1080 * var(--root--height));
+    top: calc(290 / 1080 * var(--root--height));
+    background: #00D9B8;
+    border-radius: 50px;
+}
+
+.login {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+    width: calc(330 / 1920 * var(--root--width));
+    height: calc(100 / 1080 * var(--root--height));
+    border-radius: 10px;
+    background-color: #FFFFFF;
+    /* border: 0px; */
+    cursor: pointer;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: calc(28px * var(--root--font--ratio));
+    color: #000000;
+}
+
+.button-image {
+    width: min(calc(55 / 1920 * var(--root--width)), calc(55 / 1080 * var(--root--height)));
+    height: min(calc(55 / 1920 * var(--root--width)), calc(55 / 1080 * var(--root--height)));
+}
