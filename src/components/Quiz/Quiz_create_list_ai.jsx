@@ -9,7 +9,7 @@ import PageMove from './Page_move.jsx'
 import SoundWavePlayer from './Sound_wave_player.jsx';
 import spinner from '../../img/loading.svg'
 
-const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
+const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
     // screan setting
     const [currentScreen, setCurrentScreen] = useState(1);
     const [isLoading, setIsLoading] = useState(false);
@@ -24,6 +24,8 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
     const [inputValue, setInputValue] = useState(currentPage);
     // api info
     const [orderCount, setOrderCount] = useState(0);
+    // quiz info
+    const [hintSetting, setHintSetting] = useState([]);
 
     useEffect(() => {
         const fetchHintSetting = async () => {
@@ -51,11 +53,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                 });
 
                 // Update only the `time` property in `hintSetting`
-                formattedHintSetting.forEach((formattedHint, index) => {
-                    if (hintSetting[index]) {
-                        hintSetting[index].time = formattedHint.time;
-                    }
-                });
+                setHintSetting(formattedHintSetting);
 
                 console.log(hintSetting);
             } catch (error) {
@@ -84,6 +82,14 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                         const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/answers`, token);
                         // Fetch hints
                         const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
+                        // fetch startTime
+                        let startTime;
+                        try{
+                            startTime = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/startTime`, token);
+                        }
+                        catch {
+                            startTime = null;
+                        }
 
                         return {
                             url: item.playURL,
@@ -94,7 +100,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                                 hintType: hint.hintType,
                                 hintText: hint.hintText
                             })),
-                            startTime: 0,
+                            startTime: convertToSeconds(startTime),
                             quizRelationId: item.quizSongRelationID,
                             quizUrl: item.playURL,
                             quizThumbnail: item.thumbnailURL,
@@ -116,6 +122,10 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
     }, [quizId, token]);
 
     const convertToSeconds = (timeString) => {
+        if (timeString === null)
+        {
+            return -1;
+        }
         const [hours, minutes, seconds] = timeString.split(':').map(Number);
         console.log(hours, minutes, seconds);
         return (hours * 3600) + (minutes * 60) + seconds;
@@ -134,13 +144,12 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
         if (!response.ok) {
             throw new Error(`Failed to fetch data from ${url}`);
         }
-        return response.json();
+        return await response.json();
     };
 
     const getOrderCount = async () => {
         try {
-            const response = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/GCP/userDemcusCount`, token);
-            const data = await response.json();
+            const data = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/GCP/userDemcusCount`, token);
             setOrderCount(data.orderCount);
         } catch (error) {
             console.error("Error fetching current count:", error);
@@ -183,6 +192,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                             quizUrl: item.quizUrl,
                             quizThumbnail: item.quizThumbnail,
                             maxTime: maxTimeInSeconds,
+                            isConverted: true,
                         };
                     }
                     catch (error) {
@@ -196,6 +206,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                             quizUrl: item.quizUrl,
                             quizThumbnail: item.quizThumbnail,
                             maxTime: maxTimeInSeconds,
+                            isConverted: true,
                         };
                     }
                 })
@@ -266,7 +277,10 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
                     isModalOpen={isModalOpen}
                     isLoading={isLoading}
                     hintSetting={hintSetting}
+                    orderCount={orderCount}
                     token={token}
+                    setCards={setCards}
+                    setOrderCount={setOrderCount}
                     openModal={openModal}
                     handleDeleteCard={handleDeleteCard}
                     onNavigate={() => switchScreen(2)}
@@ -313,8 +327,130 @@ const QuizCreateListAi = ({ quizId, instrumentId, hintSetting, token }) => {
     );
 };
 
-function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, token, openModal, handleDeleteCard, onNavigate }) {
+function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCount, token, setCards, setOrderCount, openModal, handleDeleteCard, onNavigate }) {
     let navigate = useNavigate();
+    const [url, setUrl] = useState('');
+
+
+    // Function to fetch the list of songs being processed
+    const fetchProcessingSongs = async () => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/quiz/DemucsCount?quizId=${quizId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': '*/*',
+                },
+            });
+
+            if (!response.ok) throw new Error('Failed to fetch processing songs');
+
+            const data = await response.json();
+            const notConvertedIds = data.notConvertedQsRelationIDInQuizList || [];
+            const allIds = data.allQsRelationIDInQuizList || [];
+
+            const updatedCards = cards.map(card => {
+                const isInAllIds = allIds.includes(card.quizRelationId);
+                const isInNotConvertedIds = notConvertedIds.includes(card.quizRelationId);
+
+                // isConverted 값을 업데이트하고 나머지 속성은 그대로 유지
+                return {
+                    ...card,
+                    isConverted: (isInAllIds && (!isInNotConvertedIds)),
+                };
+            });
+
+            setCards(prevCards =>
+                prevCards.map(card =>
+                    updatedCards.find(updatedCard => updatedCard.quizRelationId === card.quizRelationId) || card
+                )
+            );
+
+        } catch (error) {
+            console.error('Error fetching processing songs:', error);
+        }
+    };
+
+    // Initial feth and set up interval for periodic fetching
+    useEffect(() => {
+        fetchProcessingSongs(); // Initial fetch
+        const intervalId = setInterval(fetchProcessingSongs, 120000); // Fetch every 2 minutes
+
+        return () => clearInterval(intervalId); // Cleanup on component unmount
+    }, [token]);
+
+
+    const convertToSeconds = (timeString) => {
+        const [hours, minutes, seconds] = timeString.split(':').map(Number);
+        console.log(hours, minutes, seconds);
+        return (hours * 3600) + (minutes * 60) + seconds;
+    };
+
+    // Function to initiate song conversion
+    const handleSearch = async () => {
+        if (url.trim() === '') return;
+        if (orderCount === 10) {
+            alert("최대 요청 횟수를 넘겼습니다");
+            setUrl('');
+            return;
+        }
+        setOrderCount(orderCount + 1);
+        try {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': '*/*',
+                },
+            });
+            if (!response.ok) throw new Error('Failed to initiate song conversion');
+            const song = await response.json();
+
+            const ConnectRequest = await fetch(
+                `${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/SongToQuiz?songIds=${song.songId}&quizId=${quizId}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': '*/*',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({}),
+                }
+            );
+            if (!ConnectRequest.ok) throw new Error('Failed to assign song to quiz');
+
+            // 응답에서 quizSongRelationId를 추출
+            const [quizSongRelationId] = await ConnectRequest.json();
+
+            let answerList = [];
+            try {
+                answersList = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${quizSongRelationId}/answers`, token);
+
+            }
+            catch (error) {
+                answerList = [];
+            }
+
+            const newCard = {
+                url: song.playURL,
+                answers: answerList,
+                hints: [],
+                startTime: 0,
+                quizRelationId: quizSongRelationId,
+                songId: song.songId,
+                quizUrl: song.playURL,
+                songName: song.songName,
+                quizThumbnail: song.thumbnailURL,
+                maxTime: convertToSeconds(song.songTime),
+                isConverted: false,
+            };
+
+            setCards((prevCards) => [...prevCards, newCard]);
+        } catch (error) {
+            console.error('Error initiating song conversion:', error);
+        }
+        setUrl('');
+    };
 
     const nextStep = async () => {
         const hasInvalidHints = cards.some((card) => {
@@ -327,6 +463,28 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, token, 
         if (hasInvalidHints) {
             alert("힌트를 설정하지 않은 항목이 있습니다");
             return; // Prevent the request from being sent
+        }
+
+        const hasInvalidTime = cards.some((card) => {
+            return (
+                (card.startTime === -1) 
+            );
+        });
+
+        if (hasInvalidTime) {
+            alert("시작 시간을 설정하지 않은 항목이 있습니다");
+            return; 
+        }
+
+        const hasInvalidAnswer = cards.some((card) => {
+            return (
+                card.answers.length < 1
+            );
+        });
+
+        if (hasInvalidAnswer) {
+            alert("정답을 설정하지 않은 항목이 있습니다");
+            return;
         }
 
         fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/setReady/${quizId}`, {
@@ -361,7 +519,23 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, token, 
                 </div>
             ) : (
                 <div className={`${styles['card-list-container']} ${isModalOpen ? styles['blur'] : ''}`}>
-                    <button className={styles['add-button']}>퀴즈 목록</button>
+                    <div className={styles["url-input-section"]}>
+                        <input
+                            type="text"
+                            placeholder="변환할 음악의 유튜브 URL을 입력하세요"
+                            value={url}
+                            onChange={(e) => setUrl(e.target.value)}
+                            className={styles['url-input']}
+                        />
+                        <span className={`${styles['tooltip-icon']}`}>
+                            ?
+                            <span className={`${styles['tooltip-text']}`}>
+                                AI 퀴즈 노래 변환은 하루에 10곡으로 제한되며,<br />
+                                변환을 시작하면 되돌릴 수 없습니다.
+                            </span>
+                        </span>
+                        <button onClick={handleSearch} className={styles['url-input-button']}>변환</button>
+                    </div>
                     <div className={styles['card-grid']}>
                         <div className={styles['card']}>
                             <button className={styles['add-icon']} onClick={onNavigate}>
@@ -380,17 +554,22 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, token, 
                                 }}
                             >
                                 <div className={styles['card-content']}>
-                                    <div className={styles['card-icons']}>
-                                        <button className={styles['card-edit-btn']} onClick={() => openModal(index)}>
-                                            <img src={editButton} alt="Edit" className={styles['card-icon-img']} />
-                                        </button>
-                                        <button
-                                            className={styles['card-delete-btn']}
-                                            onClick={() => handleDeleteCard(index)}
-                                        >
-                                            <img src={deleteButton} alt="Delete" className={styles['card-icon-img']} />
-                                        </button>
-                                    </div>
+                                    {cards[index].isConverted ? (
+                                        <div className={styles['card-icons']}>
+                                            <button className={styles['card-edit-btn']} onClick={() => openModal(index)}>
+                                                <img src={editButton} alt="Edit" className={styles['card-icon-img']} />
+                                            </button>
+                                            <button
+                                                className={styles['card-delete-btn']}
+                                                onClick={() => handleDeleteCard(index)}
+                                            >
+                                                <img src={deleteButton} alt="Delete" className={styles['card-icon-img']} />
+                                            </button>
+                                        </div>) : (
+                                        <div className={styles['overlay']}>
+                                            <span className={styles['overlay-text']}>변환 중</span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ))}
@@ -561,9 +740,6 @@ function SearchPreProcessSong({ selectedItems, setSelectedItems, token, instrume
             <span className={`${styles['navigation-icon']} ${styles['left']}`} onClick={onNavigateBack}>
                 ←
             </span>
-            <span className={`${styles['navigation-icon']} ${styles['right']}`} onClick={onNavigateToSeparation}>
-                →
-            </span>
             <PageMove
                 info={{ currentPage, inputValue }}
                 handlers={{ setCurrentPage, setInputValue }}
@@ -576,118 +752,6 @@ function SearchPreProcessSong({ selectedItems, setSelectedItems, token, instrume
                     token={token}
                 />
             )}
-        </div>
-    );
-}
-
-function MusicSeparation({ orderCount, token, setOrderCount, onNavigateBack }) {
-    const [cards, setCards] = useState([]);
-    const [url, setUrl] = useState('');
-
-    // Function to initiate song conversion
-    const handleSearch = async () => {
-        if (url.trim() === '') return;
-        if (orderCount === 10) {
-            alert("최대 요청 횟수를 넘겼습니다");
-            setUrl('');
-            return;
-        }
-        setOrderCount(orderCount + 1);
-        try {
-            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': '*/*',
-                },
-            });
-
-            if (!response.ok) throw new Error('Failed to initiate song conversion');
-
-            const data = await response.json();
-            const newCard = {
-                thumbnailURL: data.thumbnailURL,
-            };
-            setCards((prevCards) => [newCard, ...prevCards]);
-        } catch (error) {
-            console.error('Error initiating song conversion:', error);
-        }
-        setUrl('');
-    };
-
-    // Function to fetch the list of songs being processed
-    const fetchProcessingSongs = async () => {
-        try {
-            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/myOrderList`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Accept': '*/*',
-                },
-            });
-
-            if (!response.ok) throw new Error('Failed to fetch processing songs');
-
-            const data = await response.json();
-            const processedSongs = data.map(song => ({
-                thumbnailURL: song.thumbnailURL,
-                demucsCompleted: song.demucsCompleted,
-            }));
-            setCards(processedSongs);
-        } catch (error) {
-            console.error('Error fetching processing songs:', error);
-        }
-    };
-
-    // Initial fetch and set up interval for periodic fetching
-    useEffect(() => {
-        fetchProcessingSongs(); // Initial fetch
-        const intervalId = setInterval(fetchProcessingSongs, 120000); // Fetch every 2 minutes
-
-        return () => clearInterval(intervalId); // Cleanup on component unmount
-    }, [token]);
-
-    return (
-        <div className={styles['card-list-container']}>
-            <div className={styles["url-input-section"]}>
-                <input
-                    type="text"
-                    placeholder="변환할 음악의 유튜브 URL을 입력하세요"
-                    value={url}
-                    onChange={(e) => setUrl(e.target.value)}
-                    className={styles['url-input']}
-                />
-                <span className={`${styles['tooltip-icon']}`}>
-                    ?
-                    <span className={`${styles['tooltip-text']}`}>
-                        AI 퀴즈 노래 변환은 하루에 10곡으로 제한되며,<br />
-                        변환을 시작하면 되돌릴 수 없습니다.
-                    </span>
-                </span>
-                <button onClick={handleSearch} className={styles['url-input-button']}>변환</button>
-            </div>
-            <div className={styles['card-grid']}>
-                {cards.map((card, index) => (
-                    <div
-                        className={styles['card']}
-                        key={index}
-                        style={{
-                            backgroundImage: `url(${card.thumbnailURL})`,
-                            backgroundSize: 'cover',
-                            backgroundPosition: 'center',
-                            backgroundColor: 'gray',
-                        }}
-                    >
-                        {!card.demucsCompleted && (
-                            <div className={styles['overlay']}>
-                                <span className={styles['overlay-text']}>변환 중</span>
-                            </div>
-                        )}
-                    </div>
-                ))}
-            </div>
-            <span className={`${styles['navigation-icon']} ${styles['left']}`} onClick={onNavigateBack}>
-                ←
-            </span>
         </div>
     );
 }

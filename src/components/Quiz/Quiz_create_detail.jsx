@@ -406,7 +406,8 @@ const QuizCreateDetail = ({ info, handlers }) => {
         body: JSON.stringify({
           hour: hours,
           minute: minutes,
-          second: seconds
+          second: seconds,
+          nano: 0,
         }),
       });
       if (!startTimeResponse.ok) {

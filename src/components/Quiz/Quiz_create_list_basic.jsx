@@ -55,10 +55,10 @@ const QuizList = ({ info, handlers }) => {
     );
 }
 
-const QuizCreateList = ({ quizId, hintSetting, token }) => {
+const QuizCreateList = ({ quizId, token }) => {
     const [url, setUrl] = useState('');
     const [cards, setCards] = useState([]);
-    // const [hintSetting, setHintSetting] = useState([]);
+    const [hintSetting, setHintSetting] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCardIndex, setSelectedCardIndex] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
@@ -75,6 +75,16 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
             throw new Error(`Failed to fetch data from ${url}`);
         }
         return response.json();
+    };
+
+    const convertToSeconds = (timeString) => {
+        if (timeString === null)
+        {
+            return -1;
+        }
+        const [hours, minutes, seconds] = timeString.split(':').map(Number);
+        console.log(hours, minutes, seconds);
+        return (hours * 3600) + (minutes * 60) + seconds;
     };
 
     useEffect(() => {
@@ -102,11 +112,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                     };
                 });                
                 
-                formattedHintSetting.forEach((formattedHint, index) => {
-                    if (hintSetting[index]) {
-                        hintSetting[index].time = formattedHint.time;
-                    }
-                });
+                setHintSetting(formattedHintSetting);
                 
                 console.log(hintSetting);
             } catch (error) {
@@ -135,6 +141,14 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                         const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/answers`, token);
                         // Fetch hints
                         const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
+                        // fetch startTime
+                        let startTime;
+                        try{
+                            startTime = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/startTime`, token);
+                        }
+                        catch {
+                            startTime = null;
+                        }
 
                         return {
                             url: item.playURL,
@@ -145,7 +159,7 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
                                 hintType: hint.hintType,
                                 hintText: hint.hintText
                             })),
-                            startTime: 0,
+                            startTime: convertToSeconds(startTime),
                             quizRelationId: item.quizSongRelationID,
                             quizUrl: item.playURL,
                             quizThumbnail: item.thumbnailURL,
@@ -164,11 +178,6 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
         setIsLoading(false);
     }, [quizId, token]);
 
-    const convertToSeconds = (timeString) => {
-        const [hours, minutes, seconds] = timeString.split(':').map(Number);
-        console.log(hours, minutes, seconds);
-        return (hours * 3600) + (minutes * 60) + seconds;
-    };
 
     const handleAddCard = async () => {
         if (url.trim() === '') return;
@@ -292,6 +301,28 @@ const QuizCreateList = ({ quizId, hintSetting, token }) => {
         if (hasInvalidHints) {
             alert("힌트를 설정하지 않은 항목이 있습니다");
             return; // Prevent the request from being sent
+        }
+
+        const hasInvalidTime = cards.some((card) => {
+            return (
+                (card.startTime === -1) 
+            );
+        });
+
+        if (hasInvalidTime) {
+            alert("시작 시간을 설정하지 않은 항목이 있습니다");
+            return; 
+        }
+
+        const hasInvalidAnswer = cards.some((card) => {
+            return (
+                card.answers.length < 1
+            );
+        });
+
+        if (hasInvalidAnswer) {
+            alert("정답을 설정하지 않은 항목이 있습니다");
+            return;
         }
 
         fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/setReady/${quizId}`, {

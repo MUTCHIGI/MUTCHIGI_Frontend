@@ -13,6 +13,7 @@ function Home({userInfo,setUserInfo,
     setChatRoomId,setFirstCreate,
     selectedQuiz,setSelectedQuiz,
     password,setPassword,setRoomName,
+    setRestartQuizId,
               }) {
     let token = useAuth();
     // API를 통해 받아온 방들의 ID 리스트
@@ -67,7 +68,7 @@ function Home({userInfo,setUserInfo,
     }, [currentPage,offset,selectedOption_type,selectedOption_quiztype,quizTitle,selectedOption_privacy]);
 
     return <div>
-        <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate}/>
+        <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate} setRestartQuizId={setRestartQuizId}/>
         <Header_bottom/>
         <SearchBar
             multiplay={true}

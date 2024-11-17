@@ -2,6 +2,7 @@ import Header_top from "./components/Public/Header_top.jsx";
 import Header_bottom from "./components/Public/Header_bottom.jsx";
 import Home from "./pages/Home.jsx";
 import { createContext, useContext, useEffect, useState } from "react";
+import {useNavigate} from "react-router-dom";
 import Quiz_page from "./pages/Quiz_page.jsx";
 import Footer from "./components/Public/Footer.jsx";
 import Ingame from "./pages/Ingame.jsx";
@@ -29,6 +30,9 @@ function App() {
 
     const [joinPassword,setJoinPassword] = useState('');
 
+    // 퀴즈 이어만들기 필요한 요소
+    const [restartQuizId, setRestartQuizId] = useState(-1)
+
     // 최초 생성의 경우 true, 참여하는 경우 false
     let [firstCreate,setFirstCreate] = useState(true);
 
@@ -50,6 +54,14 @@ function App() {
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
+    const navigate = useNavigate();
+    useEffect(() => {
+        if (restartQuizId !== -1)
+        {
+            navigate('/home/quiz_create');
+        }
+    }, [restartQuizId]);
 
     document.documentElement.style.setProperty("--root--height", `${windowSize.height}px`);
     document.documentElement.style.setProperty("--root--width", `${windowSize.width}px`);
@@ -85,6 +97,7 @@ function App() {
                           selectedQuiz={selectedQuiz} setSelectedQuiz={setSelectedQuiz}
                           password={joinPassword} setPassword={setJoinPassword}
                           setRoomName={setRoomName}
+                          setRestartQuizId={setRestartQuizId}
                       />}/>
                       <Route path="/home/quiz" element={<Quiz_page
                           userInfo={userInfo} setUserInfo={setUserInfo}
@@ -96,18 +109,22 @@ function App() {
                           password={createpassword} setPassword={setCreatePassword}
                           maxPlayer={maxPlayer} setMaxPlayer={setMaxPlayer}
                           setFirstCreate={setFirstCreate}
+                          setRestartQuizId={setRestartQuizId}
                       />}/>
                       <Route path="/home/quiz/playlist" element={<Quiz_page_Playlist
                           userInfo={userInfo} setUserInfo={setUserInfo}
                           playlistUrl={playListUrl} setPlayListUrl={setPlayListUrl}
                           customOrplaylist={customOrplaylist} setCustomOrPlaylist={setCustomOrPlaylist}
                           setFirstCreate={setFirstCreate}
+                          setRestartQuizId={setRestartQuizId}
                       />}/>
                        <Route path="/home/quiz_create" element={<Quiz_create
                             userInfo={userInfo} setUserInfo={setUserInfo}
                             typeId={customOrplaylist}
                             userId={userInfo ? userInfo.userId : 0}
                             playListUrl={playListUrl}
+                            restartQuizId={restartQuizId}
+                            setRestartQuizId={setRestartQuizId}
                             setPlayListUrl={setPlayListUrl}
                             setFirstCreate={setFirstCreate}
                         />} />
