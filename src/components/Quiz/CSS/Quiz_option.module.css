@@ -289,13 +289,13 @@
     flex-direction: row;
     align-items: center;
     /* gap: 10px; */
-    column-gap: calc(20 / 1920 * var(--root--width)); 
+    column-gap: calc(40 / 1920 * var(--root--width)); 
     /* width: calc(357 / 1920 * var(--root--width)); */
 }
 
 .instrument-option {
     height: calc(50 / 1080 * var(--root--height));
-    width: calc(60 / 1920 * var(--root--width));
+    width: calc(90 / 1920 * var(--root--width));
     display: flex;
     justify-content: space-between;
     align-items: center;
