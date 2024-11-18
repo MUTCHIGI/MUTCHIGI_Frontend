@@ -1,0 +1,172 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+}
+
+.container {
+  box-sizing: border-box;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: calc(850 / 1920 * var(--root--width));
+  height: calc(760 / 1080 * var(--root--height));
+  background: #252525;
+  outline: 4px solid #00FFD9;
+  /* box-shadow: 0 0 8px rgba(0, 247, 255, 0.295); */
+  outline-offset: -1px;
+  /* 테두리가 요소와 겹치도록 설정 */
+  border-radius: 20px;
+}
+
+.preview-button {
+  position: relative;
+  display: flex;
+  width: calc(200 / 1920 * var(--root--width));
+  height: calc(50 / 1080 * var(--root--height));
+  left: calc(48 / 1920 * var(--root--width));
+  top: calc(64 / 1080 * var(--root--height));
+  background: #D9D9D9;
+  border-radius: 20px;
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  align-items: center;
+  justify-content: center;
+  color: #000000;
+}
+
+.controls {
+  display: flex;
+  position: relative;
+  flex-direction: row;
+  align-items: center;
+  left: calc(48 / 1920 * var(--root--width));
+  top: calc(90 / 1080 * var(--root--height));
+}
+
+.play-text {
+  /* 재생 */
+  position: relative;
+  display: flex;
+  width: calc(70 / 1920 * var(--root--width));
+  height: calc(40 / 1080 * var(--root--height));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+}
+
+.play-button {
+  height: calc(40 / 1080 * var(--root--height));
+  width: calc(40 / 1080 * var(--root--height));
+  background: none;
+  border: none;
+  cursor: pointer;
+  border-radius: 50%;
+  background: #D9D9D9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon-img {
+  height: calc(40 / 1080 * var(--root--height));
+  width: calc(40 / 1080 * var(--root--height));
+}
+
+.time-display {
+  background: #FFFFFF;
+  border-radius: 15px;
+  position: relative;
+  width: calc(232 / 1920 * var(--root--width));
+  height: calc(40 / 1080 * var(--root--height));
+  left: calc(18 / 1920 * var(--root--width));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  color: #000000;
+}
+
+.waveform-container {
+  display: flex;
+  flex-direction: row;
+  position: relative;
+  align-items: center;
+  left: calc(48 / 1920 * var(--root--width));
+  top: calc(120 / 1080 * var(--root--height));
+}
+
+
+.instrument-text {
+  /* 재생 */
+  position: relative;
+  display: flex;
+  width: calc(80 / 1920 * var(--root--width));
+  height: calc(40 / 1080 * var(--root--height));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+  color: #FFFFFF;
+}
+
+.waveform {
+  position: relative;
+  width: calc(650 / 1920 * var(--root--width));
+  height: calc(80 / 1080 * var(--root--height));
+  margin: calc(15 / 1080 * var(--root--height)) 0;
+  left: calc(20 / 1920 * var(--root--width));
+  background-color: transparent;
+  position: relative;
+}
+
+
+
+.close-btn {
+  background-color: #00FFD9;
+  border: none;
+  position: relative;
+  height: calc(60 / 1080 * var(--root--height));
+  width: calc(100 / 1920 * var(--root--width));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  cursor: pointer;
+}
+
+.close-button {
+  background-color: #00FFD9;
+  border: none;
+  position: relative;
+  top: calc(130 / 1080 * var(--root--height));
+  left: calc(730 / 1920 * var(--root--width));
+  height: calc(45 / 1080 * var(--root--height));
+  width: calc(80 / 1920 * var(--root--width));
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 800;
+  font-size: calc(24px * var(--root--font--ratio));
+  cursor: pointer;
+}

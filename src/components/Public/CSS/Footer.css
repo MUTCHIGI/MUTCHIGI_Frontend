@@ -1,0 +1,49 @@
+.Footer {
+    display: flex;
+}
+
+.page_offset {
+    display: flex;
+    align-items: center;
+
+    margin-top: calc(var(--root--height)*0.0171296296);
+    margin-left: calc(var(--root--width)*0.46);
+
+    width: calc(var(--root--width)*0.2);
+    height: calc(var(--root--height)*0.039814814);
+
+}
+
+.input_page {
+    display: flex;
+
+    text-align: center;
+
+    width: calc(var(--root--height)*0.0365416);
+    height: calc(var(--root--height)*0.0265416);
+    margin-left: calc(var(--root--width)*0.01);
+
+    border: 5px solid #D9D9D9;
+    border-radius: 10px;
+}
+
+.cur_page {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    background-color: #D9D9D9;
+
+    width: calc(var(--root--height)*0.06);
+    height: 100%;
+
+    font-weight: bolder;
+    font-size: calc(25px*var(--root--font--ratio));
+}
+
+.button_create_room {
+    margin-left: auto;
+    margin-top: calc(var(--root--height)*0.016);
+    margin-right: calc(var(--root--width)*0.085);
+}

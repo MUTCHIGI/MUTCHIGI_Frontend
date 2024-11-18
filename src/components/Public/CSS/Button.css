@@ -1,0 +1,524 @@
+/* 버튼자체의 스타일에만 적용되는 css이므로 해당 버튼의 위치는 버튼이 존재하는 컴포넌트 css에서 다룰것 */
+/* Header top 버튼 */
+
+.button_profile_logout {
+    padding: 0;
+    border: 0;
+    width: calc(20px*var(--root--font--ratio));
+    height: calc(20px*var(--root--font--ratio));
+    cursor: pointer;
+    background-color: rgb(0,0,0,0);
+}
+
+.button-logo {
+    width: calc(20px*var(--root--font--ratio));
+    height: calc(20px*var(--root--font--ratio));
+}
+
+.button_Login {
+    background-color: #6BC5B4;
+
+    border-radius: 20px;
+    border: 2px solid #00FFD9;
+
+    font-size: calc(20px*var(--root--font--ratio));
+    font-weight: bold;
+
+    width: 100%;
+    height: calc(var(--root--height)*0.04444444444444444444444444444444);
+
+    cursor: pointer;
+}
+
+.button_Login:hover {
+    background-color: #00FFD9;
+}
+
+/* Header bottom 버튼 */
+.button_mod_all {
+    font-size: calc(20px*var(--root--font--ratio));
+    color:white;
+    font-weight: bold;
+
+    background-color: rgba(48,100,92,0);
+    width: calc(var(--root--width)*0.07);
+    height: 100%;
+
+    cursor: pointer;
+
+    border-left: 1px solid white;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    border-right: 1px solid rgba(48,100,92,0);
+}
+
+.button_mod_all_selected {
+    font-size: calc(20px*var(--root--font--ratio));
+    color:white;
+    font-weight: lighter;
+
+    background-color: rgba(255,255,255,0.5);
+    width: calc(var(--root--width)*0.07);
+    height: 100%;
+
+    cursor: pointer;
+
+    border-left: 1px solid white;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    border-right: 1px solid rgba(48,100,92,0);
+}
+
+.button_mod_custom {
+    font-size: calc(20px*var(--root--font--ratio));
+    color:white;
+    font-weight: bolder;
+
+    background-color: rgba(48,100,92,0);
+    width: calc(var(--root--width)*0.07);
+    height: 100%;
+
+    cursor: pointer;
+
+    border-left: 1px solid white;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    border-right: 1px solid rgba(48,100,92,0);
+}
+
+.button_mod_custom_selected {
+    font-size: calc(20px*var(--root--font--ratio));
+    color : white;
+    font-weight: bolder;
+
+    background-color: rgba(255,255,255,0.5);
+    width: calc(var(--root--width)*0.07);
+    height: 100%;
+
+    cursor: pointer;
+
+    border-left: 1px solid white;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    border-right: 1px solid rgba(48,100,92,0);
+}
+
+.button_mod_playlist {
+    font-size: calc(20px*var(--root--font--ratio));
+    color:white;
+    font-weight: bolder;
+
+    background-color: rgba(48,100,92,0);
+    width: calc(var(--root--width)*0.1072916);
+    height: 100%;
+
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+
+    cursor: pointer;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    /*border-right: 1px solid rgba(48,100,92,0);*/
+}
+
+.button_mod_playlist_selected {
+    font-size: calc(20px*var(--root--font--ratio));
+    color:white;
+    font-weight: bolder;
+
+    background-color: rgba(255,255,255,0.5);
+    width: calc(var(--root--width)*0.1072916);
+    height: 100%;
+
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+
+    cursor: pointer;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+    /*border-right: 1px solid rgba(48,100,92,0);*/
+}
+
+.button_mod_ai_generate {
+    font-size: calc(30px*var(--root--font--ratio));
+    color:white;
+    font-weight: bolder;
+
+    background-color: rgba(48,100,92,0);
+    width: calc(var(--root--width)*0.0984375);
+    height: 100%;
+
+    border-left: 1px solid white;
+    border-right: 1px solid white;
+
+    cursor: pointer;
+
+    /* 색상 변경시 모두 변경 */
+    border-top: 1px solid rgba(48,100,92,0);
+    border-bottom: 1px solid rgba(48,100,92,0);
+}
+
+/* Search Bar */
+
+.button_search {
+    width: calc(var(--root--width)*0.01927083333333333333333333333333);
+    height: calc(var(--root--height)*0.034259259);
+
+    background-color: white;
+    border: none;
+    border-bottom-right-radius: 10px;
+    border-top-right-radius: 10px;
+
+    cursor: pointer;
+}
+
+.button_quiz_type {
+    width: calc(var(--root--width)*0.08);
+    height: calc(var(--root--height)*0.06);
+
+    background-color: rgba(255,255,255,0.5);
+    border: 2px solid #00FFD9;
+    border-radius: 10px;
+
+    font-weight: bold;
+    font-style: italic;
+    font-size: calc(16px*var(--root--font--ratio));
+
+    cursor: pointer;
+}
+
+.button_quiz_type:active {
+    background-color: rgba(0,255,172,0.5);
+}
+/* Footer */
+
+.button_page_left {
+    width: calc(var(--root--height)*0.039814814);
+    height: 100%;
+
+    border: 1px solid #D9D9D9;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+
+    font-weight: bold;
+    font-size: calc(25px*var(--root--font--ratio));
+
+    cursor: pointer;
+}
+
+.button_page_right {
+    width: calc(var(--root--height)*0.039814814);
+    height: 100%;
+
+    border: 1px solid #D9D9D9;
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+
+    font-weight: bold;
+    font-size: calc(25px*var(--root--font--ratio));
+
+    cursor: pointer;
+}
+
+.button_page_move {
+    width: calc(var(--root--height)*0.039814814);
+    height: 70%;
+
+    border-radius: 10px;
+
+    font-size: calc(10px*var(--root--font--ratio));
+
+    margin-left: calc(var(--root--width)*0.005);
+}
+
+.button_create_room {
+    width: calc(var(--root--width)*0.10416666);
+    height: calc(var(--root--height)*0.064814814);
+
+    background-color: rgba(0,255,217,0.5);
+
+    font-size: calc(15px*var(--root--font--ratio));
+    font-weight: lighter;
+    color: white;
+
+    border: 5px solid #00FFD9;
+    border-radius: calc(var(--root--font--ratio)*20px);
+
+    cursor: pointer;
+}
+
+.button_create_room:hover {
+    background-color: #00FFD9;
+}
+
+/* Print_quiz */
+
+.button_quiz_platform_all {
+    width: calc(var(--root--width)*0.0364583333);
+    height: calc(var(--root--width)*0.0364583333);
+
+    font-size: calc(30px*var(--root--font--ratio));
+    font-weight: bolder;
+    font-style: italic;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid #D9D9D9;
+    border-radius: 20px;
+
+    cursor: pointer;
+}
+
+.button_quiz_platform_youtube {
+    border: 1px solid #D9D9D9;
+    background-color: #252525;
+    border-radius: 20px;
+
+    display: flex;
+
+    width: calc(var(--root--width)*0.0364583333);
+    height: calc(var(--root--width)*0.0364583333);
+
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+}
+
+.button_quiz_platform_youtube .button-logo {
+    width: 115%;
+    height: 115%;
+
+    border-radius: 20px;
+    object-fit: cover;
+}
+
+/* Playlist */
+
+.button_add_playlist {
+    background-color: #8F8F8F;
+
+    width: calc(var(--root--width)*0.0973958333333);
+    height: 100%;
+
+    border-radius: 20px;
+    border: 5px solid #6BC5B4;
+
+    font-size: calc(36px*var(--root--font--ratio));
+    font-weight: bolder;
+
+    cursor: pointer;
+}
+
+.button_add_playlist:hover {
+    background-color: lightgreen;
+}
+
+/* Game_board_waiting */
+
+.button_game_exit {
+    width: calc(var(--root--width)*0.041666666666666);
+    height: calc(var(--root--height)*0.04629629629629);
+
+    font-size: calc(24px*var(--root--font--ratio));
+
+    background-color: rgba(0,255,217,0.5);
+
+    color:white;
+
+    border: none;
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+.button_game_exit_deactivated {
+    width: calc(var(--root--width)*0.041666666666666);
+    height: calc(var(--root--height)*0.04629629629629);
+
+    font-size: calc(24px*var(--root--font--ratio));
+
+    background-color: rgba(0,255,217,0.2);
+
+    color:white;
+
+    border: none;
+    border-radius: 10px;
+}
+
+.button_game_exit:hover {
+    background-color: #00FFD9;
+}
+
+.button_game_share {
+    width: calc(var(--root--width)*0.041666666666666);
+    height: calc(var(--root--height)*0.04629629629629);
+
+    font-size: calc(24px*var(--root--font--ratio));
+
+    background-color: rgba(0,255,217,0.5);
+
+    color:white;
+
+    border: none;
+    border-radius: 10px;
+
+    cursor: pointer;
+}
+
+.button_game_share:hover {
+    background-color: #00FFD9;
+}
+
+.button_game_ready {
+    width: calc(var(--root--width)*0.33333333333333333);
+    height: calc(var(--root--height)*0.1111111111111111111111);
+
+    font-weight: bolder;
+    font-size: calc(24px*var(--root--font--ratio));
+
+    border-radius: 100px / 100px;
+    border: none;
+
+    cursor: pointer;
+}
+
+.button_game_ready:hover {
+    border: 5px solid black;
+}
+
+.button_game_wait {
+    width: calc(var(--root--width)*0.33333333333333333);
+    height: calc(var(--root--height)*0.1111111111111111111111);
+
+    font-weight: bolder;
+    font-size: calc(24px*var(--root--font--ratio));
+
+    border-radius: 100px / 100px;
+    border: none;
+}
+
+/* Game_board_playing */
+
+.button_skip {
+    width: calc(var(--root--width)*0.078125);
+    height: calc(var(--root--height)*0.13888888888888888888888888888889);
+
+    border-radius: 50%;
+    border: none;
+    background-color: rgba(0,255,217,0.5);
+
+
+    font-size: calc(24px*var(--root--font--ratio));
+    color: white;
+
+    cursor: pointer;
+}
+
+.button_skip:hover {
+    background-color: #00FFD9;
+}
+
+/* Ingame */
+
+.button_chat_submit {
+    display: flex;
+
+    background-color: transparent;
+
+    border: 2px solid #00FFD9;
+
+    width: calc(var(--root--width)*0.02083333333333333333333333333333);
+    height: calc(var(--root--height)*0.03703703703703703703703703703704);
+
+    cursor: pointer;
+}
+
+.button_chat_submit:hover {
+    background-color: rgba(0,255,217,0.5);
+}
+
+/* Profile_logout_floating */
+
+.button_profile_floating_out {
+    background-color: #8F8F8F;
+    border: 1px solid white;
+}
+
+.button_profile_floating_out:hover{
+    background-color: white;
+}
+
+/* Room_create_float */
+
+.button_room_create_cancel {
+    width: calc(var(--root--width)*0.05);
+    height: calc(var(--root--height)*0.05);
+
+    font-size: calc(20px*var(--root--font--ratio));
+
+    border-radius: 20px;
+
+    cursor: pointer;
+}
+
+.button_room_create_confirm {
+    width: calc(var(--root--width)*0.05);
+    height: calc(var(--root--height)*0.05);
+
+    font-size: calc(20px*var(--root--font--ratio));
+
+    border-radius: 20px;
+
+    cursor: pointer;
+}
+
+.button_room_create_confirm_notyet {
+    background-color: darkgray;
+    border : 1px solid darkgray;
+
+    width: calc(var(--root--width)*0.05);
+    height: calc(var(--root--height)*0.05);
+
+    font-size: calc(20px*var(--root--font--ratio));
+
+    border-radius: 20px;
+
+    cursor: pointer;
+}
+
+/* Password_input */
+
+.button_pwd_exit {
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+
+    width: calc(var(--root--width)*0.02083333333333333333333333333333);
+    height: calc(var(--root--height)*0.03703703703703703703703703703704);
+
+    font-weight: bold;
+    font-size: calc(var(--root--font--ratio)*20px);
+}
+
+.button_pwd_input_confirm {
+    width: calc(var(--root--width)*0.04);
+    height: calc(var(--root--height)*0.04);
+
+    background-color: white;
+    border: none;
+    border-radius: 10px;
+}

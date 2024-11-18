@@ -1,0 +1,14 @@
+.Header_bottom {
+    margin: 0;
+    display: flex;
+    background: linear-gradient(rgba(19,38,35,0.5),rgba(48,100,92,0.5));
+    width: 100%;
+    height: calc(var(--root--height)*0.050925);
+}
+
+.Quiz_header_bottom {
+    display: flex;
+    height: 100%;
+
+    margin-left: 15%;
+}
