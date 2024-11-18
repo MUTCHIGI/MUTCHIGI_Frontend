@@ -44,6 +44,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     useEffect(() => {
         if(answerChat!==null) {
             if(timeout===false){
+                console.log("정답 채팅 추가")
                 setAnswerChatList((prevChat) => [...prevChat,answerChat])
                 setTimeOut(true);
             }
@@ -146,7 +147,6 @@ function Game_board_playing({stompClient,setFirstCreate,
     const endTime = startTime + convertTimeToSeconds(timelimit);
 
     useEffect(() => {
-        console.log(quiz);
         const videoId = getYouTubeVideoId(songURL);
         if (videoId) {
             const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&end=${endTime}&rel=0`;
@@ -186,23 +186,23 @@ function Game_board_playing({stompClient,setFirstCreate,
     const duration = convertTimeToSeconds(timelimit);
 
     function onVideoLoad() {
-        if(!intervalRef1.current){
-            console.log("로딩바 실행")
-            intervalRef1.current = setInterval(() => {
-                setProgress((prevProgress) => {
-                    const newProgress = prevProgress + 0.01; // 1초마다 1씩 증가
-                    if (newProgress <= duration) {
-                        setPercentage((newProgress / duration) * 100); // percentage 계산
-                        return newProgress;
-                    } else {
-                        setTimeOut(true);
-                        clearInterval(intervalRef1.current); // duration에 도달하면 interval 종료
-                        return duration; // currentProgress는 duration으로 고정
-                    }
-                });
-            }, 10); // 1초마다 실행
-            clearInterval(intervalRef1.current)
+        console.log("로딩바 실행")
+        if(intervalRef1.current) {
+            clearInterval(intervalRef1.current);
         }
+        intervalRef1.current = setInterval(() => {
+            setProgress((prevProgress) => {
+                const newProgress = prevProgress + 0.01; // 1초마다 1씩 증가
+                if (newProgress <= duration) {
+                    setPercentage((newProgress / duration) * 100); // percentage 계산
+                    return newProgress;
+                } else {
+                    setTimeOut(true);
+                    clearInterval(intervalRef1.current); // duration에 도달하면 interval 종료
+                    return duration; // currentProgress는 duration으로 고정
+                }
+            });
+        }, 10); // 1초마다 실행
     }
 
     useEffect(() => {
