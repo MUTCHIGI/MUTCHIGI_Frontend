@@ -87,7 +87,6 @@ function Header_top({userInfo,setUserInfo,setFirstCreate, setRestartQuizId}) {
                 onClick={() => {
                     setFirstCreate(true);
                     navigator('/home');
-                    window.location.reload();
                 }}
             />
             {
