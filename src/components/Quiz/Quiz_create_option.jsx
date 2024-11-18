@@ -57,12 +57,11 @@ const OptionSelection = ({ info, handlers }) => {
           <React.Fragment key={instr.id}>
             <label
               className={styles['instrument-option']}
-              style={instr.name === '베이스' ? { width: 'calc(80 / 1920 * var(--root--width))' } : {}}
+              style={instr.name === '베이스' ? { width: 'calc(110 / 1920 * var(--root--width))' } : {}}
             >
               <span className={styles["instrument-name"]}>
                 {instr.name}
               </span>
-            </label>
             <input
               className={styles["instrument-radio"]}
               name="instrument"
@@ -71,6 +70,7 @@ const OptionSelection = ({ info, handlers }) => {
               onChange={(e) => setInstrument(parseInt(e.target.value, 10))}
               type='radio'
             />
+            </label>
           </React.Fragment>
         ))}
       </div>

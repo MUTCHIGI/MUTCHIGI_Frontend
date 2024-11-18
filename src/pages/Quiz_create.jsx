@@ -37,14 +37,14 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       setTypeId(1);
     }
   }, [typeId]);
-  
+
   useEffect(() => {
     if (token === null) {
       alert("로그인 후 이용하여 주시기 바랍니다.");
       navigate('/home'); // 원하는 주소로 변경
     }
   }, [token]);
-  
+
   let navigate = useNavigate();
 
   useEffect(() => {
@@ -76,7 +76,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
             setMode(2);
             setInstrument(quiz.instrumentId);
           }
-          else{
+          else {
             setMode(1);
           }
           setQuizId(restartQuizId);
@@ -117,21 +117,39 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
   }
 
   const postUrl = async (quizIdNumber) => {
-    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/myPlaylist`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "Accept": "*/*",
-      },
-      body: JSON.stringify({
-        myPlayListURL: playListUrl,
-        quizId: quizIdNumber,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to post url");
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/myPlaylist`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "*/*",
+        },
+        body: JSON.stringify({
+          myPlayListURL: playListUrl,
+          quizId: quizIdNumber,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to post url");
+      }
+    } catch (error) {
+      alert("비공개 플레이리스트는 변환 할 수 없습니다");
+      try {
+        const response = await fetch(`http://localhost:8080/quiz/deleteNotReadyQuiz/${quizIdNumber}`, {
+          method: 'DELETE',
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            'Accept': '*/*',
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Failed to delete quiz");
+        }
+      } catch (error) {
+        console.error('Error occurred while deleting the quiz:', error);
+      }
+      navigate("/home");
     }
 
     const data = await response.json();
@@ -151,14 +169,11 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
               },
             }
           );
-
           if (!publishResponse.ok) {
             console.error(`Failed to publish URL: ${url}`);
-          } else {
-            console.log(`Successfully published URL: ${url}`);
           }
         } catch (error) {
-          console.error(`Error publishing URL (${url}):`, error);
+
         }
       }
     }
@@ -222,20 +237,25 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       }),
     })
     if (!response.ok) {
-      throw new Error("동일한 이름의 퀴즈가 존재합니다");
+      if (response.status === 405) {
+        alert("3개 이상의 생성 중단한 퀴즈가 있습니다!\n프로필에서 퀴즈 이어가기로 생성 완료 후 다시 시도해 주세요")
+        navigate("/home");
+      } else {
+        throw new Error("동일한 이름의 퀴즈가 존재합니다");
+      }
     }
     const id = await response.text();
     const quizIdNumber = parseInt(id, 10);
     if (!isNaN(quizIdNumber)) {
       setQuizId(quizIdNumber);
       await postHints(quizIdNumber);
-    }
-    if (thumbnail) {
-      postThumbnail(quizIdNumber);
-    }
-    if (playListUrl) {
-      await postUrl(quizIdNumber);
-      setPlayListUrl(null);
+      if (thumbnail) {
+        postThumbnail(quizIdNumber);
+      }
+      if (playListUrl) {
+        await postUrl(quizIdNumber);
+        setPlayListUrl(null);
+      }
     }
     return true;
   };
@@ -254,7 +274,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         }
       }
       catch (error) {
-        alert("동일한 이름의 퀴즈가 존재합니다!");
+        // alert(error);
         setIsLoading(false);
       }
     }
