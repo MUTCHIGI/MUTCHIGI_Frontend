@@ -458,8 +458,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         }
     };
 
-    console.log(CurrentQuiz)
-
     return <div className="Ingame">
         <div className="left">
             <div className="main_board">

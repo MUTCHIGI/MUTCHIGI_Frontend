@@ -72,7 +72,6 @@ function Game_board_playing({stompClient,setFirstCreate,
                     setAnswerChat(null);
                     setFirstCreate(true);
                     navigate('/home');
-                    window.location.reload();
                 }
                 else {
                     setAnswerChat(null);
@@ -147,6 +146,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     const endTime = startTime + convertTimeToSeconds(timelimit);
 
     useEffect(() => {
+        console.log(quiz);
         const videoId = getYouTubeVideoId(songURL);
         if (videoId) {
             const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&end=${endTime}&rel=0`;
@@ -186,6 +186,10 @@ function Game_board_playing({stompClient,setFirstCreate,
     const duration = convertTimeToSeconds(timelimit);
 
     function onVideoLoad() {
+        console.log("로딩바 시작")
+        if(intervalRef1.current) {
+            clearInterval(intervalRef1.current);
+        }
         if(!intervalRef1.current){
             intervalRef1.current = setInterval(() => {
                 setProgress((prevProgress) => {
@@ -205,7 +209,7 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     useEffect(() => {
         setTimeOut(false);
-        setProgress(-0.2);
+        setProgress(0);
         setPercentage(0);
         clearInterval(intervalRef1.current)
     }, [qsRelationId]);
@@ -235,8 +239,6 @@ function Game_board_playing({stompClient,setFirstCreate,
             intervalRef2.current=null;
         };
     }, [qsRelationId]);
-
-
 
     // 세 번째 인터벌: currentTime을 1초마다 증가시키기
     useEffect(() => {
