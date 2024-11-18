@@ -146,42 +146,41 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         if (!response.ok) {
           throw new Error("Failed to delete quiz");
         }
+        
+        const data = await response.json();
+        if (mode === 2) {
+          // `playURL` 필드를 추출하여 각각 POST 요청
+          for (const song of data) {
+            const url = song.playURL;
+            
+            try {
+              const publishResponse = await fetch(
+                `${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`,
+                {
+                  method: "POST",
+                  headers: {
+                    "Authorization": `Bearer ${token}`,
+                    "Accept": "*/*",
+                  },
+                }
+              );
+              if (!publishResponse.ok) {
+                console.error(`Failed to publish URL: ${url}`);
+              }
+            } catch (error) {
+              
+            }
+          }
+        }
       } catch (error) {
         console.error('Error occurred while deleting the quiz:', error);
       }
       navigate("/home");
     }
-
-    const data = await response.json();
-    if (mode === 2) {
-      // `playURL` 필드를 추출하여 각각 POST 요청
-      for (const song of data) {
-        const url = song.playURL;
-
-        try {
-          const publishResponse = await fetch(
-            `${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`,
-            {
-              method: "POST",
-              headers: {
-                "Authorization": `Bearer ${token}`,
-                "Accept": "*/*",
-              },
-            }
-          );
-          if (!publishResponse.ok) {
-            console.error(`Failed to publish URL: ${url}`);
-          }
-        } catch (error) {
-
-        }
-      }
-    }
-
-    return data; // 필요 시 응답 데이터 반환
   }
 
   const postHints = async (quizIdNumber) => {
+    console.log(hints);
     const hintsPayload = hints.map((hint) => {
       // hint.value = hour * 3600 + minute * 60 + second + '초 후'
       const totalSeconds = parseInt(hint.time.replace('초 후', ''), 10);
@@ -244,7 +243,9 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         throw new Error("동일한 이름의 퀴즈가 존재합니다");
       }
     }
+    console.log("test2");
     const id = await response.text();
+    console.log("test");
     const quizIdNumber = parseInt(id, 10);
     if (!isNaN(quizIdNumber)) {
       setQuizId(quizIdNumber);
@@ -264,7 +265,23 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     if (step === 1 && mode) {
       setStep(step + 1);
     }
-    else if (step === 2 && title && description && (mode === 1 || (mode === 2 && instrument != -1))) {
+    else if (step === 2) {
+      if (hints.some((hint) => !hint.text.trim())) {
+        alert("힌트 내용이 비어 있습니다. 모든 힌트를 입력해주세요.");
+        return; // 조건이 충족되지 않으면 중단
+      }
+      else if (!title) {
+        alert("제목를 입력해주세요.");
+        return; // 조건이 충족되지 않으면 중단
+      }
+      else if (!description) {
+        alert("설명을 입력해주세요.");
+        return; // 조건이 충족되지 않으면 중단
+      }
+      else if (!(mode === 1 || (mode === 2 && instrument != -1))) {
+        alert("악기를 선택해주세요.");
+        return; // 조건이 충족되지 않으면 중단
+      }
       try {
         setIsLoading(true);
         const success = await postQuiz();
@@ -274,7 +291,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         }
       }
       catch (error) {
-        // alert(error);
+        alert(error);
         setIsLoading(false);
       }
     }

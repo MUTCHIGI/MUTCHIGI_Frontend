@@ -2,9 +2,9 @@ import './CSS/Profile_logout_floating.css';
 import Button from "./Button.jsx";
 import Logout from "../../img/로그아웃.png"
 import Arrow from "../../img/Arrow.svg"
-import {useEffect, useState, useRef} from "react";
+import { useEffect, useState, useRef } from "react";
 
-function Profile_logout_floating({onclose,setToken,setDivVisible, setRestartQuizId, quizNotifications, token}) {
+function Profile_logout_floating({ onclose, setToken, setDivVisible, setRestartQuizId, quizNotifications, token }) {
     const handleLogout = () => {
         setToken(null); // 상태에서 토큰 삭제
         setDivVisible(false);
@@ -37,25 +37,49 @@ function Profile_logout_floating({onclose,setToken,setDivVisible, setRestartQuiz
         const fetchQuizAvailability = async () => {
             const available = [];
             const notAvailable = [];
+
             for (const quiz of quizNotifications) {
-                try {
-                    const response = await fetch(
-                        `http://localhost:8080/GCP/quiz/DemucsCount?quizId=${quiz.quizId}`, {
+                const entityResponse = await fetch(
+                    `http://localhost:8080/quiz/Entities?idList=${quiz.quizId}`,
+                    {
                         method: 'GET',
                         headers: {
                             'accept': '*/*',
                             'Authorization': `Bearer ${token}`, // 로컬 스토리지에서 토큰 가져오기
+                        },
+                    }
+                );
+
+                if (!entityResponse.ok) {
+                    throw new Error(`Failed to fetch entities for quizId: ${quiz.quizId}`);
+                }
+
+                const entityData = await entityResponse.json();
+                const typeId = entityData[0]?.typeId; // 응답 데이터에서 typeId 추출
+
+                if (typeId === 1) {
+                    // typeId가 1이면 바로 available에 추가
+                    available.push(quiz);
+                } else if (typeId === 2) {
+                    try {
+                        const response = await fetch(
+                            `http://localhost:8080/GCP/quiz/DemucsCount?quizId=${quiz.quizId}`, {
+                            method: 'GET',
+                            headers: {
+                                'accept': '*/*',
+                                'Authorization': `Bearer ${token}`, // 로컬 스토리지에서 토큰 가져오기
+                            }
+                        });
+                        const data = await response.json();
+                        if (data.notConvertedQsRelationIDInQuizList.length === 0) {
+                            available.push(quiz);
                         }
-                });
-                    const data = await response.json();
-                    if (data.notConvertedQsRelationIDInQuizList.length === 0) {
-                        available.push(quiz);
+                        else {
+                            notAvailable.push(quiz); // 생성 불가능한 퀴즈
+                        }
+                    } catch (error) {
+                        console.error(`Error fetching quiz status for quizId: ${quiz.quizId}`, error);
                     }
-                    else {
-                        notAvailable.push(quiz); // 생성 불가능한 퀴즈
-                    }
-                } catch (error) {
-                    console.error(`Error fetching quiz status for quizId: ${quiz.quizId}`, error);
                 }
             }
             setAvailableQuizzes(available);
@@ -104,7 +128,7 @@ function Profile_logout_floating({onclose,setToken,setDivVisible, setRestartQuiz
             ))}
             <div className="Logout" onClick={handleLogout}>
                 Logout
-                <img src={Logout} className="Logout_img"/>
+                <img src={Logout} className="Logout_img" />
             </div>
         </div>
     )
