@@ -18,6 +18,7 @@ function Quiz_page({
     password,setPassword,
     maxPlayer,setMaxPlayer,
     setFirstCreate,
+    setRestartQuizId,
 }) {
     let {token} = useAuth();
     let navigate = useNavigate();
@@ -93,7 +94,7 @@ function Quiz_page({
     }, [token]);
 
     return <div>
-        <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate}/>
+        <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate} setRestartQuizId={setRestartQuizId}/>
         <Header_bottom
             quiz={true}
             customOrplaylist={customOrplaylist}

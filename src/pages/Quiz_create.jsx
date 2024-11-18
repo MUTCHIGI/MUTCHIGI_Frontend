@@ -11,7 +11,7 @@ import styles from "../components/Quiz/CSS/Quiz_create.module.css";
 import { useAuth } from "../components/Login/AuthContext.jsx";
 import spinner from "../img/loading.svg"
 
-function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, playListUrl, setPlayListUrl, setFirstCreate }) {
+function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, playListUrl, restartQuizId, setPlayListUrl, setFirstCreate, setRestartQuizId, }) {
   // quiz main info
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
@@ -45,10 +45,56 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     }
   }, [token]);
 
+  let navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchQuizDetails = async () => {
+      if (restartQuizId === -1) return; // 유효하지 않은 id는 무시
+
+      try {
+        const response = await fetch(
+          `http://localhost:8080/quiz/Entities?idList=${restartQuizId}`,
+          {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              'accept': '*/*',
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch quiz entity');
+        }
+
+        const data = await response.json();
+
+        if (data && data.length > 0) {
+          const quiz = data[0];
+
+          // mode가 2이면 state 업데이트
+          if (quiz.typeId === 2) {
+            setMode(2);
+            setInstrument(quiz.instrumentId);
+          }
+          else {
+            setMode(1);
+          }
+          setQuizId(restartQuizId);
+          setRestartQuizId(-1);
+          setStep(3);
+        }
+      } catch (error) {
+        alert("네트워크 오류 발생");
+        navigate('/home');
+      }
+    };
+
+    fetchQuizDetails();
+  }, [restartQuizId]);
+
   const handleModeSelect = (selectedMode) => setMode(selectedMode);
   const prevStep = () => step > 1 && setStep(step - 1);
 
-  let navigate = useNavigate()
 
   const postThumbnail = (quizIdNumber) => {
     const formData = new FormData();
@@ -71,31 +117,73 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
   }
 
   const postUrl = async (quizIdNumber) => {
-    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/myPlaylist`, {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${token}`,
-        "Content-Type": "application/json",
-        "Accept": "*/*",
-      },
-      body: JSON.stringify({
-        myPlayListURL: playListUrl,
-        quizId: quizIdNumber,
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error("Failed to post url");
+    try {
+      const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/myPlaylist`, {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+          "Accept": "*/*",
+        },
+        body: JSON.stringify({
+          myPlayListURL: playListUrl,
+          quizId: quizIdNumber,
+        }),
+      });
+      if (!response.ok) {
+        throw new Error("Failed to post url");
+      }
+    } catch (error) {
+      alert("비공개 플레이리스트는 변환 할 수 없습니다");
+      try {
+        const response = await fetch(`http://localhost:8080/quiz/deleteNotReadyQuiz/${quizIdNumber}`, {
+          method: 'DELETE',
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            'Accept': '*/*',
+          },
+        });
+        if (!response.ok) {
+          throw new Error("Failed to delete quiz");
+        }
+      } catch (error) {
+        console.error('Error occurred while deleting the quiz:', error);
+      }
+      navigate("/home");
     }
 
     const data = await response.json();
+    if (mode === 2) {
+      // `playURL` 필드를 추출하여 각각 POST 요청
+      for (const song of data) {
+        const url = song.playURL;
+
+        try {
+          const publishResponse = await fetch(
+            `${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`,
+            {
+              method: "POST",
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                "Accept": "*/*",
+              },
+            }
+          );
+          if (!publishResponse.ok) {
+            console.error(`Failed to publish URL: ${url}`);
+          }
+        } catch (error) {
+
+        }
+      }
+    }
+
     return data; // 필요 시 응답 데이터 반환
   }
 
   const postHints = async (quizIdNumber) => {
     const hintsPayload = hints.map((hint) => {
       // hint.value = hour * 3600 + minute * 60 + second + '초 후'
-      console.log(hint);
       const totalSeconds = parseInt(hint.time.replace('초 후', ''), 10);
       const hour = Math.floor(totalSeconds / 3600);
       const minute = Math.floor((totalSeconds % 3600) / 60);
@@ -108,7 +196,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         hintType: hint.text,
       };
     });
-
+    console.log(hintsPayload);
     const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/${quizIdNumber}/hintState`, {
       method: "POST",
       headers: {
@@ -149,20 +237,25 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       }),
     })
     if (!response.ok) {
-      throw new Error("Failed to create quiz");
+      if (response.status === 405) {
+        alert("3개 이상의 생성 중단한 퀴즈가 있습니다!\n프로필에서 퀴즈 이어가기로 생성 완료 후 다시 시도해 주세요")
+        navigate("/home");
+      } else {
+        throw new Error("동일한 이름의 퀴즈가 존재합니다");
+      }
     }
     const id = await response.text();
     const quizIdNumber = parseInt(id, 10);
     if (!isNaN(quizIdNumber)) {
       setQuizId(quizIdNumber);
       await postHints(quizIdNumber);
-    }
-    if (thumbnail) {
-      postThumbnail(quizIdNumber);
-    }
-    if (playListUrl) {
-      await postUrl(quizIdNumber);
-      setPlayListUrl(null);
+      if (thumbnail) {
+        postThumbnail(quizIdNumber);
+      }
+      if (playListUrl) {
+        await postUrl(quizIdNumber);
+        setPlayListUrl(null);
+      }
     }
     return true;
   };
@@ -181,7 +274,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         }
       }
       catch (error) {
-        console.error("Error in postQuiz:", error);
+        // alert(error);
         setIsLoading(false);
       }
     }
@@ -215,14 +308,12 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     mode === 1 ? (
       <QuizCreateList
         quizId={quizId}
-        hintSetting={hints}
         token={token}
       />
     ) : (
       <QuizCreateListAi
         quizId={quizId}
         instrumentId={instrument}
-        hintSetting={hints}
         token={token}
       />
     )
@@ -233,7 +324,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
   return (
     <div className={styles["quiz-container"]}>
-      <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate} />
+      <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate} setRestartQuizId={setRestartQuizId} />
       <Header_bottom
         quiz={false}
       />

@@ -9,7 +9,7 @@ import Profile_logout_floating from "./Profile_logout_floating.jsx";
 import {useNavigate} from "react-router-dom";
 import {useAuth} from "../Login/AuthContext.jsx";
 
-function Header_top({userInfo,setUserInfo,setFirstCreate}) {
+function Header_top({userInfo,setUserInfo,setFirstCreate, setRestartQuizId}) {
     const {token,setToken} = useAuth();
 
     const handleLogin = () => {
@@ -48,6 +48,37 @@ function Header_top({userInfo,setUserInfo,setFirstCreate}) {
         fetchUserInfo();
     }, [token]); // token이 변경될 때마다 실행
 
+    const [quizNotifications, setQuizNotifications] = useState([]); // 상태 관리
+    useEffect(() => {
+        const fetchNotReadyQuizList = async () => {
+            try {
+                if (token !== null) {
+                    const response = await fetch('http://localhost:8080/quiz/notReadyQuizList', {
+                        method: 'GET',
+                        headers: {
+                            'accept': '*/*',
+                            'Authorization': `Bearer ${token}`, // 로컬 스토리지에서 토큰 가져오기
+                        }
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setQuizNotifications(data); // 기존 데이터에 새 데이터 추가
+                    }
+                }
+            } catch (error) {
+                console.error('Error fetching quiz notifications:', error);
+            }
+        };
+
+        // 2분마다 실행
+        const interval = setInterval(fetchNotReadyQuizList, 2 * 60 * 1000);
+        fetchNotReadyQuizList(); // 컴포넌트 마운트 시 바로 한 번 실행
+
+        // 컴포넌트 언마운트 시 interval 제거
+        return () => clearInterval(interval);
+    }, []);
+
     return (
         <div className="Header">
             <img
@@ -74,7 +105,14 @@ function Header_top({userInfo,setUserInfo,setFirstCreate}) {
                     </div>)
             }
 
-            {isDivVisible && (<Profile_logout_floating onclose={() => setDivVisible(false)} setToken={setToken} setDivVisible={setDivVisible}/>)}
+            {isDivVisible && (<Profile_logout_floating 
+                onclose={() => setDivVisible(false)}
+                setToken={setToken}
+                setDivVisible={setDivVisible} 
+                setRestartQuizId={setRestartQuizId}
+                quizNotifications={quizNotifications}
+                token={token}
+            />)}
         </div>
     )
 }
