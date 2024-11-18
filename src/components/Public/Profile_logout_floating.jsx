@@ -40,7 +40,7 @@ function Profile_logout_floating({ onclose, setToken, setDivVisible, setRestartQ
 
             for (const quiz of quizNotifications) {
                 const entityResponse = await fetch(
-                    `http://localhost:8080/quiz/Entities?idList=${quiz.quizId}`,
+                    `${import.meta.env.VITE_SERVER_IP}/quiz/Entities?idList=${quiz.quizId}`,
                     {
                         method: 'GET',
                         headers: {
@@ -63,7 +63,7 @@ function Profile_logout_floating({ onclose, setToken, setDivVisible, setRestartQ
                 } else if (typeId === 2) {
                     try {
                         const response = await fetch(
-                            `http://localhost:8080/GCP/quiz/DemucsCount?quizId=${quiz.quizId}`, {
+                            `${import.meta.env.VITE_SERVER_IP}/GCP/quiz/DemucsCount?quizId=${quiz.quizId}`, {
                             method: 'GET',
                             headers: {
                                 'accept': '*/*',

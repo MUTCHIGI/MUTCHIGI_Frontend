@@ -53,7 +53,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
       try {
         const response = await fetch(
-          `http://localhost:8080/quiz/Entities?idList=${restartQuizId}`,
+          `${import.meta.env.VITE_SERVER_IP}/quiz/Entities?idList=${restartQuizId}`,
           {
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -136,7 +136,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     } catch (error) {
       alert("비공개 플레이리스트는 변환 할 수 없습니다");
       try {
-        const response = await fetch(`http://localhost:8080/quiz/deleteNotReadyQuiz/${quizIdNumber}`, {
+        const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/deleteNotReadyQuiz/${quizIdNumber}`, {
           method: 'DELETE',
           headers: {
             "Authorization": `Bearer ${token}`,
