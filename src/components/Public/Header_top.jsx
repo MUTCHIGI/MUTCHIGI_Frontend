@@ -53,7 +53,7 @@ function Header_top({userInfo,setUserInfo,setFirstCreate, setRestartQuizId}) {
         const fetchNotReadyQuizList = async () => {
             try {
                 if (token !== null) {
-                    const response = await fetch('http://localhost:8080/quiz/notReadyQuizList', {
+                    const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/notReadyQuizList`, {
                         method: 'GET',
                         headers: {
                             'accept': '*/*',

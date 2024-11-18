@@ -219,7 +219,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     const handleClick_2 = async () => {
         if (rooms[2].roomId !== null) {  // room.id가 null이 아닐 때
             try {
-                const response = await fetch(`http://localhost:8080/room/Entities?idList=${rooms[2].roomId}`, {
+                const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${rooms[2].roomId}`, {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
