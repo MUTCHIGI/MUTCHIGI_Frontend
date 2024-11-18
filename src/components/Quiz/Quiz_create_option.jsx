@@ -62,14 +62,14 @@ const OptionSelection = ({ info, handlers }) => {
               <span className={styles["instrument-name"]}>
                 {instr.name}
               </span>
-            <input
-              className={styles["instrument-radio"]}
-              name="instrument"
-              value={instr.id}
-              checked={instrument === instr.id}
-              onChange={(e) => setInstrument(parseInt(e.target.value, 10))}
-              type='radio'
-            />
+              <input
+                className={styles["instrument-radio"]}
+                name="instrument"
+                value={instr.id}
+                checked={instrument === instr.id}
+                onChange={(e) => setInstrument(parseInt(e.target.value, 10))}
+                type='radio'
+              />
             </label>
           </React.Fragment>
         ))}
@@ -119,7 +119,7 @@ const OptionSelection = ({ info, handlers }) => {
                 type="text"
                 id="title"
                 value={hint.text}
-                onChange={(e) => updateHint(hint.id, e.target.value, hint.value)}
+                onChange={(e) => updateHint(hint.id, e.target.value, hint.time)}
                 placeholder="힌트 유형"
               />
               <select
@@ -127,9 +127,9 @@ const OptionSelection = ({ info, handlers }) => {
                 onChange={(e) => updateHint(hint.id, hint.text, e.target.value)}
                 className={styles["hint-select"]}
               >
-                {Array.from({ length: timeLimit / 5 }, (_, i) => (
-                  <option key={i} value={`${(i) * 5}초 후`}>
-                    {(i) * 5}초 후
+                {Array.from({ length: Math.max(1, Math.ceil(timeLimit / 5)) }, (_, i) => (
+                  <option key={i} value={`${i * 5}초 후`}>
+                    {i * 5}초 후
                   </option>
                 ))}
               </select>
