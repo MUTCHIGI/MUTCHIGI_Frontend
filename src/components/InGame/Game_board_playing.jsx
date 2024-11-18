@@ -43,8 +43,8 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     useEffect(() => {
         if(answerChat!==null) {
-            setAnswerChatList((prevChat) => [...prevChat,answerChat])
             if(timeout===false){
+                setAnswerChatList((prevChat) => [...prevChat,answerChat])
                 setTimeOut(true);
             }
         }
@@ -186,11 +186,8 @@ function Game_board_playing({stompClient,setFirstCreate,
     const duration = convertTimeToSeconds(timelimit);
 
     function onVideoLoad() {
-        console.log("로딩바 시작")
-        if(intervalRef1.current) {
-            clearInterval(intervalRef1.current);
-        }
         if(!intervalRef1.current){
+            console.log("로딩바 실행")
             intervalRef1.current = setInterval(() => {
                 setProgress((prevProgress) => {
                     const newProgress = prevProgress + 0.01; // 1초마다 1씩 증가
@@ -204,6 +201,7 @@ function Game_board_playing({stompClient,setFirstCreate,
                     }
                 });
             }, 10); // 1초마다 실행
+            clearInterval(intervalRef1.current)
         }
     }
 
