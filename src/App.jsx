@@ -12,6 +12,7 @@ import Quiz_create from "./pages/Quiz_create.jsx";
 import { GoogleOAuthProvider } from "@react-oauth/google";
 import Quiz_page_Playlist from "./pages/Quiz_page_Playlist.jsx";
 import Login from "./pages/Login.jsx"
+import Game_stat from "./pages/Game_stat.jsx";
 
 export let WindowSizeContext = createContext();
 
@@ -35,6 +36,9 @@ function App() {
 
     // 최초 생성의 경우 true, 참여하는 경우 false
     let [firstCreate,setFirstCreate] = useState(true);
+
+    // 결과 스탯창 에 표기될 퀴즈 통계정보
+    const [answerCount, setAnswerCount] = useState({});
 
     let [windowSize,setWindowSize] = useState({
         width: window.innerWidth,
@@ -79,6 +83,12 @@ function App() {
               <AuthProvider>
                   <Routes>
                       <Route path="/" element={<Login />} />
+                      <Route path="/game-stat" element={<Game_stat
+                          answerCount={answerCount} setAnswerCount={setAnswerCount}
+                          userInfo={userInfo} setUserInfo={setUserInfo}
+                          setRestartQuizId={setRestartQuizId}
+                          setFirstCreate={setFirstCreate}
+                      />}/>
                       <Route path="/ingame" element={<Ingame
                           quiz={selectedQuiz}
                           chatRoomId={chatRoomId} setChatRoomId={setChatRoomId}
@@ -89,6 +99,7 @@ function App() {
                           maxPlayer={maxPlayer}
                           userInfo={userInfo}
                           firstCreate={firstCreate} setFirstCreate={setFirstCreate}
+                          answerCount={answerCount} setAnswerCount={setAnswerCount}
                       />}/>
                       <Route path="/home" element={<Home
                           userInfo={userInfo} setUserInfo={setUserInfo}

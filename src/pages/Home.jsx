@@ -38,6 +38,9 @@ function Home({userInfo,setUserInfo,
     // 검색어
     const [quizTitle,setQuizTitle] = useState('');
 
+    // 새로고침
+    const [refreshFlag,setRefreshFlag] = useState(false);
+
     /* ------------------------------footer state------------------------------ */
 
     // 버튼을 사용해 페이지 이동하는 state
@@ -65,7 +68,7 @@ function Home({userInfo,setUserInfo,
         };
 
         fetchRoomIds();
-    }, [currentPage,offset,selectedOption_type,selectedOption_quiztype,quizTitle,selectedOption_privacy]);
+    }, [currentPage,offset,selectedOption_type,selectedOption_quiztype,quizTitle,selectedOption_privacy,refreshFlag]);
 
     return <div>
         <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate} setRestartQuizId={setRestartQuizId}/>
@@ -78,6 +81,8 @@ function Home({userInfo,setUserInfo,
             setSelectedQuizType={setSelectedQuizType}
             selectedOption_type={selectedOption_type}
             setSelectedOption_type={setSelectedOption_type}
+            quizTitle={quizTitle} setQuizTitle={setQuizTitle}
+            refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag}
             texts={texts}
         />
         <Print_games

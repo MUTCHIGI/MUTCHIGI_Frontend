@@ -19,6 +19,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                     maxPlayer,
     userInfo,
     firstCreate,setFirstCreate,
+    answerCount,setAnswerCount,
 }) {
     let {token} = useAuth();
     let [qsRelationId,setQsRelationId] = useState(-1);
@@ -36,7 +37,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     );
     const [messageText, setMessageText] = useState(''); // 서버로 전송하는 내 입력 채팅
     const [chatMessages, setChatMessages] = useState([]); // 현재까지의 모든 채팅 내역
-    const clientRef = useRef(null); // 소켓 client 저장
     const [superUserId,setSuperUserId] = useState(-1);
     const [timeLimit,setTimeLimit] = useState(0);
     const [gameStart,setGameStart] = useState(false);
@@ -50,8 +50,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
 
     const [answerChat,setAnswerChat] = useState(null);
 
-    const [answerCount, setAnswerCount] = useState({});
-
     const [CurrentQuiz, setCurrentQuiz] = useState(null); // 현재 풀고잇는 퀴즈
     const [CurrentHint,setCurrentHint] = useState(null); // 현재 풀고있는 퀴즈의 힌트
 
@@ -59,6 +57,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
     const UserCount = userList.filter(user => user.userId !== -1).length;
 
     useEffect(() => {
+        setAnswerCount({});
         if(firstCreate) {
             handleCreateRoom();
             setFirstCreate(false);
@@ -181,7 +180,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         }, (error) => {
             console.error("STOMP 연결 실패:", error);  // 연결 실패 시 오류 로그 추가
         });
-        clientRef.current=client;
     };
 
     // 외부에 정의된 subscribe 함수
@@ -380,9 +378,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if(userList[0].userId!==-1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[0].userId) {
-                // 메시지를 전송
-                const messageData = {}; // 빈 메시지
-                clientRef.current.send(`/app/kickMember/${chatRoomId}/${userList[0].userId}`, {}, JSON.stringify(messageData));
+                if(window.confirm("해당 유저를 강퇴하시겠습니까?")) {
+                    // 메시지를 전송
+                    const messageData = {}; // 빈 메시지
+                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[0].userId}`, {}, JSON.stringify(messageData));
+                }
             }
         }
     };
@@ -390,9 +390,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if(userList[1].userId!==-1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[1].userId) {
-                // 메시지를 전송
-                const messageData = {}; // 빈 메시지
-                client.current.send(`/app/kickMember/${chatRoomId}/${userList[1].userId}`, {}, JSON.stringify(messageData));
+                if(window.confirm("해당 유저를 강퇴하시겠습니까?")) {
+                    // 메시지를 전송
+                    const messageData = {}; // 빈 메시지
+                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[1].userId}`, {}, JSON.stringify(messageData));
+                }
             }
         }
     };
@@ -400,9 +402,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if(userList[2].userId!==-1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[2].userId) {
-                // 메시지를 전송
-                const messageData = {}; // 빈 메시지
-                client.current.send(`/app/kickMember/${chatRoomId}/${userList[2].userId}`, {}, JSON.stringify(messageData));
+                if(window.confirm("해당 유저를 강퇴하시겠습니까?")) {
+                    // 메시지를 전송
+                    const messageData = {}; // 빈 메시지
+                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[2].userId}`, {}, JSON.stringify(messageData));
+                }
             }
         }
     };
@@ -410,9 +414,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if(userList[3].userId!==-1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[3].userId) {
-                // 메시지를 전송
-                const messageData = {}; // 빈 메시지
-                client.current.send(`/app/kickMember/${chatRoomId}/${userList[3].userId}`, {}, JSON.stringify(messageData));
+                if(window.confirm("해당 유저를 강퇴하시겠습니까?")) {
+                    // 메시지를 전송
+                    const messageData = {}; // 빈 메시지
+                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[3].userId}`, {}, JSON.stringify(messageData));
+                }
             }
         }
     };
@@ -420,9 +426,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if(userList[4].userId!==-1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[4].userId) {
-                // 메시지를 전송
-                const messageData = {}; // 빈 메시지
-                client.current.send(`/app/kickMember/${chatRoomId}/${userList[4].userId}`, {}, JSON.stringify(messageData));
+                if(window.confirm("해당 유저를 강퇴하시겠습니까?")) {
+                    // 메시지를 전송
+                    const messageData = {}; // 빈 메시지
+                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[4].userId}`, {}, JSON.stringify(messageData));
+                }
             }
         }
     };
@@ -430,9 +438,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if(userList[5].userId!==-1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[5].userId) {
-                // 메시지를 전송
-                const messageData = {}; // 빈 메시지
-                client.current.send(`/app/kickMember/${chatRoomId}/${userList[5].userId}`, {}, JSON.stringify(messageData));
+                if(window.confirm("해당 유저를 강퇴하시겠습니까?")) {
+                    // 메시지를 전송
+                    const messageData = {}; // 빈 메시지
+                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[5].userId}`, {}, JSON.stringify(messageData));
+                }
             }
         }
     };
@@ -440,9 +450,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if(userList[6].userId!==-1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[6].userId) {
-                // 메시지를 전송
-                const messageData = {}; // 빈 메시지
-                client.current.send(`/app/kickMember/${chatRoomId}/${userList[6].userId}`, {}, JSON.stringify(messageData));
+                if(window.confirm("해당 유저를 강퇴하시겠습니까?")) {
+                    // 메시지를 전송
+                    const messageData = {}; // 빈 메시지
+                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[6].userId}`, {}, JSON.stringify(messageData));
+                }
             }
         }
     };
@@ -450,9 +462,11 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if(userList[7].userId!==-1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[7].userId) {
-                // 메시지를 전송
-                const messageData = {}; // 빈 메시지
-                client.current.send(`/app/kickMember/${chatRoomId}/${userList[7].userId}`, {}, JSON.stringify(messageData));
+                if(window.confirm("해당 유저를 강퇴하시겠습니까?")) {
+                    // 메시지를 전송
+                    const messageData = {}; // 빈 메시지
+                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[7].userId}`, {}, JSON.stringify(messageData));
+                }
             }
         }
     };
@@ -492,6 +506,9 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                         answerChat={answerChat}
                         setAnswerChat={setAnswerChat}
                         qsRelationId={qsRelationId}
+                        answerChatList={answerChatList}
+                        setAnswerChatList={setAnswerChatList}
+                        answerCount={answerCount} setAnswerCount={setAnswerCount} userList={userList}
                     />
                 }
             </div>
@@ -512,7 +529,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             <div className="user_score">
                 <div className="user_score_left">
                     <div className="left_box">
-                        <div className="name">
+                        <div className="name_score">
                             {userList[0].userId !== -1
                             &&
                                 <>
@@ -520,7 +537,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                                 </>
                             }
                         </div>
-                        <div className="name">
+                        <div className="name_score">
                             {userList[1].userId !== -1
                                 &&
                                 <>
@@ -528,7 +545,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                                 </>
                             }
                         </div>
-                        <div className="name">
+                        <div className="name_score">
                             {userList[2].userId !== -1
                                 &&
                                 <>
@@ -536,7 +553,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                                 </>
                             }
                         </div>
-                        <div className="name">
+                        <div className="name_score">
                             {userList[3].userId !== -1
                                 &&
                                 <>
@@ -548,7 +565,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                 </div>
                 <div className="user_score_right">
                     <div className="right_box">
-                        <div className="name">
+                        <div className="name_score">
                             {userList[4].userId !== -1
                                 &&
                                 <>
@@ -556,7 +573,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                                 </>
                             }
                         </div>
-                        <div className="name">
+                        <div className="name_score">
                             {userList[5].userId !== -1
                                 &&
                                 <>
@@ -564,7 +581,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                                 </>
                             }
                         </div>
-                        <div className="name">
+                        <div className="name_score">
                             {userList[6].userId !== -1
                                 &&
                                 <>
@@ -572,7 +589,7 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
                                 </>
                             }
                         </div>
-                        <div className="name">
+                        <div className="name_score">
                             {userList[7].userId !== -1
                                 &&
                                 <>

@@ -29,6 +29,8 @@
 .inner_box_chat {
     display: flex;
 
+    align-items: center;
+
     flex-wrap: wrap;
     overflow: hidden;
 

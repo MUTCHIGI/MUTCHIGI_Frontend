@@ -19,6 +19,10 @@ function Room_create_float({quiz,onClose,userInfo,
 
     const navigate = useNavigate();
 
+    useEffect(() => {
+        setRoomName('');
+    }, []);
+
     /* 방 생성 요소 */
 
     let handleChange = (e) => {

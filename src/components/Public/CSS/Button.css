@@ -173,14 +173,13 @@
 /* Search Bar */
 
 .button_search {
-    width: calc(var(--root--width)*0.01927083333333333333333333333333);
-    height: calc(var(--root--height)*0.034259259);
+    width: calc(var(--root--width)*0.02604166666666666666666666666667);
+    height: calc(var(--root--height)*0.0462962962962962962962962962963);
 
     background-color: white;
     border: none;
-    border-bottom-right-radius: 10px;
-    border-top-right-radius: 10px;
-
+    border-radius: 10px
+;
     cursor: pointer;
 }
 
@@ -521,4 +520,25 @@
     background-color: white;
     border: none;
     border-radius: 10px;
+}
+
+/* Game_stat */
+
+.button_stat_gohome {
+    width: calc(var(--root--width)*0.08);
+    height: calc(var(--root--height)*0.06);
+
+    font-weight: bold;
+    font-size: calc(16px*var(--root--font--ratio));
+
+    border-radius: 20px;
+    border: none;
+
+    background-color: #00FFD9;
+
+    cursor: pointer;
+}
+
+.button_stat_gohome:hover {
+    background-color: #6BC5B4;
 }
