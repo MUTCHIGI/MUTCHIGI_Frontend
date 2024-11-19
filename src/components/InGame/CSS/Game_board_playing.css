@@ -17,8 +17,12 @@
 .volume_bar {
     position: absolute;
 
-    margin-left: calc(var(--root--width)*0.549);
-    margin-top: calc(var(--root--height)*0.39);
+    margin-left: calc(var(--root--width)*0.52);
+    margin-top: calc(var(--root--height)*0.557);
+}
+
+.volume_input {
+    width: calc(var(--root--width)*0.2);
 }
 
 .remaining_time {

@@ -311,6 +311,7 @@ function Game_board_playing({stompClient,setFirstCreate,
         <div className="volume_bar">
             <div>Volume : {volume}%</div>
             <input
+                className="volume_input"
                 type="range"
                 id="volume-slider"
                 min="0"

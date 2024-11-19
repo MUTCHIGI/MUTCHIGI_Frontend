@@ -46,6 +46,7 @@
     height: 22%;
 
     font-size: calc(88px*var(--root--font--ratio));
+    font-weight: bold;
     color: #D5A11E;
 }
 
