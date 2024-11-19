@@ -3,6 +3,7 @@ import Button from "../Public/Button.jsx";
 import {useNavigate} from "react-router-dom";
 import {useEffect, useRef, useState} from "react";
 import {useAuth} from "../Login/AuthContext.jsx";
+import YouTubePlayer from "./YouTubePlayer.jsx";
 
 function Game_board_playing({stompClient,setFirstCreate,
                                 handlSkipVote,userInfo,
@@ -12,6 +13,8 @@ function Game_board_playing({stompClient,setFirstCreate,
     roomName,
     songIndex,setSongIndex,songCount,
     answer,answerChat,setAnswerChat,
+    answerChatList,setAnswerChatList,
+    answerCount,setAnswerCount,userList,
 }) {
     const [timeout,setTimeOut] = useState(false);
     const navigate = useNavigate();
@@ -20,33 +23,30 @@ function Game_board_playing({stompClient,setFirstCreate,
     const originalSongURL = quiz.originalSongURL;
     const [videoUrl, setVideoUrl] = useState('');
     const [originUrl,setOriginUrl] = useState('');
-    const ref1 = useRef(null);
-    const ref2 = useRef(null);
     const [songType,setSongType] = useState(true);
     let {token} = useAuth()
-
     const skipRatio = skipCount/UserCount;
-    const [answerChatList,setAnswerChatList] = useState([]);
-
     const [percentage, setPercentage] = useState(0); // 시간 흐름 표현
     const [progress, setProgress] = useState(-0.2); // 시간 표현 state
-
     const [timeleft,setTimeLeft] = useState(0); // 남은 시간 (초 단위)
-
     const [whentoend,setWhenToEnd] = useState(null);
-
     const [currentHint, setCurrentHint] = useState([]); // 추가된 힌트들
-
     const intervalRef1 = useRef(null); // 첫 번째 interval
     const intervalRef2 = useRef(null); // 두 번째 interval
     const intervalRef3 = useRef(null); // 세 번째
 
+    const [volume,setVolume] = useState(50);
+    const [audioVolume,setAudioVolume] = useState(0.5);
+    const audioRef = useRef(null);
+
+    const [videoId,setVideoId] = useState(null);
+
     useEffect(() => {
         if(answerChat!==null) {
             if(timeout===false){
-                console.log("정답 채팅 추가")
                 setAnswerChatList((prevChat) => [...prevChat,answerChat])
                 setTimeOut(true);
+                clearInterval(intervalRef1.current)
             }
         }
     }, [answerChat]);
@@ -54,6 +54,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     useEffect(() => {
         if(skipRatio>=0.5 && timeout===false && answerChat===null) {
             setTimeOut(true);
+            clearInterval(intervalRef1.current)
         }
     }, [skipRatio,timeout,answerChat]);
 
@@ -62,17 +63,23 @@ function Game_board_playing({stompClient,setFirstCreate,
             // whentoend 값만큼 기다린 후
             const timer = setTimeout(() => {
                 if(songIndex+1===songCount) {
-                    alert("게임이 종료되었습니다. 메인화면으로 이동합니다.");
+                    setAnswerChat(null);
+                    setFirstCreate(true);
+                    const updatedCount = {...answerCount}
+
+                    userList.forEach((user) => {
+                        if(user.userId !== -1 && !(user.name in answerCount)) {
+                            updatedCount[user.name] = 0;
+                        }
+                    })
+                    setAnswerCount(updatedCount);
                     // 방과의 연결 해제
                     if (stompClient && stompClient.connected) {
                         stompClient.disconnect(() => {
                             console.log("Disconnected from room");
                         });
                     }
-                    // /home 경로로 이동
-                    setAnswerChat(null);
-                    setFirstCreate(true);
-                    navigate('/home');
+                    navigate('/game-stat');
                 }
                 else {
                     setAnswerChat(null);
@@ -97,7 +104,7 @@ function Game_board_playing({stompClient,setFirstCreate,
             // 컴포넌트가 언마운트되거나, whentoend 값이 변경되면 타이머 정리
             return () => clearTimeout(timer);
         }
-    }, [whentoend]);
+    }, [whentoend,answerCount]);
 
     const fetchAudio = async () => {
         try {
@@ -148,15 +155,23 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     useEffect(() => {
         const videoId = getYouTubeVideoId(songURL);
+
         if (videoId) {
             const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&end=${endTime}&rel=0`;
             setVideoUrl(url);
             setSongType(true);
+
+            setVideoId(videoId);
         }
         else {
             fetchAudio();
             setSongType(false);
         }
+
+        return () => {
+            // API 로드 시 부작용 제거
+            delete window.onYouTubeIframeAPIReady;
+        };
     }, [qsRelationId]);
 
     useEffect(() => {
@@ -186,7 +201,6 @@ function Game_board_playing({stompClient,setFirstCreate,
     const duration = convertTimeToSeconds(timelimit);
 
     function onVideoLoad() {
-        console.log("로딩바 실행")
         if(intervalRef1.current) {
             clearInterval(intervalRef1.current);
         }
@@ -254,7 +268,7 @@ function Game_board_playing({stompClient,setFirstCreate,
         }
 
         intervalRef3.current = setInterval(() => {
-            if(index<hintTimesInSeconds.length && currentTime >= hintTimesInSeconds[index].timeInSeconds) {
+            if(index<hintTimesInSeconds.length && currentTime+1 >= hintTimesInSeconds[index].timeInSeconds) {
                 setCurrentHint((prevHints) => [...prevHints,hintTimesInSeconds[index]]);
                 setTimeout(() => {
                     index += 1; // `setCurrentHint` 이후에 증가
@@ -267,6 +281,12 @@ function Game_board_playing({stompClient,setFirstCreate,
             clearInterval(intervalRef3.current);
         };
     }, [hint]);
+
+    useEffect(() => {
+        if(audioRef.current){
+            audioRef.current.volume = audioVolume;
+        }
+    }, [audioVolume]);
 
     const handleLoadedMetadata = (e) => {
         const audio = e.target;
@@ -282,7 +302,27 @@ function Game_board_playing({stompClient,setFirstCreate,
         }
     };
 
+    const handleVolume = (e) => {
+        setVolume(e.target.value);
+        setAudioVolume((e.target.value)/100);
+    }
+
     return <div className="Game_board_waiting">
+        <div className="volume_bar">
+            <div>Volume : {volume}%</div>
+            <input
+                className="volume_input"
+                type="range"
+                id="volume-slider"
+                min="0"
+                max="100"
+                value={volume}
+                onChange={handleVolume} // 슬라이더 값 변경 시 volume 상태 업데이트
+            />
+        </div>
+        <div className="skip_state">
+            {skipCount} / {UserCount} Skip Voted! {skipRatio >= 0.5 && <>노래를 생략합니다.</>}
+        </div>
         <div className="title_exit_share">
             <div className="game_board_title">
                 {roomName}
@@ -303,33 +343,32 @@ function Game_board_playing({stompClient,setFirstCreate,
                 <div className="current_song_ratio">
                     <div>
                         {(timeout === false && answerChat === null) ? (
-                                songType ? <iframe
-                                    key={videoUrl}
-                                    ref={ref1}
-                                    className="quiz_playing_frame_1"
-                                    src={videoUrl}
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    style={{display: "none"}}
-                                    onLoad={onVideoLoad}
-                                /> :
+                                songType ?
+                                    <YouTubePlayer
+                                        songURL={songURL}
+                                        startTime={startTime}
+                                        endTime={endTime}
+                                        onVideoLoad={onVideoLoad}
+                                        volume={volume}
+                                    />
+                                    :
                                     <audio
-                                        ref={ref1}
+                                        ref={audioRef}
                                         src={videoUrl}
                                         preload="auto"
                                         autoPlay // 자동 재생
                                         onPlay={onVideoLoad}
                                         onLoadedMetadata={handleLoadedMetadata} // 메타데이터 로드 시 시작 시간 설정
                                         onTimeUpdate={handleTimeUpdate} // 현재 시간 업데이트 시 종료 시간 확인
-                                        style={{display:"none"}}
+                                        style={{display: "none"}}
                                     />
                             )
                             :
-                            <iframe
-                                ref={ref2}
-                                className="quiz_playing_frame_2"
-                                src={originUrl}
-                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                style={{display: "none"}}
+                            <YouTubePlayer
+                                songURL={originalSongURL}
+                                startTime={Math.floor(startTime + progress)}
+                                endTime={Math.floor(startTime + progress) + 5}
+                                volume={volume}
                             />
                         }
 
@@ -373,9 +412,6 @@ function Game_board_playing({stompClient,setFirstCreate,
                     <span className="correct_bold">정답자</span> : {answerChatList[0].answerUserName}
                 </>
             }
-        </div>
-        <div className="skip_state">
-            {skipCount} / {UserCount} Skip Voted! {skipRatio>=0.5 && <>노래를 생략합니다.</>}
         </div>
     </div>
 }

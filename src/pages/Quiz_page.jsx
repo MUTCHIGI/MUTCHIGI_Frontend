@@ -51,6 +51,9 @@ function Quiz_page({
     // 검색어
     const [quizTitle,setQuizTitle] = useState('');
 
+    // 새로고침
+    const [refreshFlag,setRefreshFlag] = useState(false);
+
     /* ------------------------------footer state------------------------------ */
 
     // 버튼을 사용해 페이지 이동하는 state
@@ -84,7 +87,7 @@ function Quiz_page({
         };
 
         fetchQuizIds();
-    }, [token,currentPage, offset, selectedOption_type, quizTitle, customOrplaylist, selectedOption_quiztype,selectedOption_quizOrder]);
+    }, [token,currentPage, offset, selectedOption_type, quizTitle, customOrplaylist, selectedOption_quiztype,selectedOption_quizOrder,refreshFlag]);
 
     useEffect(() => {
         if (token === null) {
@@ -110,6 +113,9 @@ function Quiz_page({
             setSelectedOption_type={setSelectedOption_type}
             quizOrder={selectedOption_quizOrder}
             setQuizOrder={setSelectedOption_quizOrder}
+            quizTitle={quizTitle}
+            setQuizTitle={setQuizTitle}
+            refreshFlag={refreshFlag} setRefreshFlag={setRefreshFlag}
             texts={texts}
         />
         <Print_quiz quizIds={quizIds}

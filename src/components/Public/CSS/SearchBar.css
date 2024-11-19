@@ -29,6 +29,9 @@
 
 .search_by_keyword {
     display: flex;
+
+    align-items: center;
+
     margin-left: auto;
     margin-right: calc(var(--root--width)*0.034375);
     height: calc(var(--root--height)*0.034259259);
@@ -36,15 +39,18 @@
 
 .input_keyword {
     box-sizing: border-box;
-    width: calc(var(--root--width)*0.171);
+    width: calc(var(--root--width)*0.2);
     height: calc(var(--root--height)*0.034259259);
 
     border: 1px solid white;
-    border-bottom-left-radius: 10px;
-    border-top-left-radius: 10px;
+    border-radius: 10px;
 
     text-align: center;
     font-size: calc(15px*var(--root--font--ratio));
+}
+
+.button_search {
+    margin-left: 10%;
 }
 
 .search_by_public_or_private {
@@ -57,13 +63,13 @@
 }
 
 .radio_room_public {
-    width: calc(var(--root--width)*0.01041666666666666666666666666667);
-    height: calc(var(--root--height)*0.0185185185);
+    width: calc(var(--root--width)*0.015625);
+    height: calc(var(--root--height)*0.02777777777777777777777777777778);
 }
 
 .radio_room_private{
-    width: calc(var(--root--width)*0.01041666666666666666666666666667);
-    height: calc(var(--root--height)*0.0185185185);
+    width: calc(var(--root--width)*0.015625);
+    height: calc(var(--root--height)*0.02777777777777777777777777777778);
 }
 
 .temp {
@@ -71,5 +77,5 @@
 }
 
 .button_quiz_type {
-    margin-left: 10%;
+    margin-left: 15%;
 }

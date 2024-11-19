@@ -1,6 +1,6 @@
 import './CSS/SearchBar.css';
 import Button from "./Button.jsx";
-import Search from "../../img/search.png";
+import Reload from "../../img/reload.png";
 import {useState} from "react";
 
 function SearchBar({multiplay,
@@ -8,6 +8,8 @@ function SearchBar({multiplay,
                        selectedOption_quiztype, setSelectedQuizType,
                        selectedOption_type, setSelectedOption_type,
                        quizOrder,setQuizOrder,
+                       quizTitle,setQuizTitle,
+                       refreshFlag,setRefreshFlag,
                        texts
                    }) {
 
@@ -28,6 +30,10 @@ function SearchBar({multiplay,
 
     const handleTypeChange_2 = (e) => {
         setQuizOrder(e.target.value);
+    }
+
+    const handleRefresh = () => {
+        setRefreshFlag(!refreshFlag);
     }
 
     return <div className="SearchBar">
@@ -86,8 +92,14 @@ function SearchBar({multiplay,
             </div>
         }
         <div className="search_by_keyword">
-            <input className="input_keyword" type="text" name="" placeholder="검색어를 입력하십시오"/>
-            <Button classname="search" logo={Search}/>
+            <input
+                className="input_keyword"
+                type="text" name=""
+                placeholder="검색어를 입력하십시오"
+                value={quizTitle}
+                onChange={(e) => setQuizTitle(e.target.value)}
+            />
+            <Button classname="search" logo={Reload} onClick={handleRefresh}/>
         </div>
     </div>
 }
