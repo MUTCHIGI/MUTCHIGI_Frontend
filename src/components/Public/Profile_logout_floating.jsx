@@ -2,6 +2,7 @@ import './CSS/Profile_logout_floating.css';
 import Button from "./Button.jsx";
 import Logout from "../../img/로그아웃.png"
 import Arrow from "../../img/Arrow.svg"
+import Delete from "../../img/delete_quiz_button.svg"
 import { useEffect, useState, useRef } from "react";
 
 function Profile_logout_floating({ onclose, setToken, setDivVisible, setRestartQuizId, quizNotifications, token }) {
@@ -89,6 +90,27 @@ function Profile_logout_floating({ onclose, setToken, setDivVisible, setRestartQ
         fetchQuizAvailability();
     }, [quizNotifications]);
 
+    const deleteQuiz = async (quizId) => {
+        try {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/deleteNotReadyQuiz/${quizId}`, {
+              method: 'DELETE',
+              headers: {
+                "Authorization": `Bearer ${token}`,
+                'Accept': '*/*',
+              },
+            });
+            if (!response.ok) {
+              throw new Error("Failed to delete quiz");
+            }
+            setAvailableQuizzes((prevQuizzes) =>
+                prevQuizzes.filter((quiz) => quiz.quizId !== quizId)
+            );
+          }
+          catch (error) {
+            console.log(error);
+          }
+    }
+
     const restartCreateQuiz = (quizId) => {
         setRestartQuizId(quizId);
     }
@@ -99,17 +121,27 @@ function Profile_logout_floating({ onclose, setToken, setDivVisible, setRestartQ
                 <>
                     <div key={quiz.quizId}
                         className="notification"
-                        onClick={() => restartCreateQuiz(quiz.quizId)}
+                        
                     >
                         퀴즈 ({quiz.quizName.length > 10
                             ? `${quiz.quizName.slice(0, 10)}...`
                             : quiz.quizName}
                         )를 <br />
                         생성 할 수 있습니다!
-                        <div className="notification-text">
+                        <div 
+                            className="notification-text"
+                            onClick={() => restartCreateQuiz(quiz.quizId)}
+                        >
                             이어가기
                             <img src={Arrow} className="notification-logo" />
                         </div>
+                    <div
+                        className="notification-text-delete"
+                        onClick={() => deleteQuiz(quiz.quizId)}
+                    >
+                        퀴즈 삭제하기
+                        <img src={Delete} className="notification-logo" />
+                    </div>
                     </div>
                 </>
             ))}
