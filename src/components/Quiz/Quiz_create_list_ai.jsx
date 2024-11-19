@@ -435,7 +435,7 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
                 url: song.playURL,
                 answers: answerList,
                 hints: [],
-                startTime: 0,
+                startTime: -1,
                 quizRelationId: quizSongRelationId,
                 songId: song.songId,
                 quizUrl: song.playURL,
