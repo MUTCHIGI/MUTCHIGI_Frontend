@@ -79,7 +79,13 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
                         const maxTimeInSeconds = convertToSeconds(item.songTime);
 
                         // Fetch answers
-                        const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/answers`, token);
+                        let answers;
+                        try {
+                            answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/answers`, token);
+                        }   
+                        catch {
+                            answers = [];
+                        } 
                         // Fetch hints
                         const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
                         // fetch startTime
