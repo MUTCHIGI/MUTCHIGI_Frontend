@@ -133,6 +133,31 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       if (!response.ok) {
         throw new Error("Failed to post url");
       }
+      const data = await response.json();
+      if (mode === 2) {
+        // `playURL` 필드를 추출하여 각각 POST 요청
+        for (const song of data) {
+          const url = song.playURL;
+
+          try {
+            const publishResponse = await fetch(
+              `${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`,
+              {
+                method: "POST",
+                headers: {
+                  "Authorization": `Bearer ${token}`,
+                  "Accept": "*/*",
+                },
+              }
+            );
+            if (!publishResponse.ok) {
+              console.error(`Failed to publish URL: ${url}`);
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      }
     } catch (error) {
       alert("비공개 플레이리스트는 변환 할 수 없습니다");
       try {
@@ -146,38 +171,14 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         if (!response.ok) {
           throw new Error("Failed to delete quiz");
         }
-        
-        const data = await response.json();
-        if (mode === 2) {
-          // `playURL` 필드를 추출하여 각각 POST 요청
-          for (const song of data) {
-            const url = song.playURL;
-            
-            try {
-              const publishResponse = await fetch(
-                `${import.meta.env.VITE_SERVER_IP}/GCP/publish?youtubeURL=${encodeURIComponent(url)}`,
-                {
-                  method: "POST",
-                  headers: {
-                    "Authorization": `Bearer ${token}`,
-                    "Accept": "*/*",
-                  },
-                }
-              );
-              if (!publishResponse.ok) {
-                console.error(`Failed to publish URL: ${url}`);
-              }
-            } catch (error) {
-              
-            }
-          }
-        }
-      } catch (error) {
-        console.error('Error occurred while deleting the quiz:', error);
+
+      }
+      catch (error) {
+        console.log(error);
       }
       navigate("/home");
     }
-  }
+  };
 
   const postHints = async (quizIdNumber) => {
     console.log(hints);

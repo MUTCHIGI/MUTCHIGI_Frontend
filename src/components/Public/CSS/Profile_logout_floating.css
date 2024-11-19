@@ -62,7 +62,7 @@
     font-size: calc(18px * var(--root--font--ratio));
     text-align: center;
     color: #000000;
-    cursor: pointer;
+    border-bottom: 1px solid #000000;
 }
 
 .notification-text {
@@ -78,6 +78,23 @@
     text-align: center;
     color: #0396FF;
     height: auto;
+    cursor: pointer;
+}
+
+.notification-text-delete {
+    display: flex;
+    flex-direction: row;
+    margin-left: 10px;
+    /* justify-content: center; */
+    align-items: center;
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-size: calc(18px * var(--root--font--ratio));
+    text-align: center;
+    color: #FF575A;
+    height: auto;
+    cursor: pointer;
 }
 
 .notification-logo {
@@ -88,7 +105,16 @@
 .notification:hover {
     background-color: lightgrey;
 
-    border-radius: 10px;
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
 
     color: #6BC5B4;
+}
+
+.notification-text:hover {
+    color: #0066CC; /* 텍스트 hover 효과 */
+}
+
+.notification-text-delete:hover {
+    color: #CC0000; /* 텍스트 hover 효과 */
 }
