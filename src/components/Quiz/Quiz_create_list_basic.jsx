@@ -209,7 +209,7 @@ const QuizCreateList = ({ quizId, token }) => {
                     url: data.playURL,
                     answers: answers, // 할당된 answers
                     hints: [],
-                    startTime: 0,
+                    startTime: -1,
                     quizRelationId: data.quizSongRelationID,
                     quizUrl: data.playURL,
                     quizThumbnail: data.thumbnailURL,
@@ -222,7 +222,7 @@ const QuizCreateList = ({ quizId, token }) => {
                     url: data.playURL,
                     answers: [], // 할당된 answers
                     hints: [],
-                    startTime: 0,
+                    startTime: -1,
                     quizRelationId: data.quizSongRelationID,
                     quizUrl: data.playURL,
                     quizThumbnail: data.thumbnailURL,

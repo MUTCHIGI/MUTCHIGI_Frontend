@@ -219,7 +219,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
         stompClient.subscribe('/topic/correct/' + roomId, (message) => {
             const received_answerChat = JSON.parse(message.body);
             setAnswerChat(received_answerChat);
-            setAnswerChatList((prevChat) => [...prevChat,received_answerChat]);
         });
         stompClient.subscribe('/topic/kick/' + roomId);
         stompClient.subscribe('/topic/superUser/' + roomId);
@@ -457,8 +456,6 @@ function Ingame({quiz,chatRoomId,setChatRoomId,
             }
         }
     };
-
-    console.log(CurrentQuiz)
 
     return <div className="Ingame">
         <div className="left">
