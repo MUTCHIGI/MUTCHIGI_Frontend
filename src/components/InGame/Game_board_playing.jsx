@@ -42,9 +42,6 @@ function Game_board_playing({stompClient,setFirstCreate,
     const [videoId,setVideoId] = useState(null);
 
     console.log(quiz);
-    useEffect(() => {
-        console.log(progress);
-    }, [progress]);
 
     useEffect(() => {
         if(answerChat!==null) {
