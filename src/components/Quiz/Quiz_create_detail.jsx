@@ -2,6 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import styles from './CSS/Quiz_create_detail.module.css'
 import playButton from '../../img/music_play_button.svg'
 import pauseButton from '../../img/music_pause_button.svg'
+import YouTube from "react-youtube";
+import { map } from 'sockjs-client/lib/transport-list';
 
 const AnswerInput = ({ answers, onUpdateAnswers }) => {
   const [currentInputValue, setCurrentInputValue] = useState('');
@@ -117,13 +119,19 @@ const HintInput = ({ hints, onUpdateHints, maxHintNum, hintSetting }) => {
 
   const handleInputChange = (e, index) => {
     const newHints = [...localHints];
-    newHints[index] = e.target.value;
+    if (newHints[index]) {
+      // 기존 힌트가 있는 경우 값만 업데이트
+      newHints[index].hintText = e.target.value;
+    } else {
+      // 새로운 힌트를 생성하여 추가
+      newHints[index] = {
+        hintId: hintSetting[index].id, // ID는 유니크하게 설정
+        hintTime: "00:00:00", // 기본 값
+        hintType: hintSetting[index].text, // 기본 값
+        hintText: e.target.value, // 입력값
+      };
+    }
     setLocalHints(newHints);
-    onUpdateHints(newHints);
-  };
-
-  const handleDelete = (index) => {
-    const newHints = hints.filter((_, i) => i !== index);
     onUpdateHints(newHints);
   };
 
@@ -135,12 +143,14 @@ const HintInput = ({ hints, onUpdateHints, maxHintNum, hintSetting }) => {
       <div className={styles["hint-list"]}>
         {Array.from({ length: maxHintNum }).map((_, index) => (
           <div key={index} className={styles["hint-item"]}>
-            <span className={styles['hint-type']}>{hintSetting[index].text}</span>
+            <span className={styles["hint-type"]}>
+              {hintSetting[index]?.text || `Hint ${index + 1}`}
+            </span>
             <input
               type="text"
-              value={localHints[index] || ''}
+              value={localHints[index]?.hintText || ""}
               onChange={(e) => handleInputChange(e, index)}
-              className={styles['input-square-white']}
+              className={styles["input-square-white"]}
             />
           </div>
         ))}
@@ -149,95 +159,21 @@ const HintInput = ({ hints, onUpdateHints, maxHintNum, hintSetting }) => {
   );
 };
 
-const TimeAdjuster = ({ startTime, onUpdateTime, maxTime }) => {
-  const [time, setTime] = useState(startTime || 0);
-
-  const formatTime = (seconds) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    const hours = Math.floor(mins / 60);
-    const displayMins = mins % 60;
-    return `${hours > 0 ? String(hours).padStart(2, '0') + ':' : ''}${String(displayMins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-  };
-
-  const handleSliderChange = (e) => {
-    const newTime = Number(e.target.value);
-    if (newTime <= maxTime) {
-      setTime(newTime);
-      onUpdateTime(newTime);
-    }
-  };
-
-  const adjustTime = (timeOffset) => {
-    const newTime = Math.max(0, time + timeOffset);
-    if (newTime <= maxTime) {
-      setTime(newTime);
-      onUpdateTime(newTime);
-    }
-    else {
-      setTime(maxTime);
-      onUpdateTime(maxTime);
-    }
-  };
-
-  return (
-    <div className={styles["time-adjuster-container"]}>
-      <div className={styles["slider-section"]}>
-        <label className={styles["seting-label"]}>재생 설정</label>
-        <input
-          type="range"
-          min="0"
-          max={maxTime}
-          value={time}
-          onChange={handleSliderChange}
-          className={styles["option-timebar"]}
-        />
-        <div className={styles["slider-labels"]}>
-          <span>0</span>
-          <span style={{ marginLeft: 'calc(240 / 1920 * var(--root--width))' }}>Max</span>
-        </div>
-      </div>
-
-      <div className={styles["time-display"]}>
-        <label>시작시간</label>
-        <div className={styles["time"]}>{formatTime(time)}</div>
-      </div>
-
-      <div className={styles["adjust-buttons"]}>
-        {[1, 5, 10, 30].map((val) => (
-          <button key={val} onClick={() => adjustTime(val)}>{`+${val}`}</button>
-        ))}
-        {[1, 5, 10, 30].map((val) => (
-          <button key={-val} onClick={() => adjustTime(-val)}>{`-${val}`}</button>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const MusicPlayer = ({ startTime, instrumentId, card, token }) => {
-  const audioRef = useRef(null);
+function YouTubePlayer({ card, songURL, startTime, volume, instrumentId, token, setStartTime }) {
   const playerRef = useRef(null);
+  const [playerHeight, setPlayerHeight] = useState('390'); // Default height
+  const [playerWidth, setPlayerWidth] = useState('640'); // Default width
+  const intervalRef = useRef(null); // Store interval ID to manage cleanup
+  const [initialStartTime, setInitialStartTime] = useState(startTime);
+  const audioRef = useRef(null);
   const [audioUrl, setAudioUrl] = useState(null);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [playerReady, setPlayerReady] = useState(false);
+  const [isYoutubeMuted, setIsYoutubeMuted] = useState(false);
+
+  // audio 
 
   useEffect(() => {
     const initializePlayerOrFetchAudio = async () => {
-      if (instrumentId === 0) {
-        if (window.YT) {
-          loadYouTubePlayer();
-        } else {
-          const tag = document.createElement('script');
-          tag.src = 'https://www.youtube.com/iframe_api';
-          const firstScriptTag = document.getElementsByTagName('script')[0];
-          firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-          window.onYouTubeIframeAPIReady = () => {
-            loadYouTubePlayer();
-          };
-        }
-      } else if (instrumentId !== 0) {
+      if (instrumentId !== 0) {
         try {
           const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/play?songId=${card.songId}&instrumentId=${instrumentId}`, {
             method: 'GET',
@@ -253,99 +189,156 @@ const MusicPlayer = ({ startTime, instrumentId, card, token }) => {
               setAudioUrl(url);
               if (audioRef.current) {
                 audioRef.current.src = url;
-                setPlayerReady(true);
               }
             }
-          } 
+          }
         } catch (error) {
           console.error('Error fetching audio file:', error);
         }
+        setIsYoutubeMuted(true); // Mute YouTube
       }
     };
-    
+
     initializePlayerOrFetchAudio();
-    // Cleanup function
+  }, [card.songId, instrumentId]);
+
+
+  useEffect(() => {
+    if (audioRef.current) {
+      audioRef.current.load();
+      audioRef.current.volume = 0.5;
+    }
+  }, [audioUrl]);
+
+  // youtube
+  useEffect(() => {
+    const updatePlayerSize = () => {
+      const windowHeight = window.innerHeight;
+      const windowWidth = window.innerWidth;
+      const newHeight = Math.floor(windowHeight * 0.27); // Adjust multiplier as needed
+      const newWidth = Math.floor(windowWidth * 0.27); // Adjust multiplier as needed
+      setPlayerHeight(newHeight.toString());
+      setPlayerWidth(newWidth.toString());
+    };
+    updatePlayerSize();
+    window.addEventListener('resize', updatePlayerSize);
     return () => {
-      if (playerRef.current && instrumentId === 0) {
-        playerRef.current.destroy();
+      window.removeEventListener('resize', updatePlayerSize);
+    };
+  }, []);
+
+  const opts = {
+    height: playerHeight,
+    width: playerWidth,
+    playerVars: {
+      autoplay: 1,
+      start: 0,
+      rel: 0,
+    },
+  };
+
+  const handlePlayerReady = (event) => {
+    playerRef.current = event.target;
+    if (volume >= 0 && volume <= 100) {
+      playerRef.current.setVolume(volume);
+    }
+    console.log(isYoutubeMuted)
+    if (isYoutubeMuted)
+    {
+      playerRef.current.mute(isYoutubeMuted);
+    }
+    playerRef.current.seekTo(initialStartTime, true);
+    playerRef.current.pauseVideo();
+    intervalRef.current = setInterval(() => {
+      const currentTime = playerRef.current.getCurrentTime();
+      setStartTime(currentTime);
+    }, 10); // Log every second
+  };
+
+  useEffect(() => {
+    // Cleanup on component unmount
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
       }
     };
-  }, [card, instrumentId]);
+  }, []);
 
-  const loadYouTubePlayer = () => {
-    const videoId = card.quizUrl.split('v=')[1];
-    playerRef.current = new window.YT.Player('youtube-player', {
-      videoId: videoId,
-      events: {
-        onReady: (event) => {
-          // 플레이어가 준비되었을 때 시작 시간만 설정하고 재생은 하지 않음
-          setPlayerReady(true);
-          if (startTime > 0) {
-            event.target.cueVideoById({
-              videoId: videoId,
-              startSeconds: startTime
-            });
-          }
-        },
-      },
-      playerVars: {
-        autoplay: 0, // 자동 재생 비활성화
-        controls: 0,
-        start: startTime,
-        mute: 0,
-        playsinline: 1
-      }
-    });
-  };
-
-  const handlePlay = async () => {
-    if (instrumentId === 0 && playerRef.current && playerReady) {
-      playerRef.current.seekTo(startTime);
-      playerRef.current.playVideo();
-      setIsPlaying(true);
-    } else if (instrumentId != 0) {
-      setIsPlaying(true);
-      if (audioRef.current) {
-        audioRef.current.currentTime = startTime;
-        audioRef.current.play();
-      }
+  useEffect(() => {
+    if (playerRef.current && volume >= 0 && volume <= 100) {
+      playerRef.current.setVolume(volume);
     }
-  };
+  }, [volume]);
 
-  const handlePause = () => {
-    if (instrumentId === 0 && playerRef.current && playerReady) {
-      playerRef.current.pauseVideo();
-      setIsPlaying(false);
-    } else if (audioRef.current) {
-      audioRef.current.pause();
-      setIsPlaying(false);
+  const handleStateChange = (event) => {
+    if (event.data === 1) {
+      if (audioRef.current) {
+        audioRef.current.play();
+        audioRef.current.currentTime = playerRef.current.getCurrentTime();
+      }
+    } else if (event.data === 2) {
+      if (audioRef.current) {
+        audioRef.current.pause();
+      }
     }
   };
 
   return (
-    <div className={styles['music-play-container']}>
-      <label className={styles["seting-label"]}>미리 듣기</label>
-      {instrumentId === 0 && (
-        <div id="youtube-player" style={{ display: 'none' }}></div>
-      )}
+    <>
+      <div className={styles.container}>
+        <YouTube
+          videoId={songURL.split('v=')[1]?.split('&')[0]}
+          opts={opts}
+          onReady={handlePlayerReady}
+          onStateChange={handleStateChange}
+        />
+      </div>
       {instrumentId !== 0 && audioUrl && (
         <audio ref={audioRef} src={audioUrl} />
       )}
-      <button
-        className={styles['card-play-btn']}
-        onClick={isPlaying ? handlePause : handlePlay}
-        disabled={instrumentId === 0 && !playerReady}
-      >
-        {isPlaying ? (
-          <img src={pauseButton} alt="Pause" className={styles['icon-img']} />
-        ) : (
-          <img src={playButton} alt="Play" className={styles['icon-img']} />
-        )}
-      </button>
+    </>
+  );
+}
+
+
+const TimeAdjuster = ({ card, startTime, instrumentId, token, onUpdateTime }) => {
+
+  const formatTime = (seconds) => {
+    const totalMilliseconds = seconds * 1000;
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    const hours = Math.floor(mins / 60);
+    const displayMins = mins % 60;
+  
+    return `${hours > 0 ? String(hours).padStart(2, '0') + ':' : ''}` +
+           `${String(displayMins).padStart(2, '0')}:` +
+           `${String(secs).padStart(2, '0')}`;
+  };
+
+  useEffect(() => {
+    console.log("starTime is" , startTime)
+  }, [startTime]);
+
+  return (
+    <div className={styles["time-adjuster-container"]}>
+      <div className={styles["slider-section"]}>
+        <label className={styles["seting-label-big"]}>시작 시간 설정</label>
+        <div className={styles["time"]}>{formatTime(startTime)}</div>
+      </div>
+      <div className={styles["time-display"]}>
+        <YouTubePlayer
+          card={card}
+          songURL={card.quizUrl}
+          startTime={startTime}
+          volume={50}
+          instrumentId={instrumentId}
+          token={token}
+          setStartTime={onUpdateTime}
+        />
+      </div>
     </div>
   );
 };
-
 
 const QuizCreateDetail = ({ info, handlers }) => {
   const { card, hintSetting, token, instrumentId } = info;
@@ -356,15 +349,12 @@ const QuizCreateDetail = ({ info, handlers }) => {
   const [localHints, setLocalHints] = useState(card.hints);
   const [localTime, setLocalTime] = useState(card.startTime === -1 ? 0 : card.startTime);
 
-  useEffect(() => {
-    console.log(card);
-  }, [card]);
-
   const closeModal = () => {
     setIsModalOpen(false);
     setSelectedCardIndex(null);
   };
 
+  console.log("qsid : ", card.quizRelationId);
   const handleSave = async () => {
     // execption
     if (localAnswers.length > 20) {
@@ -380,12 +370,12 @@ const QuizCreateDetail = ({ info, handlers }) => {
     // Start time
     const hours = Math.floor(localTime / 3600);
     const minutes = Math.floor((localTime % 3600) / 60);
-    const seconds = localTime % 60;
+    const seconds = Math.floor(localTime % 60);
 
     // hintDTOList 
     const hintDTOList = hintSetting.map((setting, index) => ({
       hintStateId: setting.id, // Use setting.id for hintStateId
-      hintText: localHints[index] || "" // Use localHints[index] or an empty string if unavailable
+      hintText: localHints[index]?.hintText || "" // Use localHints[index] or an empty string if unavailable
     }));
 
     const hasEmptyHint = hintDTOList.some(hint => hint.hintText === "");
@@ -407,7 +397,6 @@ const QuizCreateDetail = ({ info, handlers }) => {
           hour: hours,
           minute: minutes,
           second: seconds,
-          nano: 0,
         }),
       });
       if (!startTimeResponse.ok) {
@@ -461,8 +450,13 @@ const QuizCreateDetail = ({ info, handlers }) => {
           <HintInput hints={localHints} onUpdateHints={setLocalHints} maxHintNum={hintSetting.length} hintSetting={hintSetting} />
         </div>
         <div className={styles['quiz-seting-right']}>
-          <TimeAdjuster startTime={localTime} onUpdateTime={setLocalTime} maxTime={card.maxTime} />
-          <MusicPlayer startTime={localTime} instrumentId={instrumentId} card={card} token={token} />
+          <TimeAdjuster
+            card={card}
+            startTime={localTime}
+            instrumentId={instrumentId}
+            token={token}
+            onUpdateTime={setLocalTime}
+          />
         </div>
         <div className={styles["btn-container"]}>
           <button
