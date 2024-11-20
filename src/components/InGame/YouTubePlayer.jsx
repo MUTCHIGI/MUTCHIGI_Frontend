@@ -4,6 +4,7 @@ import YouTube from "react-youtube";
 // 프롭스의 onVideoLoad 는 로딩바 시작하기위한 함수라서
 // 형쓸꺼에는 다른 함수 넣거나 프롭스로 안넘겨도됨
 function YouTubePlayer({songURL,startTime,endTime,onVideoLoad,volume}) {
+    console.log("songURL in Player : ",songURL);
     const playerRef=useRef(null);
     const opts = {
         height: '390', // 비디오 크기
