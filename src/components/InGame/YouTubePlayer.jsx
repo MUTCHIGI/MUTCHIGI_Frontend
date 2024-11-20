@@ -4,7 +4,7 @@ import YouTube from "react-youtube";
 // 프롭스의 onVideoLoad 는 로딩바 시작하기위한 함수라서
 // 형쓸꺼에는 다른 함수 넣거나 프롭스로 안넘겨도됨
 function YouTubePlayer({songURL,startTime,endTime,onVideoLoad,volume}) {
-    console.log("songURL in Player : ",songURL);
+    const src=songURL ? (songURL.split('v=')[1]).split('&')[0] : "";
     const playerRef=useRef(null);
     const opts = {
         height: '390', // 비디오 크기
@@ -43,7 +43,7 @@ function YouTubePlayer({songURL,startTime,endTime,onVideoLoad,volume}) {
     // visible : hidden 은 공간은 차지하지만 화면에는 안보이고, display: none은 공간도 차지하지 않고 화면에도 안보임
     return <div style={{ display: 'none' }}>
         <YouTube
-            videoId={(songURL.split('v=')[1]).split('&')[0]}
+            videoId={src}
             opts={opts}
             onReady={handlePlayerReady} // 비디오 재생이 준비되면 실행할 함수
         />

@@ -41,6 +41,8 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     const [videoId,setVideoId] = useState(null);
 
+    console.log(quiz);
+
     useEffect(() => {
         if(answerChat!==null) {
             if(timeout===false){
@@ -156,7 +158,6 @@ function Game_board_playing({stompClient,setFirstCreate,
     const endTime = startTime + convertTimeToSeconds(timelimit);
 
     useEffect(() => {
-        console.log(songURL)
         const videoId = getYouTubeVideoId(songURL);
 
         if (videoId) {
