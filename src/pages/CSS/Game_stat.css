@@ -45,10 +45,12 @@ div[class^="stat_ranking_"] {
 }
 
 .ranking {
+    font-family: "SeedReg";
     font-weight: bold;
 }
 
 .ranking_username {
+    font-family: SeedBold;
     color: white;
     font-style: italic;
 }

@@ -7,3 +7,24 @@
 .App {
   margin: 0;
 }
+
+@font-face {
+  font-family: "SeedBold";
+  font-weight: bold;
+  font-style: normal;
+  src: url("./fonts/LINESeedKR-Bd.ttf");
+}
+
+@font-face {
+  font-family: "SeedReg";
+  font-weight: bold;
+  font-style: normal;
+  src: url("./fonts/LINESeedKR-Rg.ttf");
+}
+
+@font-face {
+  font-family: "SeedThin";
+  font-weight: bold;
+  font-style: normal;
+  src: url("./fonts/LINESeedKR-Th.ttf");
+}
