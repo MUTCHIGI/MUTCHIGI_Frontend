@@ -10,7 +10,7 @@ function YouTubePlayer({songURL,startTime,endTime,onVideoLoad,volume}) {
         width: '640',
         playerVars: {
             autoplay: 1, // 자동 재생
-            start: startTime || 0, // 시작 시간 (초 단위), 기본값 0
+            start: startTime, // 시작 시간 (초 단위), 기본값 0
             end: endTime || undefined, // 종료 시간 (초 단위), 기본값 없음
             rel: 0, // 관련 동영상 표시 비활성화
         },

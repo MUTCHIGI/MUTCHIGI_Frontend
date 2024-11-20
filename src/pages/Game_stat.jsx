@@ -19,7 +19,15 @@ function Game_stat({answerCount,setAnswerCount,
             <div className="stat_innerbox">
                 {sortedEntries.map(([key, value],index) => (
                     <div key={key} className={`stat_ranking_${index+1}`}>
-                        <span style={{fontStyle: 'italic'}}>{index + 1}등</span> {key}:{value}개
+                        <div className="ranking">
+                            {index + 1}등&nbsp;
+                        </div>
+                        <div className="ranking_username">
+                            {key}&nbsp;&nbsp;
+                        </div>
+                        <div className="ranking_value">
+                            {value}
+                        </div>
                     </div>
                 ))}
             </div>
