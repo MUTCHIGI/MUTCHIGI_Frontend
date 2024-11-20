@@ -143,6 +143,7 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     // 시간 (HH:MM:SS)을 초로 변환하는 함수
     const convertTimeToSeconds = (timeStr) => {
+        console.log("timeStr: ",timeStr)
         if(timeStr) {
             const timeParts = timeStr.split(':');
             const hours = parseInt(timeParts[0], 10);
@@ -158,7 +159,6 @@ function Game_board_playing({stompClient,setFirstCreate,
     const endTime = startTime + convertTimeToSeconds(timelimit);
 
     useEffect(() => {
-
         console.log(songURL)
         const videoId = getYouTubeVideoId(songURL);
 
