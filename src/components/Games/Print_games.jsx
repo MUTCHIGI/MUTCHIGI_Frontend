@@ -108,6 +108,9 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     useEffect(() => {
         const urls = rooms.map((room) => room.quiz.thumbnailURL);
         setThumbnailURL(urls);
+        let string = "";
+        let string2= string.split('v=')[1];
+        console.log(string2);
     }, [rooms]);
 
     useEffect(() => {

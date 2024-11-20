@@ -27,7 +27,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     let {token} = useAuth()
     const skipRatio = skipCount/UserCount;
     const [percentage, setPercentage] = useState(0); // 시간 흐름 표현
-    const [progress, setProgress] = useState(-0.2); // 시간 표현 state
+    const [progress, setProgress] = useState(0); // 시간 표현 state
     const [timeleft,setTimeLeft] = useState(0); // 남은 시간 (초 단위)
     const [whentoend,setWhenToEnd] = useState(null);
     const [currentHint, setCurrentHint] = useState([]); // 추가된 힌트들
@@ -40,6 +40,10 @@ function Game_board_playing({stompClient,setFirstCreate,
     const audioRef = useRef(null);
 
     const [videoId,setVideoId] = useState(null);
+
+    useEffect(() => {
+        console.log(progress)
+    }, [progress]);
 
     useEffect(() => {
         if(answerChat!==null) {
@@ -87,7 +91,7 @@ function Game_board_playing({stompClient,setFirstCreate,
                     setVideoUrl('');
                     setOriginUrl('');
                     setPercentage(0);
-                    setProgress(-0.2);
+                    setProgress(0);
                     if (intervalRef1.current) {
                         clearInterval(intervalRef1.current);
                         intervalRef1.current = null;
@@ -202,6 +206,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     const duration = convertTimeToSeconds(timelimit);
 
     function onVideoLoad() {
+        ///////////// 로딩바
         if(intervalRef1.current) {
             clearInterval(intervalRef1.current);
         }
@@ -218,19 +223,10 @@ function Game_board_playing({stompClient,setFirstCreate,
                 }
             });
         }, 10); // 1초마다 실행
-    }
 
-    useEffect(() => {
-        setTimeOut(false);
-        setProgress(0);
-        setPercentage(0);
-        clearInterval(intervalRef1.current)
-    }, [qsRelationId]);
 
-    // 두 번째 인터벌: timeLeft가 0이 될 때까지 1초마다 감소
-    useEffect(() => {
+        ////////////////// 남은시간
         setTimeLeft(duration);
-
         // 컴포넌트가 렌더링될 때마다 이전 interval을 클리어
         if (intervalRef2.current) {
             clearInterval(intervalRef2.current);
@@ -247,14 +243,7 @@ function Game_board_playing({stompClient,setFirstCreate,
             });
         }, 1000);
 
-        return () => {
-            clearInterval(intervalRef2.current);
-            intervalRef2.current=null;
-        };
-    }, [qsRelationId]);
-
-    // 세 번째 인터벌: currentTime을 1초마다 증가시키기
-    useEffect(() => {
+        ///////////// 힌트
         let index=0;
         let currentTime = 0;
         // 힌트들을 초로 변환한 배열을 미리 준비
@@ -277,11 +266,15 @@ function Game_board_playing({stompClient,setFirstCreate,
             }
             currentTime = currentTime+1;
         }, 1000);
+    }
 
-        return () => {
-            clearInterval(intervalRef3.current);
-        };
-    }, [hint]);
+    useEffect(() => {
+        setTimeOut(false);
+        setProgress(0);
+        setPercentage(0);
+        clearInterval(intervalRef1.current)
+    }, [qsRelationId]);
+
 
     useEffect(() => {
         if(audioRef.current){
@@ -322,7 +315,7 @@ function Game_board_playing({stompClient,setFirstCreate,
             />
         </div>
         <div className="skip_state">
-            {skipCount} / {UserCount} Skip Voted! {skipRatio >= 0.5 && <>노래를 생략합니다.</>}
+            {skipCount} / {Math.ceil(UserCount/2)} Skip Voted! {skipRatio >= 0.5 && <>노래를 생략합니다.</>}
         </div>
         <div className="title_exit_share">
             <div className="game_board_title">
@@ -367,8 +360,8 @@ function Game_board_playing({stompClient,setFirstCreate,
                             :
                             <YouTubePlayer
                                 songURL={originalSongURL}
-                                startTime={Math.floor(startTime + progress)}
-                                endTime={Math.floor(startTime + progress) + 5}
+                                startTime={startTime + progress}
+                                endTime={startTime + progress + 5}
                                 volume={volume}
                             />
                         }
@@ -377,7 +370,7 @@ function Game_board_playing({stompClient,setFirstCreate,
                             <div className="play_bar_time_outer">
                                 <div className="play_bar_time_inner"
                                      style={{
-                                         width: `${percentage}%`
+                                         width: `${100-percentage}%`
                                      }}
                                 />
                             </div> :

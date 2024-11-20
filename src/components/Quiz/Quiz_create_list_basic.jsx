@@ -155,7 +155,7 @@ const QuizCreateList = ({ quizId, token }) => {
                         catch {
                             startTime = null;
                         }
-
+                        console.log(hints);
                         return {
                             url: item.playURL,
                             answers: answers,
@@ -300,7 +300,7 @@ const QuizCreateList = ({ quizId, token }) => {
         const hasInvalidHints = cards.some((card) => {
             return (
                 card.hints.length < hintSetting.length || // Not enough hints
-                card.hints.some((hint) => hint.trim() === '') // Empty hint string
+                card.hints.some((hint) => !hint || hint.hintText.trim() === '') // Check null or empty hint
             );
         });
     
