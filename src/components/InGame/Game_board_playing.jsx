@@ -348,7 +348,7 @@ function Game_board_playing({stompClient,setFirstCreate,
                                         src={videoUrl}
                                         preload="auto"
                                         autoPlay // 자동 재생
-                                        onPlay={onVideoLoad}
+                                        onPlaying={onVideoLoad}
                                         onLoadedMetadata={handleLoadedMetadata} // 메타데이터 로드 시 시작 시간 설정
                                         onTimeUpdate={handleTimeUpdate} // 현재 시간 업데이트 시 종료 시간 확인
                                         style={{display: "none"}}
