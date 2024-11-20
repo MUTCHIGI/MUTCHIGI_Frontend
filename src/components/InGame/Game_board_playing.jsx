@@ -42,10 +42,6 @@ function Game_board_playing({stompClient,setFirstCreate,
     const [videoId,setVideoId] = useState(null);
 
     useEffect(() => {
-        console.log(progress)
-    }, [progress]);
-
-    useEffect(() => {
         if(answerChat!==null) {
             if(timeout===false){
                 setAnswerChatList((prevChat) => [...prevChat,answerChat])
@@ -134,16 +130,17 @@ function Game_board_playing({stompClient,setFirstCreate,
 
     // YouTube 비디오 ID 추출 함수
     const getYouTubeVideoId = (url) => {
-        const videoId = url.split('v=')[1];
-        if (videoId) {
-            return videoId.split('&')[0];
+        if(url) {
+            const videoId = url.split('v=')[1];
+            if (videoId) {
+                return videoId.split('&')[0];
+            }
         }
         return null;
     };
 
     // 시간 (HH:MM:SS)을 초로 변환하는 함수
     const convertTimeToSeconds = (timeStr) => {
-        console.log("timeStr: ",timeStr)
         if(timeStr) {
             const timeParts = timeStr.split(':');
             const hours = parseInt(timeParts[0], 10);
@@ -163,11 +160,7 @@ function Game_board_playing({stompClient,setFirstCreate,
         const videoId = getYouTubeVideoId(songURL);
 
         if (videoId) {
-            const url = `https://www.youtube.com/embed/${videoId}?autoplay=1&start=${startTime}&end=${endTime}&rel=0`;
-            setVideoUrl(url);
             setSongType(true);
-
-            setVideoId(videoId);
         }
         else {
             fetchAudio();
@@ -184,7 +177,6 @@ function Game_board_playing({stompClient,setFirstCreate,
         if(answerChat !== null) {
             if(timeout === false) {
                 const videoId_origin = getYouTubeVideoId(originalSongURL);
-
                 if(videoId_origin) {
                     const url_origin = `https://www.youtube.com/embed/${videoId_origin}?autoplay=1&start=${Math.floor(startTime + progress)}&end=${Math.floor(startTime + progress)+5}&rel=0`;
                     setOriginUrl(url_origin);
