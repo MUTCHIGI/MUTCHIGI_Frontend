@@ -90,13 +90,14 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
                         const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
                         // fetch startTime
                         let startTime;
+                        
                         try {
                             startTime = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/startTime`, token);
                         }
                         catch {
                             startTime = null;
                         }
-
+                        console.log("startTime response ",startTime)
                         return {
                             url: item.playURL,
                             answers: answers,
@@ -128,6 +129,15 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
         getOrderCount();
         setIsLoading(false);
     }, [quizId, token]);
+
+    const convertToMillis = (timeString) => {
+        if (timeString === null) {
+            return -1;
+        }
+        const [hours, minutes, seconds, millis] = timeString.split(':').map(Number);
+        console.log(hours, minutes, seconds, millis);
+        return (hours * 3600) + (minutes * 60) + seconds + (millis / 1000);
+    };
 
     const convertToSeconds = (timeString) => {
         if (timeString === null) {
@@ -262,6 +272,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
     };
 
     const handleUpdateHints = (newHints) => {
+        console.log(newHints);
         const updatedCards = [...cards];
         updatedCards[selectedCardIndex].hints = newHints;
         setCards(updatedCards);
@@ -467,9 +478,10 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
         }
 
         const hasInvalidHints = cards.some((card) => {
+            console.log(card.hints)
             return (
                 card.hints.length < hintSetting.length || // Not enough hints
-                card.hints.some((hint) => hint.trim() === '') // Empty hint string
+                card.hints.some((hint) => !hint || hint.hintText.trim() === '') // Check null or empty hint
             );
         });
 
