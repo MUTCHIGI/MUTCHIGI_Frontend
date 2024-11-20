@@ -158,6 +158,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     const endTime = startTime + convertTimeToSeconds(timelimit);
 
     useEffect(() => {
+
         console.log(songURL)
         const videoId = getYouTubeVideoId(songURL);
 
