@@ -21,12 +21,14 @@ function YouTubePlayer({songURL,startTime,endTime,onVideoLoad,volume}) {
     // YouTube Player 초기화 후 객체 저장
     const handlePlayerReady = (event) => {
         playerRef.current = event.target; // Player 객체 저장
+        playerRef.current.seekTo(startTime, true);
         // 이부분은 로딩바 실행 함수이므로 필수는 아님
         if (onVideoLoad) {
             onVideoLoad(); // 프롭스로 전달된 함수 호출
         }
         // 초기 비디오 로딩시 볼륨값 설정
         if (volume >= 0 && volume <= 100) {
+            playerRef.current.unMute();
             playerRef.current.setVolume(volume); // 볼륨 설정 (0~100)
         }
     };
