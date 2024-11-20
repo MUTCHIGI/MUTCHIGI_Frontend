@@ -175,6 +175,10 @@
 }
 
 .play_bar_time_outer {
+    display: flex;
+
+    justify-content: center;
+
     width: calc(var(--root--width)*0.25520833333333333333333333333333);
     height: calc(var(--root--height)*0.05555555555555555555555555555556);
 

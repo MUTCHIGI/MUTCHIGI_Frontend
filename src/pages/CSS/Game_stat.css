@@ -39,20 +39,33 @@
     margin-right: 0;
 }
 
-.stat_ranking_1 {
-    text-align: center;
+div[class^="stat_ranking_"] {
+    display: flex;
+    justify-content: center;
+}
 
+.ranking {
+    font-weight: bold;
+}
+
+.ranking_username {
+    color: white;
+    font-style: italic;
+}
+
+.ranking_value {
+    color: #00FFD9;
+}
+
+.stat_ranking_1 {
     width: 100%;
     height: 22%;
 
     font-size: calc(88px*var(--root--font--ratio));
-    font-weight: bold;
     color: #D5A11E;
 }
 
 .stat_ranking_2 {
-    text-align: center;
-
     width: 100%;
     height: 16%;
 
@@ -61,8 +74,6 @@
 }
 
 .stat_ranking_3 {
-    text-align: center;
-
     width: 100%;
     height: 12%;
 
@@ -71,8 +82,6 @@
 }
 
 .stat_ranking_4 {
-    text-align: center;
-
     width: 100%;
     height: 10%;
 
@@ -80,8 +89,6 @@
 }
 
 .stat_ranking_5 {
-    text-align: center;
-
     width: 100%;
     height: 10%;
 
@@ -89,8 +96,6 @@
 }
 
 .stat_ranking_6 {
-    text-align: center;
-
     width: 100%;
     height: 10%;
 
@@ -98,8 +103,6 @@
 }
 
 .stat_ranking_7 {
-    text-align: center;
-
     width: 100%;
     height: 10%;
 
@@ -107,8 +110,6 @@
 }
 
 .stat_ranking_8 {
-    text-align: center;
-
     width: 100%;
     height: 10%;
 
