@@ -405,15 +405,14 @@
   position: relative;
   left: 0;
   display: flex;
-  top: calc(30 / 1080 * var(--root--height));
-  ;
+  top: calc(10 / 1080 * var(--root--height));
   align-items: center;
   gap: 10px;
 }
 
 .time-display label {
   position: relative;
-  left: calc(36 / 1920 * var(--root--width));
+  /* left: calc(36 / 1920 * var(--root--width)); */
   font-family: 'Inter';
   font-style: normal;
   font-weight: 800;
@@ -511,4 +510,12 @@
   font-weight: 800;
   font-size: calc(24px * var(--root--font--ratio));
   cursor: pointer;
+}
+
+/* 토글 버튼 */
+
+.toggleConatiner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
