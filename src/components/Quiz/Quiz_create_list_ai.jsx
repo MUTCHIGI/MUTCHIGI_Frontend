@@ -456,7 +456,7 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
 
             let answerList = [];
             try {
-                answersList = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${quizSongRelationId}/answers`, token);
+                answerList = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${quizSongRelationId}/answers`, token);
 
             }
             catch (error) {
