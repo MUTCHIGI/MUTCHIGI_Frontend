@@ -153,7 +153,8 @@
   background-color: transparent;
   margin-left: 5px;
   margin-top: 5px;
-  min-height: auto; /* 높이를 자동으로 조정 */
+  min-height: auto;
+  /* 높이를 자동으로 조정 */
   /* width: 95%; */
   border-radius: 15px;
   position: relative;
@@ -335,8 +336,7 @@
   align-items: center;
 }
 
-.slider-labels {
-}
+.slider-labels {}
 
 .slider-labels span {
   margin-left: calc(30 / 1920 * var(--root--width));
@@ -518,4 +518,9 @@
   display: flex;
   flex-direction: row;
   align-items: center;
+}
+
+.icon-img {
+  width: min(calc(40 / 1080 * var(--root--height)), calc(40 / 1920 * var(--root--width)));
+  height: min(calc(40 / 1080 * var(--root--height)), calc(40 / 1920 * var(--root--width)));
 }
