@@ -15,7 +15,6 @@ function Game_board_waiting({stompClient,
     const navigate = useNavigate();
     const [countdown, setCountdown] = useState(null); // 카운트다운 초기 상태
     const [secondsRemaining,setSecondsRemaining] = useState(5);
-
     const handleExit = () => {
         // 방과의 연결 해제
         if (stompClient && stompClient.connected) {
@@ -26,7 +25,6 @@ function Game_board_waiting({stompClient,
         // /home 경로로 이동
         setFirstCreate(true);
         navigate('/home');
-        window.location.reload();
     };
 
     const handleStartClick = () => {
@@ -96,7 +94,6 @@ function Game_board_waiting({stompClient,
                 <Button text={countdown ? countdown : "waiting for start..."} classname={"game_wait"}/> :
                 <Button text={countdown ? countdown : "Start!"} classname={"game_ready"} onClick={handleStartClick}/>
             }
-
         </div>
         <div className="ready_proportion">
             {UserCount} Players Waiting!

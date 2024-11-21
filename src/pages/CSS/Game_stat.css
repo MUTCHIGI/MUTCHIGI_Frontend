@@ -1,0 +1,119 @@
+.Game_stat {
+
+}
+
+.stat_board {
+    display: flex;
+
+    width: calc(var(--root--width)*0.82135416666666666666666666666667);
+    height: calc(var(--root--height)*0.71851851851851851851851851851852);
+
+    background-color: #30645C;
+
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: calc(var(--root--height)*0.02);
+
+    border-radius: 30px;
+}
+
+.stat_innerbox {
+    margin: auto;
+
+    width: calc(var(--root--width)*0.77604166666666666666666666666667);
+    height: calc(var(--root--height)*0.65462962962962962962962962962963);
+}
+
+.stat_board_bottom {
+    display: flex;
+    width: calc(var(--root--width)*0.82135416666666666666666666666667);
+
+    justify-content: flex-end;
+
+    margin-top: calc(var(--root--height)*0.01);
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button_stat_gohome {
+    margin-right: 0;
+}
+
+div[class^="stat_ranking_"] {
+    display: flex;
+    justify-content: center;
+}
+
+.ranking {
+    font-family: "SeedReg";
+    font-weight: bold;
+}
+
+.ranking_username {
+    font-family: SeedBold;
+    color: white;
+    font-style: italic;
+}
+
+.ranking_value {
+    color: #00FFD9;
+}
+
+.stat_ranking_1 {
+    width: 100%;
+    height: 22%;
+
+    font-size: calc(88px*var(--root--font--ratio));
+    color: #D5A11E;
+}
+
+.stat_ranking_2 {
+    width: 100%;
+    height: 16%;
+
+    font-size: calc(64px*var(--root--font--ratio));
+    color: #A3A3A3;
+}
+
+.stat_ranking_3 {
+    width: 100%;
+    height: 12%;
+
+    font-size: calc(48px*var(--root--font--ratio));
+    color: #CD7F32;
+}
+
+.stat_ranking_4 {
+    width: 100%;
+    height: 10%;
+
+    font-size: calc(40px*var(--root--font--ratio));
+}
+
+.stat_ranking_5 {
+    width: 100%;
+    height: 10%;
+
+    font-size: calc(40px*var(--root--font--ratio));
+}
+
+.stat_ranking_6 {
+    width: 100%;
+    height: 10%;
+
+    font-size: calc(40px*var(--root--font--ratio));
+}
+
+.stat_ranking_7 {
+    width: 100%;
+    height: 10%;
+
+    font-size: calc(40px*var(--root--font--ratio));
+}
+
+.stat_ranking_8 {
+    width: 100%;
+    height: 10%;
+
+    font-size: calc(40px*var(--root--font--ratio));
+}
