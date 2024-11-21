@@ -25,6 +25,8 @@
 .game_board_title {
     display: flex;
 
+    font-family: MaplestoryLight;
+
     width: calc(var(--root--width)*0.597916666666666);
     height: 100%;
 
@@ -80,6 +82,7 @@
     margin-top: calc(var(--root--height)*0.0277777777777777777);
 
     color:white;
+    font-family: MaplestoryLight;
     font-size: calc(25px*var(--root--font--ratio));
     font-style: italic;
     font-weight: lighter;

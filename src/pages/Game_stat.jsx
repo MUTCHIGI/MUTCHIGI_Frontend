@@ -17,8 +17,8 @@ function Game_stat({answerCount,setAnswerCount,
         <Header_bottom/>
         <div className="stat_board">
             <div className="stat_innerbox">
-                {sortedEntries.map(([key, value],index) => (
-                    <div key={key} className={`stat_ranking_${index+1}`}>
+                {sortedEntries.map(([key, value], index) => (
+                    <div key={key} className={`stat_ranking_${index + 1}`}>
                         <div className="ranking">
                             {index + 1}등&nbsp;
                         </div>
