@@ -699,7 +699,7 @@ function SearchPreProcessSong({ selectedItems, setSelectedItems, token, instrume
 
     const fetchData = async () => {
         try {
-            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/List?page=${currentPage}&offset=12&songTitle=${encodeURIComponent(title)}`, {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/List?page=${currentPage}&offset=8&songTitle=${encodeURIComponent(title)}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,
