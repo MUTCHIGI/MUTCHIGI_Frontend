@@ -45,17 +45,18 @@ div[class^="stat_ranking_"] {
 }
 
 .ranking {
-    font-family: "SeedReg";
+    font-family: MaplestoryLight;
     font-weight: bold;
 }
 
 .ranking_username {
-    font-family: SeedBold;
     color: white;
+    font-family: MaplestoryBold;
     font-style: italic;
 }
 
 .ranking_value {
+    font-family: MaplestoryLight;
     color: #00FFD9;
 }
 

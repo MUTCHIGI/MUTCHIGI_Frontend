@@ -183,33 +183,35 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
                 return !isDuplicate; // 중복이 아닌 경우만 남김
             });
 
+            const response = await fetch(
+                `${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/SongToQuiz?songIds=${uniqueSelectedItems.map(item => item.songId).join('&songIds=')}&quizId=${quizId}`,
+                {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': '*/*',
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({}),
+                }
+            );
+            
+            if (!response.ok) throw new Error('Failed to assign songs to quiz');
+            
+            // 응답에서 quizSongRelationIds를 추출
+            const quizSongRelationIds = await response.json();
+            
+            // quizSongRelationIds를 활용하여 각각의 카드 형식을 반환
             const updatedSelectedItems = await Promise.all(
-                uniqueSelectedItems.map(async (item) => {
-                    const response = await fetch(
-                        `${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/SongToQuiz?songIds=${item.songId}&quizId=${quizId}`,
-                        {
-                            method: 'POST',
-                            headers: {
-                                'Authorization': `Bearer ${token}`,
-                                'Accept': '*/*',
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify({}),
-                        }
-                    );
-
-                    if (!response.ok) throw new Error('Failed to assign song to quiz');
-
-                    // 응답에서 quizSongRelationId를 추출
-                    const [quizSongRelationId] = await response.json();
-
-                    // 새로운 card 형식으로 반환
+                uniqueSelectedItems.map(async (item, index) => {
+                    const quizSongRelationId = quizSongRelationIds[index];
                     const maxTimeInSeconds = item.maxTime;
+            
                     try {
                         const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${quizSongRelationId}/answers`, token);
                         return {
                             url: item.playURL,
-                            answers: answers, // answers succesful
+                            answers: answers,
                             hints: [],
                             startTime: 0,
                             songId: item.songId,
@@ -219,11 +221,10 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
                             maxTime: maxTimeInSeconds,
                             isConverted: true,
                         };
-                    }
-                    catch (error) {
+                    } catch (error) {
                         return {
                             url: item.playURL,
-                            answers: [], // on failure answers 초기값으로 빈 배열 설정
+                            answers: [],
                             hints: [],
                             startTime: 0,
                             songId: item.songId,

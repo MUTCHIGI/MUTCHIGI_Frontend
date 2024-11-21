@@ -100,11 +100,13 @@
 }
 
 .answer_top {
+    font-family: MaplestoryLight;
     text-align: center;
     width: 100%;
 }
 
 .get_next {
+    font-family: MaplestoryLight;
     text-align: center;
 
     margin-top: calc(var(--root--height)*0.01);
