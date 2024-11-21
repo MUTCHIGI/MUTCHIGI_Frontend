@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './CSS/Quiz_create_detail.module.css'
+import togleStyles from './CSS/togle.module.css'
 import playButton from '../../img/music_play_button.svg'
 import pauseButton from '../../img/music_pause_button.svg'
 import YouTube from "react-youtube";
@@ -159,6 +160,44 @@ const HintInput = ({ hints, onUpdateHints, maxHintNum, hintSetting }) => {
   );
 };
 
+const ToggleSwitch = ({ instrumentId, isSeparated, setIsSeparated }) => {
+
+  const toggleSwitch = () => {
+    setIsSeparated((prev) => !prev);
+  };
+
+  // instrumentId에 따른 텍스트 매핑
+  const instrumentMap = {
+    1: "보컬",
+    2: "베이스",
+    3: "반주",
+    4: "드럼",
+  };
+
+  const instrumentText = instrumentMap[instrumentId] || "악기"; // 기본값: "악기"
+
+  return (
+    <div className={togleStyles.container}>
+      <label className={togleStyles.switch}>
+        <input
+          type="checkbox"
+          checked={isSeparated}
+          onChange={toggleSwitch}
+          className={togleStyles.input}
+        />
+        <div className={togleStyles.textContainer}>
+          <span className={togleStyles.text}>{instrumentText}</span>
+          <span className={togleStyles.text}>원본</span>
+        </div>
+        <span
+          className={`${togleStyles.slider} ${isSeparated ? togleStyles.sliderLeft : togleStyles.sliderRight
+            }`}
+        ></span>
+      </label>
+    </div>
+  );
+};
+
 function YouTubePlayer({ card, songURL, startTime, volume, instrumentId, token, setStartTime }) {
   const playerRef = useRef(null);
   const [playerHeight, setPlayerHeight] = useState('390'); // Default height
@@ -168,6 +207,8 @@ function YouTubePlayer({ card, songURL, startTime, volume, instrumentId, token, 
   const audioRef = useRef(null);
   const [audioUrl, setAudioUrl] = useState(null);
   const [isYoutubeMuted, setIsYoutubeMuted] = useState(false);
+  const [isSeparated, setIsSeparated] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
 
   // audio 
 
@@ -198,7 +239,6 @@ function YouTubePlayer({ card, songURL, startTime, volume, instrumentId, token, 
         setIsYoutubeMuted(true); // Mute YouTube
       }
     };
-
     initializePlayerOrFetchAudio();
   }, [card.songId, instrumentId]);
 
@@ -234,6 +274,7 @@ function YouTubePlayer({ card, songURL, startTime, volume, instrumentId, token, 
       autoplay: 1,
       start: 0,
       rel: 0,
+      mute: 0,
     },
   };
 
@@ -242,13 +283,13 @@ function YouTubePlayer({ card, songURL, startTime, volume, instrumentId, token, 
     if (volume >= 0 && volume <= 100) {
       playerRef.current.setVolume(volume);
     }
-    console.log(isYoutubeMuted)
-    if (isYoutubeMuted)
-    {
-      playerRef.current.mute(isYoutubeMuted);
-    }
     playerRef.current.seekTo(initialStartTime, true);
-    playerRef.current.pauseVideo();
+    if (instrumentId === 0) {
+      playerRef.current.unMute();
+    }
+    else {
+      playerRef.current.mute();
+    }
     intervalRef.current = setInterval(() => {
       const currentTime = playerRef.current.getCurrentTime();
       setStartTime(currentTime);
@@ -274,18 +315,74 @@ function YouTubePlayer({ card, songURL, startTime, volume, instrumentId, token, 
     if (event.data === 1) {
       if (audioRef.current) {
         audioRef.current.play();
+        setIsPlaying(true);
         audioRef.current.currentTime = playerRef.current.getCurrentTime();
       }
-    } else if (event.data === 2) {
+    } else if (event.data === 2 || event.data === 3) {
       if (audioRef.current) {
         audioRef.current.pause();
+        setIsPlaying(false);
       }
+    }
+  };
+
+  useEffect(() => {
+    if (playerRef.current && audioRef.current) {
+      if (playerRef.current.isMuted() && isSeparated == false) {
+        playerRef.current.unMute();
+        audioRef.current.volume = 0;
+      }
+      else if (!playerRef.current.isMuted() && isSeparated == true) {
+        playerRef.current.mute();
+        audioRef.current.volume = 0.5;
+      }
+    }
+  }, [isSeparated]);
+
+  const handlePlay = async () => {
+    if (playerRef.current && audioRef.current) {
+      playerRef.current.seekTo(startTime);
+      playerRef.current.playVideo();
+      audioRef.current.currentTime = startTime;
+      audioRef.current.play();
+      setIsPlaying(true);
+    }
+  };
+
+  const handlePause = () => {
+    if (playerRef.current && audioRef.current) {
+      playerRef.current.pauseVideo();
+      audioRef.current.pause();
+      setIsPlaying(false);
     }
   };
 
   return (
     <>
       <div className={styles.container}>
+        {instrumentId !== 0 && (
+          <div className={styles.toggleConatiner}>
+            <ToggleSwitch
+              instrumentId={instrumentId}
+              isSeparated={isSeparated}
+              setIsSeparated={setIsSeparated}
+            />
+            <button
+              className={styles['card-play-btn']}
+              disabled={instrumentId === 0 && !playerReady}
+              onClick={isPlaying ? handlePause : handlePlay}
+            >
+              {isPlaying ? (
+                <img src={pauseButton} alt="Pause" className={styles['icon-img']} />
+              ) : (
+                <img src={playButton} alt="Play" className={styles['icon-img']} />
+              )}
+            </button>
+            {audioUrl && (
+              <audio ref={audioRef} src={audioUrl} />
+            )}
+          </div>
+        )}
         <YouTube
           videoId={songURL.split('v=')[1]?.split('&')[0]}
           opts={opts}
@@ -293,9 +390,6 @@ function YouTubePlayer({ card, songURL, startTime, volume, instrumentId, token, 
           onStateChange={handleStateChange}
         />
       </div>
-      {instrumentId !== 0 && audioUrl && (
-        <audio ref={audioRef} src={audioUrl} />
-      )}
     </>
   );
 }
@@ -309,15 +403,11 @@ const TimeAdjuster = ({ card, startTime, instrumentId, token, onUpdateTime }) =>
     const secs = Math.floor(seconds % 60);
     const hours = Math.floor(mins / 60);
     const displayMins = mins % 60;
-  
-    return `${hours > 0 ? String(hours).padStart(2, '0') + ':' : ''}` +
-           `${String(displayMins).padStart(2, '0')}:` +
-           `${String(secs).padStart(2, '0')}`;
-  };
 
-  useEffect(() => {
-    console.log("starTime is" , startTime)
-  }, [startTime]);
+    return `${hours > 0 ? String(hours).padStart(2, '0') + ':' : ''}` +
+      `${String(displayMins).padStart(2, '0')}:` +
+      `${String(secs).padStart(2, '0')}`;
+  };
 
   return (
     <div className={styles["time-adjuster-container"]}>
@@ -354,7 +444,6 @@ const QuizCreateDetail = ({ info, handlers }) => {
     setSelectedCardIndex(null);
   };
 
-  console.log("qsid : ", card.quizRelationId);
   const handleSave = async () => {
     // execption
     if (localAnswers.length > 20) {
