@@ -203,7 +203,8 @@ const QuizCreateList = ({ quizId, token }) => {
             });
 
             if (!response.ok) {
-                throw new Error('Network response was not ok');
+                alert("이미 추가된 곡입니다.")
+                setUrl('');
             }
 
             const data = await response.json();

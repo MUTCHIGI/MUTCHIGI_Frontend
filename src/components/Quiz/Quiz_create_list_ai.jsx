@@ -82,22 +82,22 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
                         let answers;
                         try {
                             answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/answers`, token);
-                        }   
+                        }
                         catch {
                             answers = [];
-                        } 
+                        }
                         // Fetch hints
                         const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
                         // fetch startTime
                         let startTime;
-                        
+
                         try {
                             startTime = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/startTime`, token);
                         }
                         catch {
                             startTime = null;
                         }
-                        console.log("startTime response ",startTime)
+                        console.log("startTime response ", startTime)
                         return {
                             url: item.playURL,
                             answers: answers,
@@ -175,8 +175,16 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
 
     const confirmCandidate = async () => {
         try {
+            const uniqueSelectedItems = selectedItems.filter((item) => {
+                const isDuplicate = cards.some((card) => card.songId === item.songId);
+                if (isDuplicate) {
+                    console.warn(`Duplicate songId detected: ${item.songId}`);
+                }
+                return !isDuplicate; // 중복이 아닌 경우만 남김
+            });
+
             const updatedSelectedItems = await Promise.all(
-                selectedItems.map(async (item) => {
+                uniqueSelectedItems.map(async (item) => {
                     const response = await fetch(
                         `${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/SongToQuiz?songIds=${item.songId}&quizId=${quizId}`,
                         {
@@ -421,6 +429,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
             });
             if (!response.ok) throw new Error('Failed to initiate song conversion');
             const song = await response.json();
+
+            const isDuplicate = cards.some((card) => card.songId === song.songId);
+            if (isDuplicate) {
+                alert("이미 추가된 곡입니다.");
+                setUrl('');
+                return;
+            }
 
             const ConnectRequest = await fetch(
                 `${import.meta.env.VITE_SERVER_IP}/GCP/DemucsSong/SongToQuiz?songIds=${song.songId}&quizId=${quizId}`,
