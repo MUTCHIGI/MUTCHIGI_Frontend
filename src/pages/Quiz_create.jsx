@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header_top from "../components/Public/Header_top.jsx";
 import Header_bottom from "../components/Public/Header_bottom.jsx";
 import MainInfo from "../components/Quiz/Quiz_create_main.jsx";
@@ -46,14 +46,37 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
   }, [token]);
 
   let navigate = useNavigate();
+  const location = useLocation();
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
-      if (restartQuizId === -1) return; // 유효하지 않은 id는 무시
+      let tempQuizId = null;
+      if (restartQuizId === -1) {
+        const params = new URLSearchParams(location.search);
+        const hasQuery = params.has('quiz_id');
+
+        if (hasQuery) {
+          const quizId = parseInt(params.get('quiz_id'), 10);
+          if (!isNaN(quizId)) {
+            tempQuizId = quizId;
+          } else {
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+      else {
+        tempQuizId = restartQuizId;
+      }
+      setIsLoading(true);
+      const params = new URLSearchParams();
+      params.set('quiz_id', `${tempQuizId}`);
+      navigate(`?${params.toString()}`);
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_SERVER_IP}/quiz/Entities?idList=${restartQuizId}`,
+          `${import.meta.env.VITE_SERVER_IP}/quiz/Entities?idList=${tempQuizId}`,
           {
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -79,12 +102,14 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
           else {
             setMode(1);
           }
-          setQuizId(restartQuizId);
+          setQuizId(tempQuizId);
           setRestartQuizId(-1);
+          setIsLoading(false);
           setStep(3);
         }
       } catch (error) {
         alert("네트워크 오류 발생");
+        setIsLoading(false);
         navigate('/home');
       }
     };
@@ -248,6 +273,9 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     const id = await response.text();
     console.log("test");
     const quizIdNumber = parseInt(id, 10);
+    const params = new URLSearchParams();
+    params.set('quiz_id', `${quizIdNumber}`);
+    navigate(`?${params.toString()}`);
     if (!isNaN(quizIdNumber)) {
       setQuizId(quizIdNumber);
       await postHints(quizIdNumber);
