@@ -55,14 +55,16 @@ function Game_board_playing({stompClient,setFirstCreate,
         if(answerChat!==null) {
             if(timeout===false){ //최초 정답자 등장
                 setAnswerChatList((prevChat) => [...prevChat,answerChat])
+
                 setAnsweredPerson((prevPerson) => [...prevPerson,{
                     answer: answer[0],
                     name: answerChat.answerUserName,
                     time: progress,
                 }]);
+                console.log("완료1");
+
                 setAnswerTime((prevState) => {
                     const current = prevState[answerChat.answerUserName] || { min: progress, max: progress, sum: 0 };
-
                     return {
                         ...prevState,
                         [answerChat.answerUserName]: {
@@ -72,6 +74,8 @@ function Game_board_playing({stompClient,setFirstCreate,
                         },
                     };
                 });
+                console.log("완료2");
+
                 setTimeOut(true);
                 clearInterval(intervalRef1.current)
             }
@@ -107,6 +111,7 @@ function Game_board_playing({stompClient,setFirstCreate,
                                     sum: 0,
                                 }
                             }))
+                            console.log("완료3");
                         }
                     })
                     setAnswerCount(updatedCount);
@@ -135,6 +140,7 @@ function Game_board_playing({stompClient,setFirstCreate,
                             name: "",
                             time: -1,
                         }]);
+                        console.log("완료4");
                     }
                     setWhenToEnd(null);
                     setCurrentHint([]);
