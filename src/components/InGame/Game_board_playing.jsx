@@ -102,6 +102,7 @@ function Game_board_playing({stompClient,setFirstCreate,
                         if(user.userId !== -1 && !(user.name in answerCount)) {
                             updatedCount[user.name] = 0;
                         }
+
                         if(user.userId !== -1 && !(user.name in answerTime)) {
                             setAnswerTime((prevState) =>({
                                 ...prevState,
