@@ -39,6 +39,8 @@ function App() {
 
     // 결과 스탯창 에 표기될 퀴즈 통계정보
     const [answerCount, setAnswerCount] = useState({});
+    const [answeredPerson,setAnsweredPerson] = useState({});
+    const [answerTime,setAnswerTime] = useState({});
 
     let [windowSize,setWindowSize] = useState({
         width: window.innerWidth,
@@ -85,6 +87,8 @@ function App() {
                       <Route path="/" element={<Login />} />
                       <Route path="/game-stat" element={<Game_stat
                           answerCount={answerCount} setAnswerCount={setAnswerCount}
+                          answeredPerson={answeredPerson} setAnsweredPerson={setAnsweredPerson}
+                          answerTime={answerTime} setAnswerTime={setAnswerTime}
                           userInfo={userInfo} setUserInfo={setUserInfo}
                           setRestartQuizId={setRestartQuizId}
                           setFirstCreate={setFirstCreate}
@@ -100,6 +104,8 @@ function App() {
                           userInfo={userInfo}
                           firstCreate={firstCreate} setFirstCreate={setFirstCreate}
                           answerCount={answerCount} setAnswerCount={setAnswerCount}
+                          answeredPerson={answeredPerson} setAnsweredPerson={setAnsweredPerson}
+                          answerTime={answerTime} setAnswerTime={setAnswerTime}
                       />}/>
                       <Route path="/home" element={<Home
                           userInfo={userInfo} setUserInfo={setUserInfo}

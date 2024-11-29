@@ -15,6 +15,8 @@ function Game_board_playing({stompClient,setFirstCreate,
     answer,answerChat,setAnswerChat,
     answerChatList,setAnswerChatList,
     answerCount,setAnswerCount,userList,
+    answeredPerson,setAnsweredPerson,
+    answerTime,setAnswerTime,
 }) {
     const [timeout,setTimeOut] = useState(false);
     const navigate = useNavigate();
@@ -46,9 +48,30 @@ function Game_board_playing({stompClient,setFirstCreate,
     }, [quiz]);
 
     useEffect(() => {
+        console.log(hint)
+    }, [hint]);
+
+    useEffect(() => {
         if(answerChat!==null) {
-            if(timeout===false){
+            if(timeout===false){ //최초 정답자 등장
                 setAnswerChatList((prevChat) => [...prevChat,answerChat])
+                setAnsweredPerson((prevPerson) => [...prevPerson,{
+                    answer: answer[0],
+                    name: answerChat.answerUserName,
+                    time: progress,
+                }]);
+                setAnswerTime((prevState) => {
+                    const current = prevState[answerChat.answerUserName] || { min: progress, max: progress, sum: 0 };
+
+                    return {
+                        ...prevState,
+                        [answerChat.answerUserName]: {
+                            min: Math.min(current.min, progress), // progress가 더 작으면 min 업데이트
+                            max: Math.max(current.max, progress), // progress가 더 크면 max 업데이트
+                            sum: current.sum + progress, // 항상 sum에 progress 추가
+                        },
+                    };
+                });
                 setTimeOut(true);
                 clearInterval(intervalRef1.current)
             }
@@ -75,6 +98,16 @@ function Game_board_playing({stompClient,setFirstCreate,
                         if(user.userId !== -1 && !(user.name in answerCount)) {
                             updatedCount[user.name] = 0;
                         }
+                        if(user.userId !== -1 && !(user.name in answerTime)) {
+                            setAnswerTime((prevState) =>({
+                                ...prevState,
+                                [user.name]: {
+                                    min: 0,
+                                    max: 0,
+                                    sum: 0,
+                                }
+                            }))
+                        }
                     })
                     setAnswerCount(updatedCount);
                     // 방과의 연결 해제
@@ -95,6 +128,13 @@ function Game_board_playing({stompClient,setFirstCreate,
                     if (intervalRef1.current) {
                         clearInterval(intervalRef1.current);
                         intervalRef1.current = null;
+                    }
+                    if (answerChatList.length===songIndex) {
+                        setAnsweredPerson((prevPerson) => [...prevPerson,{
+                            answer: answer[0],
+                            name: "",
+                            time: -1,
+                        }]);
                     }
                     setWhenToEnd(null);
                     setCurrentHint([]);
