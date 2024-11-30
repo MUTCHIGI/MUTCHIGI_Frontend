@@ -39,7 +39,7 @@ function App() {
 
     // 결과 스탯창 에 표기될 퀴즈 통계정보
     const [answerCount, setAnswerCount] = useState({});
-    const [answeredPerson,setAnsweredPerson] = useState({});
+    const [answeredPerson,setAnsweredPerson] = useState([]);
     const [answerTime,setAnswerTime] = useState({});
 
     let [windowSize,setWindowSize] = useState({

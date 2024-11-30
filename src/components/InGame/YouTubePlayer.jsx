@@ -4,7 +4,6 @@ import YouTube from "react-youtube";
 // 프롭스의 onVideoLoad 는 로딩바 시작하기위한 함수라서
 // 형쓸꺼에는 다른 함수 넣거나 프롭스로 안넘겨도됨
 function YouTubePlayer({songURL,startTime,endTime,onVideoLoad,volume}) {
-    console.log(startTime)
     const src=songURL ? (songURL.split('v=')[1]).split('&')[0] : "";
     const playerRef=useRef(null);
     const opts = {
