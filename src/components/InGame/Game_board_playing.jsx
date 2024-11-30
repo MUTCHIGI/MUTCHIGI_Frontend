@@ -41,7 +41,7 @@ function Game_board_playing({stompClient,setFirstCreate,
     const [audioVolume,setAudioVolume] = useState(0.5);
     const audioRef = useRef(null);
 
-    const [videoId,setVideoId] = useState(null);
+    const [correct,setCorrect] = useState(false);
 
     useEffect(() => {
         console.log(quiz);
@@ -54,15 +54,14 @@ function Game_board_playing({stompClient,setFirstCreate,
     useEffect(() => {
         if(answerChat!==null) {
             if(timeout===false){ //최초 정답자 등장
-                setAnswerChatList((prevChat) => [...prevChat,answerChat])
+                setAnswerChatList((prevChat) => [...prevChat,answerChat]);
+                setCorrect(true);
 
                 setAnsweredPerson((prevPerson) => [...prevPerson,{
                     answer: answer[0],
                     name: answerChat.answerUserName,
                     time: progress,
                 }]);
-                console.log("완료1");
-
                 setAnswerTime((prevState) => {
                     const current = prevState[answerChat.answerUserName] || { min: progress, max: progress, sum: 0 };
                     return {
@@ -74,7 +73,6 @@ function Game_board_playing({stompClient,setFirstCreate,
                         },
                     };
                 });
-                console.log("완료2");
 
                 setTimeOut(true);
                 clearInterval(intervalRef1.current)
@@ -98,6 +96,16 @@ function Game_board_playing({stompClient,setFirstCreate,
                     setFirstCreate(true);
                     const updatedCount = {...answerCount}
 
+                    console.log(answerChatList.length);
+                    console.log(songIndex);
+                    if (!correct) {
+                        setAnsweredPerson((prevPerson) => [...prevPerson,{
+                            answer: answer[0],
+                            name: "",
+                            time: -1,
+                        }]);
+                    }
+
                     userList.forEach((user) => {
                         if(user.userId !== -1 && !(user.name in answerCount)) {
                             updatedCount[user.name] = 0;
@@ -112,7 +120,6 @@ function Game_board_playing({stompClient,setFirstCreate,
                                     sum: 0,
                                 }
                             }))
-                            console.log("완료3");
                         }
                     })
                     setAnswerCount(updatedCount);
@@ -135,16 +142,16 @@ function Game_board_playing({stompClient,setFirstCreate,
                         clearInterval(intervalRef1.current);
                         intervalRef1.current = null;
                     }
-                    if (answerChatList.length===songIndex) {
+                    if (!correct) { //정답자 없음
                         setAnsweredPerson((prevPerson) => [...prevPerson,{
                             answer: answer[0],
                             name: "",
                             time: -1,
                         }]);
-                        console.log("완료4");
                     }
                     setWhenToEnd(null);
                     setCurrentHint([]);
+                    setCorrect(false);
                     setSkip(false);
                     setSkipCount(0);
                     setAnswerChatList([]);

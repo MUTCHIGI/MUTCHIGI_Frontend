@@ -15,46 +15,7 @@ function Game_stat({answerCount,setAnswerCount,
     setRestartQuizId,setFirstCreate,
 }) {
     const [selected,setSelected] = useState('select1');
-    console.log("answerCount : ",answerCount);
-    console.log("answeredPerson : ",answeredPerson);
-    console.log("answerTime : ",answerTime);
-
     let navigator = useNavigate();
-    // const answerCount = {
-    //     test1: 8,
-    //     test2: 3,
-    //     test3: 6,
-    //     test4: 5,
-    //     test5: 2,
-    //     test6: 4,
-    //     test7: 3,
-    //     test8: 7,
-    // };
-
-    // const answeredPerson = [
-    //     { answer: "Song Title 1", name: "User 1", time: 1.885 },
-    //     { answer: "Song Title 2", name: "User 2", time: 9.164 },
-    //     { answer: "Song Title 3", name: "User 3", time: 8.761 },
-    //     { answer: "Song Title 4", name: "User 4", time: -1 },
-    //     { answer: "Song Title 5", name: "User 5", time: 2.851 },
-    //     { answer: "Song Title 6", name: "User 6", time: 3.774 },
-    //     { answer: "Song Title 7", name: "User 7", time: 4.241 },
-    //     { answer: "Song Title 8", name: "User 8", time: -1 },
-    //     { answer: "Song Title 9", name: "User 9", time: 7.333 },
-    //     { answer: "Song Title 10", name: "User 10", time: 1.321 }
-    // ];
-
-    // const answerTime = {
-    //     test1: { min: 3.45, max: 12.78, sum: 30 },
-    //     test2: { min: 2.34, max: 10.56, sum: 30 },
-    //     test3: { min: 5.67, max: 14.45, sum: 30 },
-    //     test4: { min: 1.23, max: 9.87, sum: 30 },
-    //     test5: { min: 0.98, max: 8.45, sum: 30 },
-    //     test6: { min: 4.56, max: 13.34, sum: 30 },
-    //     test7: { min: 6.78, max: 15.00, sum: 30 },
-    //     test8: { min: 7.12, max: 12.67, sum: 30 },
-    // };
-
     const sortedEntries = Object.entries(answerCount).sort(([, valueA], [, valueB]) => valueB - valueA);
     const labels_polarArea = sortedEntries.map(([key]) => key);
     const series_polarArea = sortedEntries.map(([, value]) => value);
@@ -219,7 +180,7 @@ function Game_stat({answerCount,setAnswerCount,
                                             {person.name}
                                         </div>
                                         <div className="answered_person_time">
-                                            {person.time}
+                                            {person.time.toFixed(2)}
                                         </div>
                                     </div>
                                 );
@@ -265,7 +226,7 @@ function Game_stat({answerCount,setAnswerCount,
         <div className="stat_board_bottom">
             <Button text={"홈 화면으로"} classname={"stat_gohome"} onClick={() => {
                 setAnswerCount({});
-                setAnsweredPerson({});
+                setAnsweredPerson([]);
                 setAnswerTime({});
                 navigator('/home');
             }}/>
