@@ -1,16 +1,17 @@
 import './CSS/Print_games.css'
 import Game_item from "./Game_item.jsx";
-import {useEffect, useState} from "react";
-import {useNavigate} from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import Password_input from "../Public/Password_input.jsx";
 import Thumbnail from '../../img/QuizItemTest/no_img.png';
+import WarningModal from '../Public/Error';
 
 /* 만약 room이 null값이면 출력안하는게 아니라 그만큼 빈자리에 빈 div를 출력함 */
 /* Footer 버튼 방 생성 버튼으로 바꾸는거 추가 */
-function Print_games({roomIds,setChatRoomId,setFirstCreate,
-    selectedQuiz,setSelectedQuiz,selectedOption_privacy,
-    password,setPassword,setRoomName,
-                     }) {
+function Print_games({ roomIds, setChatRoomId, setFirstCreate,
+    selectedQuiz, setSelectedQuiz, selectedOption_privacy,
+    password, setPassword, setRoomName,
+}) {
     // 방의 기본값 설정
     const emptyRoomTemplate = {
         roomId: null,
@@ -57,12 +58,15 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
 
     // 방 정보들을 담을 상태 선언
     const [rooms, setRooms] = useState(Array(6).fill(emptyRoomTemplate)); // 초기값을 6개의 빈 방으로 설정
-    const [selectedRoom,setSelectedRoom] = useState(null);
+    const [selectedRoom, setSelectedRoom] = useState(null);
 
-    const [thumbnailURL,setThumbnailURL] = useState([]);
-    const [imageSrc,setImageSrc] = useState([]);
+    const [thumbnailURL, setThumbnailURL] = useState([]);
+    const [imageSrc, setImageSrc] = useState([]);
     const navigate = useNavigate();
-    const [showPasswordInput,setShowPasswordInput] = useState(false);
+    const [showPasswordInput, setShowPasswordInput] = useState(false);
+    
+    // 에러 모달
+    const [err, setError] = useState({ hasError: false, title: "", message: "" });
 
     // roomIds 배열을 가지고 API 요청을 보내는 함수
     useEffect(() => {
@@ -109,7 +113,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
         const urls = rooms.map((room) => room.quiz.thumbnailURL);
         setThumbnailURL(urls);
         let string = "";
-        let string2= string.split('v=')[1];
+        let string2 = string.split('v=')[1];
     }, [rooms]);
 
     useEffect(() => {
@@ -173,8 +177,14 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                         setRoomName(rooms[0].roomName);
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
-                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
-                        navigate('/home');
+                        // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        setError({
+                            ...err,
+                            hasError: true,
+                            title: "입장 불가능",
+                            message: '이미 게임이 시작되었거나 인원이 꽉 찼습니다'
+                          });
+                        // navigate('/home');
                     }
 
                 } else {
@@ -206,8 +216,14 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                         setPassword("");
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
-                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
-                        navigate('/home');
+                        // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        setError({
+                            ...err,
+                            hasError: true,
+                            title: "입장 불가능",
+                            message: '이미 게임이 시작되었거나 인원이 꽉 찼습니다'
+                          });
+                        // navigate('/home');
                     }
 
                 } else {
@@ -239,8 +255,14 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                         setPassword("");
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
-                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
-                        navigate('/home');
+                        // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        setError({
+                            ...err,
+                            hasError: true,
+                            title: "입장 불가능",
+                            message: '이미 게임이 시작되었거나 인원이 꽉 찼습니다'
+                          });
+                        // navigate('/home');
                     }
 
                 } else {
@@ -272,8 +294,14 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                         setPassword("");
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
-                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
-                        navigate('/home');
+                        // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        setError({
+                            ...err,
+                            hasError: true,
+                            title: "입장 불가능",
+                            message: '이미 게임이 시작되었거나 인원이 꽉 찼습니다'
+                          });
+                        // navigate('/home');
                     }
 
                 } else {
@@ -305,8 +333,14 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                         setPassword("");
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
-                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
-                        navigate('/home');
+                        // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        setError({
+                            ...err,
+                            hasError: true,
+                            title: "입장 불가능",
+                            message: '이미 게임이 시작되었거나 인원이 꽉 찼습니다'
+                          });
+                        // navigate('/home');
                     }
 
                 } else {
@@ -338,8 +372,14 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                         setPassword("");
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
-                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
-                        navigate('/home');
+                        // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        setError({
+                            ...err,
+                            hasError: true,
+                            title: "입장 불가능",
+                            message: '이미 게임이 시작되었거나 인원이 꽉 찼습니다'
+                          });
+                        // navigate('/home');
                     }
 
                 } else {
@@ -352,7 +392,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
     };
 
     const handleConfirmPassword = async () => {
-        if(selectedRoom.roomId!==null) {
+        if (selectedRoom.roomId !== null) {
             try {
                 const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/Entities?idList=${selectedRoom.roomId}`, {
                     method: 'GET',
@@ -372,9 +412,15 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                         setShowPasswordInput(false); // 모달 닫기
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
-                        window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
+                        setError({
+                            ...err,
+                            hasError: true,
+                            title: "입장 불가능",
+                            message: '이미 게임이 시작되었거나 인원이 꽉 찼습니다'
+                          });
                         setShowPasswordInput(false); // 모달 닫기
-                        navigate('/home');
+                        // navigate('/home');
                     }
 
                 } else {
@@ -386,8 +432,25 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
         }
     };
 
+    const handleClose = () => {
+        setError({
+            ...err,
+            hasError: false,
+            title: "",
+            message: ""
+        });
+        navigate('/home');
+    };
+
     return <div className="Print_games">
-        <div className="dash_line"/>
+        <WarningModal
+            show={err.hasError}
+            setError={(flag) => setError(flag)}
+            title={err.title}
+            message={err.message}
+            onHide={handleClose}
+        />
+        <div className="dash_line" />
         <div className="games_centerbox">
             <Game_item
                 room={rooms[0]}
@@ -398,7 +461,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 setPassword={setPassword}
                 src={imageSrc[0] ? imageSrc[0] : Thumbnail}
                 onClick_private={() => {
-                    if(rooms[0].roomId!==null) {
+                    if (rooms[0].roomId !== null) {
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
@@ -415,7 +478,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 setPassword={setPassword}
                 src={imageSrc[1] ? imageSrc[1] : Thumbnail}
                 onClick_private={() => {
-                    if(rooms[1].roomId!==null) {
+                    if (rooms[1].roomId !== null) {
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
@@ -432,7 +495,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 setPassword={setPassword}
                 src={imageSrc[2] ? imageSrc[2] : Thumbnail}
                 onClick_private={() => {
-                    if(rooms[2].roomId!==null) {
+                    if (rooms[2].roomId !== null) {
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
@@ -449,7 +512,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 setPassword={setPassword}
                 src={imageSrc[3] ? imageSrc[3] : Thumbnail}
                 onClick_private={() => {
-                    if(rooms[3].roomId!==null) {
+                    if (rooms[3].roomId !== null) {
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
@@ -466,7 +529,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 setPassword={setPassword}
                 src={imageSrc[4] ? imageSrc[4] : Thumbnail}
                 onClick_private={() => {
-                    if(rooms[4].roomId!==null) {
+                    if (rooms[4].roomId !== null) {
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
@@ -483,7 +546,7 @@ function Print_games({roomIds,setChatRoomId,setFirstCreate,
                 setPassword={setPassword}
                 src={imageSrc[5] ? imageSrc[5] : Thumbnail}
                 onClick_private={() => {
-                    if(rooms[5].roomId!==null) {
+                    if (rooms[5].roomId !== null) {
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
