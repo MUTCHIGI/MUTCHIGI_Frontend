@@ -15,6 +15,8 @@ function Game_board_playing({stompClient,setFirstCreate,
     answer,answerChat,setAnswerChat,
     answerChatList,setAnswerChatList,
     answerCount,setAnswerCount,userList,
+    answeredPerson,setAnsweredPerson,
+    answerTime,setAnswerTime,
 }) {
     const [timeout,setTimeOut] = useState(false);
     const navigate = useNavigate();
@@ -39,16 +41,39 @@ function Game_board_playing({stompClient,setFirstCreate,
     const [audioVolume,setAudioVolume] = useState(0.5);
     const audioRef = useRef(null);
 
-    const [videoId,setVideoId] = useState(null);
+    const [correct,setCorrect] = useState(false);
 
     useEffect(() => {
         console.log(quiz);
     }, [quiz]);
 
     useEffect(() => {
+        console.log(hint)
+    }, [hint]);
+
+    useEffect(() => {
         if(answerChat!==null) {
-            if(timeout===false){
-                setAnswerChatList((prevChat) => [...prevChat,answerChat])
+            if(timeout===false){ //최초 정답자 등장
+                setAnswerChatList((prevChat) => [...prevChat,answerChat]);
+                setCorrect(true);
+
+                setAnsweredPerson((prevPerson) => [...prevPerson,{
+                    answer: answer[0],
+                    name: answerChat.answerUserName,
+                    time: progress,
+                }]);
+                setAnswerTime((prevState) => {
+                    const current = prevState[answerChat.answerUserName] || { min: progress, max: progress, sum: 0 };
+                    return {
+                        ...prevState,
+                        [answerChat.answerUserName]: {
+                            min: Math.min(current.min, progress), // progress가 더 작으면 min 업데이트
+                            max: Math.max(current.max, progress), // progress가 더 크면 max 업데이트
+                            sum: current.sum + progress, // 항상 sum에 progress 추가
+                        },
+                    };
+                });
+
                 setTimeOut(true);
                 clearInterval(intervalRef1.current)
             }
@@ -71,9 +96,30 @@ function Game_board_playing({stompClient,setFirstCreate,
                     setFirstCreate(true);
                     const updatedCount = {...answerCount}
 
+                    console.log(answerChatList.length);
+                    console.log(songIndex);
+                    if (!correct) {
+                        setAnsweredPerson((prevPerson) => [...prevPerson,{
+                            answer: answer[0],
+                            name: "",
+                            time: -1,
+                        }]);
+                    }
+
                     userList.forEach((user) => {
                         if(user.userId !== -1 && !(user.name in answerCount)) {
                             updatedCount[user.name] = 0;
+                        }
+
+                        if(user.userId !== -1 && !(user.name in answerTime)) {
+                            setAnswerTime((prevState) =>({
+                                ...prevState,
+                                [user.name]: {
+                                    min: 0,
+                                    max: 0,
+                                    sum: 0,
+                                }
+                            }))
                         }
                     })
                     setAnswerCount(updatedCount);
@@ -96,8 +142,16 @@ function Game_board_playing({stompClient,setFirstCreate,
                         clearInterval(intervalRef1.current);
                         intervalRef1.current = null;
                     }
+                    if (!correct) { //정답자 없음
+                        setAnsweredPerson((prevPerson) => [...prevPerson,{
+                            answer: answer[0],
+                            name: "",
+                            time: -1,
+                        }]);
+                    }
                     setWhenToEnd(null);
                     setCurrentHint([]);
+                    setCorrect(false);
                     setSkip(false);
                     setSkipCount(0);
                     setAnswerChatList([]);

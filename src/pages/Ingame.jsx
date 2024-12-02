@@ -19,8 +19,10 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
     joinPassword, setJoinPassword,
     maxPlayer,
     userInfo,
-    firstCreate, setFirstCreate,
-    answerCount, setAnswerCount,
+    firstCreate,setFirstCreate,
+    answerCount,setAnswerCount,
+    answeredPerson,setAnsweredPerson,
+    answerTime,setAnswerTime,
 }) {
     let { token } = useAuth();
     let [qsRelationId, setQsRelationId] = useState(-1);
@@ -547,6 +549,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                         answerChatList={answerChatList}
                         setAnswerChatList={setAnswerChatList}
                         answerCount={answerCount} setAnswerCount={setAnswerCount} userList={userList}
+                        answeredPerson={answeredPerson} setAnsweredPerson={setAnsweredPerson}
+                        answerTime={answerTime} setAnswerTime={setAnswerTime}
                     />
                 }
             </div>
