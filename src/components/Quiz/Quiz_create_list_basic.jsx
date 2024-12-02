@@ -5,6 +5,7 @@ import editButton from '../../img/edit_button.svg';
 import deleteButton from '../../img/delete_button.svg';
 import QuizCreateDetail from './Quiz_create_detail';
 import spinner from '../../img/loading.svg'
+import WarningModal from '../Public/Error';
 
 const QuizList = ({ info, handlers }) => {
     const { isModalOpen, url, cards } = info;
@@ -62,6 +63,7 @@ const QuizCreateList = ({ quizId, token }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedCardIndex, setSelectedCardIndex] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
+    const [err, setError] = useState({ hasError: false, title: "", message: "" });
 
     const fetchGetApi = async (url, token) => {
         const response = await fetch(url, {
@@ -78,8 +80,7 @@ const QuizCreateList = ({ quizId, token }) => {
     };
 
     const convertToSeconds = (timeString) => {
-        if (timeString === null)
-        {
+        if (timeString === null) {
             return -1;
         }
         const [hours, minutes, seconds] = timeString.split(':').map(Number);
@@ -104,16 +105,16 @@ const QuizCreateList = ({ quizId, token }) => {
                 const formattedHintSetting = data.map(hint => {
                     const [hours, minutes, seconds] = hint.hintTime.split(':').map(Number);
                     const totalSeconds = (hours * 3600) + (minutes * 60) + seconds;
-                
+
                     return {
                         id: hint.hintStateId,
                         text: hint.hintType,
                         time: totalSeconds
                     };
-                });                
-                
+                });
+
                 setHintSetting(formattedHintSetting);
-                
+
                 console.log(hintSetting);
             } catch (error) {
                 console.error('Error fetching hint setting:', error);
@@ -149,7 +150,7 @@ const QuizCreateList = ({ quizId, token }) => {
                         const hints = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/hint`, token);
                         // fetch startTime
                         let startTime;
-                        try{
+                        try {
                             startTime = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${item.quizSongRelationID}/startTime`, token);
                         }
                         catch {
@@ -203,7 +204,13 @@ const QuizCreateList = ({ quizId, token }) => {
             });
 
             if (!response.ok) {
-                alert("이미 추가된 곡입니다.")
+                // alert("이미 추가된 곡입니다.")
+                setError({
+                    ...err,
+                    hasError: true,
+                    title: "음악 추가 불가",
+                    message: "이미 추가된 곡입니다."
+                });
                 setUrl('');
             }
 
@@ -304,21 +311,33 @@ const QuizCreateList = ({ quizId, token }) => {
                 card.hints.some((hint) => !hint || hint.hintText.trim() === '') // Check null or empty hint
             );
         });
-    
+
         if (hasInvalidHints) {
-            alert("힌트를 설정하지 않은 항목이 있습니다");
+            // alert("힌트를 설정하지 않은 항목이 있습니다");
+            setError({
+                ...err,
+                hasError: true,
+                title: "퀴즈 생성 불가",
+                message: "힌트를 설정하지 않은 항목이 있습니다"
+            });
             return; // Prevent the request from being sent
         }
 
         const hasInvalidTime = cards.some((card) => {
             return (
-                (card.startTime === -1) 
+                (card.startTime === -1)
             );
         });
 
         if (hasInvalidTime) {
-            alert("시작 시간을 설정하지 않은 항목이 있습니다");
-            return; 
+            // alert("시작 시간을 설정하지 않은 항목이 있습니다");
+            setError({
+                ...err,
+                hasError: true,
+                title: "퀴즈 생성 불가",
+                message: "시작 시간을 설정하지 않은 항목이 있습니다"
+            });
+            return;
         }
 
         const hasInvalidAnswer = cards.some((card) => {
@@ -328,7 +347,13 @@ const QuizCreateList = ({ quizId, token }) => {
         });
 
         if (hasInvalidAnswer) {
-            alert("정답을 설정하지 않은 항목이 있습니다");
+            // alert("정답을 설정하지 않은 항목이 있습니다");
+            setError({
+                ...err,
+                hasError: true,
+                title: "퀴즈 생성 불가",
+                message: "정답을 설정하지 않은 항목이 있습니다"
+            });
             return;
         }
 
@@ -350,6 +375,12 @@ const QuizCreateList = ({ quizId, token }) => {
     const modalHandlers = { setIsModalOpen, setSelectedCardIndex, handleUpdateAnswers, handleUpdateHints, handleUpdateStartTime };
     return (
         <>
+            <WarningModal
+                show={err.hasError}
+                setError={(flag) => setError(flag)}
+                title={err.title}
+                message={err.message}
+            />
             {isLoading ? (
                 <div className={styles["loading-screen"]}>
                     <div className={styles["loading-component"]}>
@@ -389,7 +420,7 @@ const QuizCreateList = ({ quizId, token }) => {
                                 card: cards[selectedCardIndex],
                                 hintSetting: hintSetting,
                                 token: token,
-                                instrumentId : 0,
+                                instrumentId: 0,
                             }}
                             handlers={modalHandlers}
                         />

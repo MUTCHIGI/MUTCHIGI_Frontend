@@ -1,27 +1,30 @@
 import '../Quiz/CSS/Room_create_float.css';
 import Button from "../Public/Button.jsx";
-import {useEffect, useState} from "react";
-import {useAuth} from "../Login/AuthContext.jsx";
+import { useEffect, useState } from "react";
+import { useAuth } from "../Login/AuthContext.jsx";
 import Thumbnail from "../../img/QuizItemTest/no_img.png";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import WarningModal from '../Public/Error';
 
-function Room_create_float({quiz,onClose,userInfo,
-                               setChatRoomId,
-                               privacy,setPrivacy,
-                               roomName,setRoomName,
-                               password,setPassword,
-                               maxPlayer,setMaxPlayer,
-                               setFirstCreate,
-                           }) {
+function Room_create_float({ quiz, onClose, userInfo,
+    setChatRoomId,
+    privacy, setPrivacy,
+    roomName, setRoomName,
+    password, setPassword,
+    maxPlayer, setMaxPlayer,
+    setFirstCreate,
+}) {
     /* 토큰 */
-    const {token} = useAuth();
-    const [img,setImg] = useState(null);
+    const { token } = useAuth();
+    const [img, setImg] = useState(null);
 
     const navigate = useNavigate();
 
     useEffect(() => {
         setRoomName('');
     }, []);
+    /* 에러 */
+    const [err, setError] = useState({ hasError: false, title: "", message: "" });
 
     /* 방 생성 요소 */
 
@@ -42,7 +45,13 @@ function Room_create_float({quiz,onClose,userInfo,
     };
 
     const handleEmptyInputClick = () => {
-        alert("방 이름,또는 비공개방의 비밀번호는 비어있을 수 없습니다."); // 비어 있을 때 경고창 출력
+        // alert("방 이름,또는 비공개방의 비밀번호는 비어있을 수 없습니다.");
+        setError({
+            ...err,
+            hasError: true,
+            title: "잘못된 설정",
+            message: "방 이름,또는 비공개방의 비밀번호는 비어있을 수 없습니다."
+        });
     };
 
     let handleMoveRoom = () => {
@@ -52,7 +61,7 @@ function Room_create_float({quiz,onClose,userInfo,
     }
 
     const fetchThumbnail = async (url) => {
-        if(url === "" || url === null) {
+        if (url === "" || url === null) {
             return "";
         }
         try {
@@ -82,6 +91,12 @@ function Room_create_float({quiz,onClose,userInfo,
     }, [quiz]);
 
     return <div className="Room_create_float">
+        <WarningModal
+            show={err.hasError}
+            setError={(flag) => setError(flag)}
+            title={err.title}
+            message={err.message}
+        />
         <div className="Room_create_setting">
             <div className="set_room_title">
                 방 이름 :&nbsp;
@@ -146,7 +161,7 @@ function Room_create_float({quiz,onClose,userInfo,
         </div>
         <div className="Room_create_info">
             <div className="Room_create_img">
-                <img src={img!=="" ? img : Thumbnail} className="Room_create_img_src"/>
+                <img src={img !== "" ? img : Thumbnail} className="Room_create_img_src" />
             </div>
             <div className="Room_create_description">
                 <div className={"Room_create_description_innerbox"}>
@@ -154,7 +169,7 @@ function Room_create_float({quiz,onClose,userInfo,
                 </div>
             </div>
         </div>
-        <Button text={"취소"} onClick={onClose} classname={"room_create_cancel"}/>
+        <Button text={"취소"} onClick={onClose} classname={"room_create_cancel"} />
 
         {(roomName.trim() !== '' && (privacy !== 'private' || password.trim() !== '')) ? (
             <Button text={"확인"} onClick={handleMoveRoom} classname={"room_create_confirm"} />
