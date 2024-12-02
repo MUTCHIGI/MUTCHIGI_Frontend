@@ -8,6 +8,7 @@ import QuizCreateDetail from './Quiz_create_detail';
 import PageMove from './Page_move.jsx'
 import SoundWavePlayer from './Sound_wave_player.jsx';
 import spinner from '../../img/loading.svg'
+import WarningModal from '../Public/Error';
 
 const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
     // screan setting
@@ -195,18 +196,18 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
                     body: JSON.stringify({}),
                 }
             );
-            
+
             if (!response.ok) throw new Error('Failed to assign songs to quiz');
-            
+
             // 응답에서 quizSongRelationIds를 추출
             const quizSongRelationIds = await response.json();
-            
+
             // quizSongRelationIds를 활용하여 각각의 카드 형식을 반환
             const updatedSelectedItems = await Promise.all(
                 uniqueSelectedItems.map(async (item, index) => {
                     const quizSongRelationId = quizSongRelationIds[index];
                     const maxTimeInSeconds = item.maxTime;
-            
+
                     try {
                         const answers = await fetchGetApi(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${quizSongRelationId}/answers`, token);
                         return {
@@ -357,7 +358,7 @@ const QuizCreateListAi = ({ quizId, instrumentId, token }) => {
 function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCount, token, setCards, setOrderCount, openModal, handleDeleteCard, onNavigate }) {
     let navigate = useNavigate();
     const [url, setUrl] = useState('');
-
+    const [err, setError] = useState({ hasError: false, title: "", message: "" });
 
     // Function to fetch the list of songs being processed
     const fetchProcessingSongs = async () => {
@@ -415,7 +416,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
     const handleSearch = async () => {
         if (url.trim() === '') return;
         if (orderCount === 10) {
-            alert("최대 요청 횟수를 넘겼습니다");
+            // alert("최대 요청 횟수를 넘겼습니다");
+            setError({
+                ...err,
+                hasError: true,
+                title: "요청 한도 초과",
+                message: "최대 요청 횟수(10 회)를 넘겼습니다."
+              });
             setUrl('');
             return;
         }
@@ -433,7 +440,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
 
             const isDuplicate = cards.some((card) => card.songId === song.songId);
             if (isDuplicate) {
-                alert("이미 추가된 곡입니다.");
+                // alert("이미 추가된 곡입니다.");
+                setError({
+                    ...err,
+                    hasError: true,
+                    title: "음악 추가 불가",
+                    message: "이미 추가된 곡입니다."
+                  });
                 setUrl('');
                 return;
             }
@@ -489,7 +502,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
         const hasUnconvertedCards = cards.some((card) => !card.isConverted);
 
         if (hasUnconvertedCards) {
-            alert("변환되지 않은 항목이 있습니다");
+            // alert("변환되지 않은 항목이 있습니다");
+            setError({
+                ...err,
+                hasError: true,
+                title: "퀴즈 생성 불가",
+                message: "변환되지 않은 항목이 있습니다"
+              });
             return; // Prevent the request from being sent
         }
 
@@ -502,7 +521,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
         });
 
         if (hasInvalidHints) {
-            alert("힌트를 설정하지 않은 항목이 있습니다");
+            // alert("힌트를 설정하지 않은 항목이 있습니다");
+            setError({
+                ...err,
+                hasError: true,
+                title: "퀴즈 생성 불가",
+                message: "힌트를 설정하지 않은 항목이 있습니다"
+              });
             return; // Prevent the request from being sent
         }
 
@@ -513,7 +538,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
         });
 
         if (hasInvalidTime) {
-            alert("시작 시간을 설정하지 않은 항목이 있습니다");
+            // alert("시작 시간을 설정하지 않은 항목이 있습니다");
+            setError({
+                ...err,
+                hasError: true,
+                title: "퀴즈 생성 불가",
+                message: "시작 시간을 설정하지 않은 항목이 있습니다"
+              });
             return;
         }
 
@@ -524,7 +555,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
         });
 
         if (hasInvalidAnswer) {
-            alert("정답을 설정하지 않은 항목이 있습니다");
+            // alert("정답을 설정하지 않은 항목이 있습니다");
+            setError({
+                ...err,
+                hasError: true,
+                title: "퀴즈 생성 불가",
+                message: "정답을 설정하지 않은 항목이 있습니다"
+              });
             return;
         }
 
@@ -545,6 +582,12 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
 
     return (
         <>
+            <WarningModal
+                show={err.hasError}
+                setError={(flag) => setError(flag)}
+                title={err.title}
+                message={err.message}
+            />
             {isLoading ? (
                 <div className={styles["loading-screen"]}>
                     <div className={styles["loading-component"]}>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import Header_top from "../components/Public/Header_top.jsx";
 import Header_bottom from "../components/Public/Header_bottom.jsx";
 import MainInfo from "../components/Quiz/Quiz_create_main.jsx";
@@ -10,6 +10,7 @@ import QuizCreateListAi from "../components/Quiz/Quiz_create_list_ai.jsx"
 import styles from "../components/Quiz/CSS/Quiz_create.module.css";
 import { useAuth } from "../components/Login/AuthContext.jsx";
 import spinner from "../img/loading.svg"
+import WarningModal from '../components/Public/Error';
 
 function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, playListUrl, restartQuizId, setPlayListUrl, setFirstCreate, setRestartQuizId, }) {
   // quiz main info
@@ -32,6 +33,28 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
   const { token } = useAuth();
   const [typeId, setTypeId] = useState(initialTypeId);
 
+  // error modal
+  const [err, setError] = useState({ hasError: false, title: "", message: "" });
+
+  const handleClose = () => {
+    let flag;
+    if (err.title === "네트워크 오류" || err.title === "로그인 필요" || err.title === "잘못된 URL" ||
+        err.message === "3개 이상의 생성 중단한 퀴즈가 있습니다!\n프로필에서 퀴즈 이어가기로 생성 완료 후 다시 시도해 주세요"
+    )
+      flag = true;
+    else
+      flag = false;
+    setError({
+        ...err,
+        hasError: false,
+        title: "",
+        message: ""
+    });
+    if (flag)
+      navigate('/home');
+};
+
+
   useEffect(() => {
     if (typeId === 0) {
       setTypeId(1);
@@ -40,43 +63,26 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
   useEffect(() => {
     if (token === null) {
-      alert("로그인 후 이용하여 주시기 바랍니다.");
-      navigate('/home'); // 원하는 주소로 변경
+      // alert("로그인 후 이용하여 주시기 바랍니다.");
+      setError({
+        ...err,
+        hasError: true,
+        title: "로그인 필요",
+        message: "로그인 후 이용하여 주시기 바랍니다."
+      });
+      // navigate('/home');
     }
   }, [token]);
 
   let navigate = useNavigate();
-  const location = useLocation();
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
-      let tempQuizId = null;
-      if (restartQuizId === -1) {
-        const params = new URLSearchParams(location.search);
-        const hasQuery = params.has('quiz_id');
-
-        if (hasQuery) {
-          const quizId = parseInt(params.get('quiz_id'), 10);
-          if (!isNaN(quizId)) {
-            tempQuizId = quizId;
-          } else {
-            return;
-          }
-        } else {
-          return;
-        }
-      }
-      else {
-        tempQuizId = restartQuizId;
-      }
-      setIsLoading(true);
-      const params = new URLSearchParams();
-      params.set('quiz_id', `${tempQuizId}`);
-      navigate(`?${params.toString()}`);
+      if (restartQuizId === -1) return; // 유효하지 않은 id는 무시
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_SERVER_IP}/quiz/Entities?idList=${tempQuizId}`,
+          `${import.meta.env.VITE_SERVER_IP}/quiz/Entities?idList=${restartQuizId}`,
           {
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -102,15 +108,19 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
           else {
             setMode(1);
           }
-          setQuizId(tempQuizId);
+          setQuizId(restartQuizId);
           setRestartQuizId(-1);
-          setIsLoading(false);
           setStep(3);
         }
       } catch (error) {
-        alert("네트워크 오류 발생");
-        setIsLoading(false);
-        navigate('/home');
+        // alert("네트워크 오류 발생");
+        setError({
+          ...err,
+          hasError: true,
+          title: "네트워크 오류",
+          message: "요청 중 서버 오류가 발생 했습니다"
+        });
+        // navigate('/home');
       }
     };
 
@@ -184,7 +194,13 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         }
       }
     } catch (error) {
-      alert("비공개 플레이리스트는 변환 할 수 없습니다");
+      // alert("비공개 플레이리스트는 변환 할 수 없습니다");
+      setError({
+        ...err,
+        hasError: true,
+        title: "잘못된 URL",
+        message: "비공개 플레이리스트는 변환 할 수 없습니다"
+      });
       try {
         const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/quiz/deleteNotReadyQuiz/${quizIdNumber}`, {
           method: 'DELETE',
@@ -201,7 +217,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       catch (error) {
         console.log(error);
       }
-      navigate("/home");
+      // navigate("/home");
     }
   };
 
@@ -263,8 +279,14 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     })
     if (!response.ok) {
       if (response.status === 405) {
-        alert("3개 이상의 생성 중단한 퀴즈가 있습니다!\n프로필에서 퀴즈 이어가기로 생성 완료 후 다시 시도해 주세요")
-        navigate("/home");
+        // alert("3개 이상의 생성 중단한 퀴즈가 있습니다!\n프로필에서 퀴즈 이어가기로 생성 완료 후 다시 시도해 주세요")
+        setError({
+          ...err,
+          hasError: true,
+          title: "퀴즈 생성 불가",
+          message: "3개 이상의 생성 중단한 퀴즈가 있습니다!\n프로필에서 퀴즈 이어가기로 생성 완료 후 다시 시도해 주세요"
+        });
+        // navigate("/home");
       } else {
         throw new Error("동일한 이름의 퀴즈가 존재합니다");
       }
@@ -273,9 +295,6 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     const id = await response.text();
     console.log("test");
     const quizIdNumber = parseInt(id, 10);
-    const params = new URLSearchParams();
-    params.set('quiz_id', `${quizIdNumber}`);
-    navigate(`?${params.toString()}`);
     if (!isNaN(quizIdNumber)) {
       setQuizId(quizIdNumber);
       await postHints(quizIdNumber);
@@ -296,19 +315,43 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     }
     else if (step === 2) {
       if (hints.some((hint) => !hint.text.trim())) {
-        alert("힌트 내용이 비어 있습니다. 모든 힌트를 입력해주세요.");
+        // alert("힌트 내용이 비어 있습니다. 모든 힌트를 입력해주세요.");
+        setError({
+          ...err,
+          hasError: true,
+          title: "퀴즈 생성 불가",
+          message: "힌트 내용이 비어 있습니다. 모든 힌트를 입력해주세요."
+        });
         return; // 조건이 충족되지 않으면 중단
       }
       else if (!title) {
-        alert("제목를 입력해주세요.");
+        // alert("제목를 입력해주세요.");
+        setError({
+          ...err,
+          hasError: true,
+          title: "퀴즈 생성 불가",
+          message: "제목를 입력해주세요."
+        });
         return; // 조건이 충족되지 않으면 중단
       }
       else if (!description) {
-        alert("설명을 입력해주세요.");
+        // alert("설명을 입력해주세요.");
+        setError({
+          ...err,
+          hasError: true,
+          title: "퀴즈 생성 불가",
+          message: "설명을 입력해주세요."
+        });
         return; // 조건이 충족되지 않으면 중단
       }
       else if (!(mode === 1 || (mode === 2 && instrument != -1))) {
-        alert("악기를 선택해주세요.");
+        // alert("악기를 선택해주세요.");
+        setError({
+          ...err,
+          hasError: true,
+          title: "퀴즈 생성 불가",
+          message: "악기를 선택해주세요."
+        });
         return; // 조건이 충족되지 않으면 중단
       }
       try {
@@ -320,7 +363,8 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         }
       }
       catch (error) {
-        alert(error);
+        // alert(error);
+        console.log(error);
         setIsLoading(false);
       }
     }
@@ -373,6 +417,13 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       <Header_top userInfo={userInfo} setUserInfo={setUserInfo} setFirstCreate={setFirstCreate} setRestartQuizId={setRestartQuizId} />
       <Header_bottom
         quiz={false}
+      />
+      <WarningModal
+        show={err.hasError}
+        setError={(flag) => setError(flag)}
+        title={err.title}
+        message={err.message}
+        onHide={handleClose}
       />
       {isLoading ? (
         <div className={styles["loading-screen"]}>

@@ -4,6 +4,7 @@ import togleStyles from './CSS/togle.module.css'
 import playButton from '../../img/music_play_button.svg'
 import pauseButton from '../../img/music_pause_button.svg'
 import YouTube from "react-youtube";
+import WarningModal from '../Public/Error';
 import { map } from 'sockjs-client/lib/transport-list';
 
 const AnswerInput = ({ answers, onUpdateAnswers }) => {
@@ -438,6 +439,7 @@ const QuizCreateDetail = ({ info, handlers }) => {
   const [localAnswers, setLocalAnswers] = useState(card.answers);
   const [localHints, setLocalHints] = useState(card.hints);
   const [localTime, setLocalTime] = useState(card.startTime === -1 ? 0 : card.startTime);
+  const [err, setError] = useState({ hasError: false, title: "", message: "" });
 
   const closeModal = () => {
     setIsModalOpen(false);
@@ -447,12 +449,24 @@ const QuizCreateDetail = ({ info, handlers }) => {
   const handleSave = async () => {
     // execption
     if (localAnswers.length > 20) {
-      alert("Answer는 20개를 초과할 수 없습니다.");
+      // alert("Answer는 20개를 초과할 수 없습니다.");
+      setError({
+        ...err,
+        hasError: true,
+        title: "잘못된 설정",
+        message: "정답은 20개를 초과할 수 없습니다."
+      });
       return;
     }
 
     if (localAnswers.length === 0) {
-      alert("Answer는 최소 1개 이상 필요합니다.");
+      // alert("Answer는 최소 1개 이상 필요합니다.");
+      setError({
+        ...err,
+        hasError: true,
+        title: "잘못된 설정",
+        message: "정답은 최소 1개 이상 필요합니다."
+      });
       return;
     }
 
@@ -469,7 +483,13 @@ const QuizCreateDetail = ({ info, handlers }) => {
 
     const hasEmptyHint = hintDTOList.some(hint => hint.hintText === "");
     if (hasEmptyHint) {
-      alert("모든 힌트는 비어 있을 수 없습니다.");
+      // alert("모든 힌트는 비어 있을 수 없습니다.");
+      setError({
+        ...err,
+        hasError: true,
+        title: "잘못된 설정",
+        message: "모든 힌트는 비어 있을 수 없습니다."
+      });
       return;
     }
 
@@ -533,6 +553,12 @@ const QuizCreateDetail = ({ info, handlers }) => {
 
   return (
     <div className={styles["modal-overlay"]}>
+      <WarningModal
+        show={err.hasError}
+        setError={(flag) => setError(flag)}
+        title={err.title}
+        message={err.message}
+      />
       <div className={styles["modal-content"]} onClick={(e) => e.stopPropagation()}>
         <div className={styles["quiz-seting-left"]}>
           <AnswerInput answers={localAnswers} onUpdateAnswers={setLocalAnswers} />
