@@ -3,6 +3,7 @@
     top: calc(150 / 1080 * var(--root--height));
     width: calc(500 / 1920 * var(--root--width));
     height: calc(250 / 1080 * var(--root--height));
+    min-width: 100px; /* 모달의 최소 너비 */
     background-color: #2d2d2d;
     z-index: 1055;
     border-radius: 10px;
@@ -70,6 +71,8 @@
     font-style: normal;
     font-size: calc(18px * var(--root--font--ratio));
     border-radius: 10px;
+    max-width: 90%; /* 버튼 최대 너비 설정 */
+    box-sizing: border-box; /* 버튼 크기 계산 문제 방지 */
     border: none;
 }
 
