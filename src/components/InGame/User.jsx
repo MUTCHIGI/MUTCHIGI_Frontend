@@ -1,10 +1,10 @@
 import '../InGame/CSS/User.css';
 import {useEffect, useState} from "react";
+import Kickmodal from "./Kickmodal.jsx";
 
-function User({userInfo,chat,number,master,onClick}) {
+function User({client,chatRoomId,userInfo,chat,number,master,onClick,index,kickModal,setKickModal}) {
     // chat의 상태를 localChat으로 복사해 사용
     const [localChat, setLocalChat] = useState(chat);
-
     useEffect(() => {
         if (chat && userInfo.name === chat.username) { // 현재 유저의 채팅이 들어온 경우에만 갱신
             setLocalChat(chat);
@@ -15,7 +15,7 @@ function User({userInfo,chat,number,master,onClick}) {
         }
     }, [chat, userInfo.name]);
 
-    return <div className="User" onClick={onClick}>
+    return <div className="User">
         {localChat && userInfo.name === localChat.username && (
             <>
                 <div className="chat_box_body">
@@ -26,6 +26,7 @@ function User({userInfo,chat,number,master,onClick}) {
                 <div className="chat_box_tail" />
             </>
         )}
+        {kickModal[index] && userInfo.userId!==-1 && <Kickmodal client={client} chatRoomId={chatRoomId} user={userInfo} setKickModal={setKickModal} index={index}/>}
         <div className="user_profile">
             {master && (<>
                     <div className="master_div">
@@ -33,7 +34,7 @@ function User({userInfo,chat,number,master,onClick}) {
                     </div>
                 </>
             )}
-            <div className="profile_image">
+            <div className="profile_image" onClick={onClick}>
                 {userInfo.profileImageURL && <img src={userInfo.profileImageURL} className="user_img"/>}
             </div>
             <div className={`profile_name_${number}`}>

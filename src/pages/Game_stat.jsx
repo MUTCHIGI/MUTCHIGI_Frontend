@@ -46,6 +46,9 @@ function Game_stat({answerCount,setAnswerCount,
         legend: {
             position: "bottom",
             fontSize: fontSize,
+            labels: {
+                colors: "#fff", // 범례 텍스트 색상 설정
+            },
         },
     };
 
@@ -80,6 +83,16 @@ function Game_stat({answerCount,setAnswerCount,
             type: 'bar',
             height: 350,
         },
+        title: {
+            text: "Quiz Solved Time", // 차트 타이틀 텍스트
+            align: "center", // 가운데 정렬 (왼쪽: 'left', 오른쪽: 'right')
+            margin: 10, // 타이틀과 차트 간 간격
+            offsetY: 0, // Y축 위치 조정
+            style: {
+                fontSize: 25 * ratio + "px", // 폰트 크기
+                color: "#fff", // 텍스트 색상
+            },
+        },
         plotOptions: {
             bar: {
                 horizontal: false,
@@ -100,22 +113,18 @@ function Game_stat({answerCount,setAnswerCount,
             labels: {
                 style: {
                     fontSize: 16*ratio,
+                    colors: "#fff",
                 }
             }
         },
         yaxis: {
-            title: {
-                text: 'Quiz Solving Time',
-                style: {
-                    fontSize: 20*ratio,
-                }
-            },
             labels: {
                 formatter: function (val) {
                     return Math.round(val); // 소수점을 반올림하여 정수로 표시
                 },
                 style: {
-                    fontSize: 16*ratio
+                    fontSize: 16*ratio,
+                    colors: "#fff",
                 }
             }
         },
@@ -128,6 +137,14 @@ function Game_stat({answerCount,setAnswerCount,
                     return val.toFixed(2); // 소수점 2자리까지 표시
                 },
             },
+        },
+        legend: {
+            position: "bottom", // 범례 위치
+            labels: {
+                colors: "#fff", // 범례 텍스트 색상
+                useSeriesColors: false, // 각 시리즈의 색상을 사용하지 않음
+            },
+            fontSize: `${18 * ratio}px`, // 폰트 크기
         },
     };
 
