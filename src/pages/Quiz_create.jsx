@@ -39,20 +39,20 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
   const handleClose = () => {
     let flag;
     if (err.title === "네트워크 오류" || err.title === "로그인 필요" || err.title === "잘못된 URL" ||
-        err.message === "3개 이상의 생성 중단한 퀴즈가 있습니다!\n프로필에서 퀴즈 이어가기로 생성 완료 후 다시 시도해 주세요"
+      err.message === "3개 이상의 생성 중단한 퀴즈가 있습니다!\n프로필에서 퀴즈 이어가기로 생성 완료 후 다시 시도해 주세요" || err.title === "권한 부족"
     )
       flag = true;
     else
       flag = false;
     setError({
-        ...err,
-        hasError: false,
-        title: "",
-        message: ""
+      ...err,
+      hasError: false,
+      title: "",
+      message: ""
     });
     if (flag)
       navigate('/home');
-};
+  };
 
 
   useEffect(() => {
@@ -78,11 +78,33 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
-      if (restartQuizId === -1) return; // 유효하지 않은 id는 무시
+      let tempQuizId = null;
+      if (restartQuizId === -1) {
+        const params = new URLSearchParams(location.search);
+        const hasQuery = params.has('quiz_id');
+
+        if (hasQuery) {
+          const quizId = parseInt(params.get('quiz_id'), 10);
+          if (!isNaN(quizId)) {
+            tempQuizId = quizId;
+          } else {
+            return;
+          }
+        } else {
+          return;
+        }
+      }
+      else {
+        tempQuizId = restartQuizId;
+      }
+      setIsLoading(true);
+      const params = new URLSearchParams();
+      params.set('quiz_id', `${tempQuizId}`);
+      navigate(`?${params.toString()}`);
 
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_SERVER_IP}/quiz/Entities?idList=${restartQuizId}`,
+          `${import.meta.env.VITE_SERVER_IP}/quiz/Entity/restore?quizId=${tempQuizId}`,
           {
             headers: {
               "Authorization": `Bearer ${token}`,
@@ -92,13 +114,19 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         );
 
         if (!response.ok) {
-          throw new Error('Failed to fetch quiz entity');
+          setError({
+            ...err,
+            hasError: true,
+            title: "권한 부족",
+            message: "해당 유저의 퀴즈가 아닙니다"
+          });
+          // throw new Error('Failed to fetch quiz entity');
         }
 
         const data = await response.json();
 
-        if (data && data.length > 0) {
-          const quiz = data[0];
+        if (data) {
+          const quiz = data;
 
           // mode가 2이면 state 업데이트
           if (quiz.typeId === 2) {
@@ -108,8 +136,9 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
           else {
             setMode(1);
           }
-          setQuizId(restartQuizId);
+          setQuizId(tempQuizId);
           setRestartQuizId(-1);
+          setIsLoading(false);
           setStep(3);
         }
       } catch (error) {
@@ -117,9 +146,10 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         setError({
           ...err,
           hasError: true,
-          title: "네트워크 오류",
-          message: "요청 중 서버 오류가 발생 했습니다"
+          title: "권한 부족",
+          message: "해당 유저의 퀴즈가 아닙니다"
         });
+        // setIsLoading(false);
         // navigate('/home');
       }
     };
@@ -296,6 +326,9 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
     console.log("test");
     const quizIdNumber = parseInt(id, 10);
     if (!isNaN(quizIdNumber)) {
+      const params = new URLSearchParams();
+      params.set('quiz_id', `${quizIdNumber}`);
+      navigate(`?${params.toString()}`);
       setQuizId(quizIdNumber);
       await postHints(quizIdNumber);
       if (thumbnail) {
