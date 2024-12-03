@@ -1,6 +1,7 @@
 .Game_stat_select {
     font-family: MaplestoryLight;
     font-size: calc(20px*var(--root--font--ratio));
+    color: ivory;
 
     width: calc(var(--root--width)*0.8);
     height: calc(var(--root--height)*0.045);

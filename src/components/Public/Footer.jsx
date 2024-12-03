@@ -17,10 +17,12 @@ function Footer({
 
     const handlePrevPage = () => {
         setCurrentPage((prevPage) => Math.max(prevPage - 1, 1)); // 1보다 작아지지 않도록 설정
+        setInputValue((prevPage) => Math.max(prevPage - 1, 1));
     };
 
     const handleNextPage = () => {
         setCurrentPage((prevPage) => prevPage + 1); // 페이지 수를 1 증가
+        setInputValue((prevPage) => prevPage + 1);
     };
 
     const handlePageChange = () => {
@@ -72,16 +74,18 @@ function Footer({
                 {currentPage}
             </div>
             <Button text={">"} classname={"page_right"} onClick={handleNextPage} />
-            <input
-                className="input_page"
-                type="number"
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                min="1"
-            />
-            <Button text={"이동"} classname={"page_move"} onClick={handlePageChange} />
+            <div className="page_move_div">
+                <input
+                    className="input_page"
+                    type="number"
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    min="1"
+                />
+                <Button text={"이동"} classname={"page_move"} onClick={handlePageChange}/>
+            </div>
         </div>
-        {multiplay && <Button text={"방 만들기"} classname={"create_room"} onClick={gotoQuiz} />}
+        {multiplay && <Button text={"방 만들기"} classname={"create_room"} onClick={gotoQuiz}/>}
     </div>
 }
 
