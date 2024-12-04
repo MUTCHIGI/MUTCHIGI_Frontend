@@ -332,6 +332,12 @@ function Game_board_playing({stompClient,setFirstCreate,
         }
     }, [audioVolume]);
 
+    useEffect(() => {
+        if(audioRef.current){
+            audioRef.current.volume = audioVolume;
+        }
+    }, [videoUrl]);
+
     const handleLoadedMetadata = (e) => {
         const audio = e.target;
         // 오디오가 로드된 후 시작 시간 설정
