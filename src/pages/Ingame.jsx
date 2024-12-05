@@ -61,6 +61,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
     const client = useRef(null);
     const UserCount = userList.filter(user => user.userId !== -1).length;
 
+    const [kickModal,setKickModal] = useState(Array(8).fill(false));
+
     useEffect(() => {
         setAnswerCount({});
         if (firstCreate) {
@@ -113,6 +115,17 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                         });
                     }
                     setUserList(updatedUserList);
+                    setKickModal((prevState) => {
+                        // prevState를 복사한 후, updatedUserList의 userId가 -1인 경우 해당 index의 kickModal 값을 false로 설정
+                        const newState = [...prevState]; // prevState를 복사
+                        updatedUserList.forEach((user, index) => {
+                            if (user.userId === -1) {
+                                newState[index] = false; // userId가 -1이면 해당 index의 kickModal을 false로 변경
+                            }
+                        });
+                        return newState; // 업데이트된 배열을 반환
+                    });
+
                 } else {
                     console.error('Failed to fetch user list');
                 }
@@ -411,11 +424,11 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if (userList[0].userId !== -1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[0].userId) {
-                if (window.confirm("해당 유저를 강퇴하시겠습니까?")) {
-                    // 메시지를 전송
-                    const messageData = {}; // 빈 메시지
-                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[0].userId}`, {}, JSON.stringify(messageData));
-                }
+                setKickModal((prevState) => {
+                    const newState = [...prevState]; // 배열 복사
+                    newState[0] = true; // 값 변경
+                    return newState;
+                });
             }
         }
     };
@@ -423,11 +436,11 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if (userList[1].userId !== -1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[1].userId) {
-                if (window.confirm("해당 유저를 강퇴하시겠습니까?")) {
-                    // 메시지를 전송
-                    const messageData = {}; // 빈 메시지
-                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[1].userId}`, {}, JSON.stringify(messageData));
-                }
+                setKickModal((prevState) => {
+                    const newState = [...prevState]; // 배열 복사
+                    newState[1] = true; // 값 변경
+                    return newState;
+                });
             }
         }
     };
@@ -435,11 +448,11 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if (userList[2].userId !== -1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[2].userId) {
-                if (window.confirm("해당 유저를 강퇴하시겠습니까?")) {
-                    // 메시지를 전송
-                    const messageData = {}; // 빈 메시지
-                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[2].userId}`, {}, JSON.stringify(messageData));
-                }
+                setKickModal((prevState) => {
+                    const newState = [...prevState]; // 배열 복사
+                    newState[2] = true; // 값 변경
+                    return newState;
+                });
             }
         }
     };
@@ -447,11 +460,11 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if (userList[3].userId !== -1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[3].userId) {
-                if (window.confirm("해당 유저를 강퇴하시겠습니까?")) {
-                    // 메시지를 전송
-                    const messageData = {}; // 빈 메시지
-                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[3].userId}`, {}, JSON.stringify(messageData));
-                }
+                setKickModal((prevState) => {
+                    const newState = [...prevState]; // 배열 복사
+                    newState[3] = true; // 값 변경
+                    return newState;
+                });
             }
         }
     };
@@ -459,11 +472,11 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if (userList[4].userId !== -1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[4].userId) {
-                if (window.confirm("해당 유저를 강퇴하시겠습니까?")) {
-                    // 메시지를 전송
-                    const messageData = {}; // 빈 메시지
-                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[4].userId}`, {}, JSON.stringify(messageData));
-                }
+                setKickModal((prevState) => {
+                    const newState = [...prevState]; // 배열 복사
+                    newState[4] = true; // 값 변경
+                    return newState;
+                });
             }
         }
     };
@@ -471,11 +484,11 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if (userList[5].userId !== -1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[5].userId) {
-                if (window.confirm("해당 유저를 강퇴하시겠습니까?")) {
-                    // 메시지를 전송
-                    const messageData = {}; // 빈 메시지
-                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[5].userId}`, {}, JSON.stringify(messageData));
-                }
+                setKickModal((prevState) => {
+                    const newState = [...prevState]; // 배열 복사
+                    newState[5] = true; // 값 변경
+                    return newState;
+                });
             }
         }
     };
@@ -483,11 +496,11 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if (userList[6].userId !== -1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[6].userId) {
-                if (window.confirm("해당 유저를 강퇴하시겠습니까?")) {
-                    // 메시지를 전송
-                    const messageData = {}; // 빈 메시지
-                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[6].userId}`, {}, JSON.stringify(messageData));
-                }
+                setKickModal((prevState) => {
+                    const newState = [...prevState]; // 배열 복사
+                    newState[6] = true; // 값 변경
+                    return newState;
+                });
             }
         }
     };
@@ -495,11 +508,11 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
         // userInfo.userId와 superUserId가 같을 때만 실행
         if (userList[7].userId !== -1) {
             if (userInfo.userId === superUserId && userInfo.userId !== userList[7].userId) {
-                if (window.confirm("해당 유저를 강퇴하시겠습니까?")) {
-                    // 메시지를 전송
-                    const messageData = {}; // 빈 메시지
-                    client.current.send(`/app/kickMember/${chatRoomId}/${userList[7].userId}`, {}, JSON.stringify(messageData));
-                }
+                setKickModal((prevState) => {
+                    const newState = [...prevState]; // 배열 복사
+                    newState[7] = true; // 값 변경
+                    return newState;
+                });
             }
         }
     };
@@ -556,14 +569,14 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
             </div>
             <div className="user_list">
                 <div className="user_box">
-                    <User userInfo={userList[0]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={1} master={userList[0].userId === superUserId} onClick={handleKickClick_0} />
-                    <User userInfo={userList[1]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={2} master={userList[1].userId === superUserId} onClick={handleKickClick_1} />
-                    <User userInfo={userList[2]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={3} master={userList[2].userId === superUserId} onClick={handleKickClick_2} />
-                    <User userInfo={userList[3]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={4} master={userList[3].userId === superUserId} onClick={handleKickClick_3} />
-                    <User userInfo={userList[4]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={5} master={userList[4].userId === superUserId} onClick={handleKickClick_4} />
-                    <User userInfo={userList[5]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={6} master={userList[5].userId === superUserId} onClick={handleKickClick_5} />
-                    <User userInfo={userList[6]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={7} master={userList[6].userId === superUserId} onClick={handleKickClick_6} />
-                    <User userInfo={userList[7]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={8} master={userList[7].userId === superUserId} onClick={handleKickClick_7} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[0]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={1} master={userList[0].userId === superUserId} onClick={handleKickClick_0} index={0} kickModal={kickModal} setKickModal={setKickModal} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[1]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={2} master={userList[1].userId === superUserId} onClick={handleKickClick_1} index={1} kickModal={kickModal} setKickModal={setKickModal} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[2]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={3} master={userList[2].userId === superUserId} onClick={handleKickClick_2} index={2} kickModal={kickModal} setKickModal={setKickModal} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[3]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={4} master={userList[3].userId === superUserId} onClick={handleKickClick_3} index={3} kickModal={kickModal} setKickModal={setKickModal} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[4]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={5} master={userList[4].userId === superUserId} onClick={handleKickClick_4} index={4} kickModal={kickModal} setKickModal={setKickModal} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[5]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={6} master={userList[5].userId === superUserId} onClick={handleKickClick_5} index={5} kickModal={kickModal} setKickModal={setKickModal} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[6]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={7} master={userList[6].userId === superUserId} onClick={handleKickClick_6} index={6} kickModal={kickModal} setKickModal={setKickModal} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[7]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={8} master={userList[7].userId === superUserId} onClick={handleKickClick_7} index={7} kickModal={kickModal} setKickModal={setKickModal} />
                 </div>
             </div>
         </div>

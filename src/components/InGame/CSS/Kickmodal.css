@@ -1,0 +1,32 @@
+.Kickmodal {
+    position: absolute;
+
+    margin-top: calc(var(--root--height)*0.05);
+
+    width: calc(var(--root--width)*0.08);
+    height: calc(var(--root--height)*0.07);
+
+    border-radius: 20px;
+    border: 1px solid #00FFD9;
+
+    z-index: 10;
+}
+
+.Kick_message {
+    display: flex;
+
+    border-top-left-radius: 20px;
+    border-top-right-radius: 20px;
+
+    font-family: MaplestoryLight;
+    font-size: calc(16px*var(--root--font--ratio));
+
+    background-color: #8F8F8F;
+
+    justify-content: center;
+    align-items: center;
+
+    width: 100%;
+    height: calc(var(--root--height)*0.04);
+}
+

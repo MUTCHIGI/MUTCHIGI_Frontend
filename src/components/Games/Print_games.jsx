@@ -191,6 +191,12 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                     console.error('데이터를 가져오는 데 실패했습니다.');
                 }
             } catch (error) {
+                setError({
+                    ...err,
+                    hasError: true,
+                    title: "입장 불가능",
+                    message: '유효하지 않은 방입니다. 새로고침하여주십시오.'
+                });
                 console.error('GET 요청 중 오류 발생:', error);
             }
         }
@@ -230,6 +236,12 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                     console.error('데이터를 가져오는 데 실패했습니다.');
                 }
             } catch (error) {
+                setError({
+                    ...err,
+                    hasError: true,
+                    title: "입장 불가능",
+                    message: '유효하지 않은 방입니다. 새로고침하여주십시오.'
+                });
                 console.error('GET 요청 중 오류 발생:', error);
             }
         }
@@ -269,6 +281,12 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                     console.error('데이터를 가져오는 데 실패했습니다.');
                 }
             } catch (error) {
+                setError({
+                    ...err,
+                    hasError: true,
+                    title: "입장 불가능",
+                    message: '유효하지 않은 방입니다. 새로고침하여주십시오.'
+                });
                 console.error('GET 요청 중 오류 발생:', error);
             }
         }
@@ -308,6 +326,12 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                     console.error('데이터를 가져오는 데 실패했습니다.');
                 }
             } catch (error) {
+                setError({
+                    ...err,
+                    hasError: true,
+                    title: "입장 불가능",
+                    message: '유효하지 않은 방입니다. 새로고침하여주십시오.'
+                });
                 console.error('GET 요청 중 오류 발생:', error);
             }
         }
@@ -347,6 +371,12 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                     console.error('데이터를 가져오는 데 실패했습니다.');
                 }
             } catch (error) {
+                setError({
+                    ...err,
+                    hasError: true,
+                    title: "입장 불가능",
+                    message: '유효하지 않은 방입니다. 새로고침하여주십시오.'
+                });
                 console.error('GET 요청 중 오류 발생:', error);
             }
         }
@@ -387,6 +417,12 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 }
             } catch (error) {
                 console.error('GET 요청 중 오류 발생:', error);
+                setError({
+                    ...err,
+                    hasError: true,
+                    title: "입장 불가능",
+                    message: '유효하지 않은 방입니다. 새로고침하여주십시오.'
+                });
             }
         }
     };
