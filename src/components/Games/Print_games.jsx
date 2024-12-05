@@ -99,7 +99,6 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 while (filledRooms.length < 6) {
                     filledRooms.push(emptyRoomTemplate);
                 }
-
                 setRooms(filledRooms); // 성공적으로 받아온 데이터 저장
             } catch (error) {
                 console.error('Failed to fetch quiz entities:', error);
@@ -175,6 +174,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedQuiz(rooms[0].quiz);
                         setPassword("");
                         setRoomName(rooms[0].roomName);
+                        console.log(rooms[0].roomName);
                         navigate('/ingame');  // '/ingame'으로 네비게이션
                     } else {
                         // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
@@ -501,6 +501,9 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
+                        setFirstCreate(false);
+                        setSelectedQuiz(rooms[0].quiz);
+                        setRoomName(rooms[0].roomName);
                     }
                 }}
                 onClick_public={handleClick_0}
@@ -518,6 +521,9 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
+                        setFirstCreate(false);
+                        setSelectedQuiz(rooms[1].quiz);
+                        setRoomName(rooms[1].roomName);
                     }
                 }}
                 onClick_public={handleClick_1}
@@ -535,6 +541,9 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
+                        setFirstCreate(false);
+                        setSelectedQuiz(rooms[2].quiz);
+                        setRoomName(rooms[2].roomName);
                     }
                 }}
                 onClick_public={handleClick_2}
@@ -552,6 +561,9 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
+                        setFirstCreate(false);
+                        setSelectedQuiz(rooms[3].quiz);
+                        setRoomName(rooms[3].roomName);
                     }
                 }}
                 onClick_public={handleClick_3}
@@ -569,6 +581,9 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
+                        setFirstCreate(false);
+                        setSelectedQuiz(rooms[4].quiz);
+                        setRoomName(rooms[4].roomName);
                     }
                 }}
                 onClick_public={handleClick_4}
@@ -586,6 +601,9 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedRoom(rooms[0]);
                         setShowPasswordInput(true);
                         setPassword("");
+                        setFirstCreate(false);
+                        setSelectedQuiz(rooms[5].quiz);
+                        setRoomName(rooms[5].roomName);
                     }
                 }}
                 onClick_public={handleClick_5}
