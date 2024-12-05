@@ -518,7 +518,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 src={imageSrc[1] ? imageSrc[1] : Thumbnail}
                 onClick_private={() => {
                     if (rooms[1].roomId !== null) {
-                        setSelectedRoom(rooms[0]);
+                        setSelectedRoom(rooms[1]);
                         setShowPasswordInput(true);
                         setPassword("");
                         setFirstCreate(false);
@@ -538,7 +538,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 src={imageSrc[2] ? imageSrc[2] : Thumbnail}
                 onClick_private={() => {
                     if (rooms[2].roomId !== null) {
-                        setSelectedRoom(rooms[0]);
+                        setSelectedRoom(rooms[2]);
                         setShowPasswordInput(true);
                         setPassword("");
                         setFirstCreate(false);
@@ -558,7 +558,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 src={imageSrc[3] ? imageSrc[3] : Thumbnail}
                 onClick_private={() => {
                     if (rooms[3].roomId !== null) {
-                        setSelectedRoom(rooms[0]);
+                        setSelectedRoom(rooms[3]);
                         setShowPasswordInput(true);
                         setPassword("");
                         setFirstCreate(false);
@@ -578,7 +578,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 src={imageSrc[4] ? imageSrc[4] : Thumbnail}
                 onClick_private={() => {
                     if (rooms[4].roomId !== null) {
-                        setSelectedRoom(rooms[0]);
+                        setSelectedRoom(rooms[4]);
                         setShowPasswordInput(true);
                         setPassword("");
                         setFirstCreate(false);
@@ -598,7 +598,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 src={imageSrc[5] ? imageSrc[5] : Thumbnail}
                 onClick_private={() => {
                     if (rooms[5].roomId !== null) {
-                        setSelectedRoom(rooms[0]);
+                        setSelectedRoom(rooms[5]);
                         setShowPasswordInput(true);
                         setPassword("");
                         setFirstCreate(false);
