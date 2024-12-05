@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Header_top from "../components/Public/Header_top.jsx";
 import Header_bottom from "../components/Public/Header_bottom.jsx";
 import MainInfo from "../components/Quiz/Quiz_create_main.jsx";
@@ -36,6 +36,8 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
   // error modal
   const [err, setError] = useState({ hasError: false, title: "", message: "" });
 
+  const location = useLocation();
+
   const handleClose = () => {
     let flag;
     if (err.title === "네트워크 오류" || err.title === "로그인 필요" || err.title === "잘못된 URL" ||
@@ -54,6 +56,12 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       navigate('/home');
   };
 
+
+  useEffect(() => {
+    return () => {
+      setRestartQuizId(-1);
+    };
+  }, []);
 
   useEffect(() => {
     if (typeId === 0) {
@@ -78,6 +86,7 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
 
   useEffect(() => {
     const fetchQuizDetails = async () => {
+      console.log("quizId ", restartQuizId)
       let tempQuizId = null;
       if (restartQuizId === -1) {
         const params = new URLSearchParams(location.search);
@@ -97,9 +106,10 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
       else {
         tempQuizId = restartQuizId;
       }
+
       setIsLoading(true);
       const params = new URLSearchParams();
-      params.set('quiz_id', `${tempQuizId}`);
+      await params.set('quiz_id', `${tempQuizId}`);
       navigate(`?${params.toString()}`);
 
       try {
@@ -137,7 +147,6 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
             setMode(1);
           }
           setQuizId(tempQuizId);
-          setRestartQuizId(-1);
           setIsLoading(false);
           setStep(3);
         }
@@ -153,8 +162,8 @@ function QuizCreate({ userInfo, setUserInfo, userId, typeId: initialTypeId, play
         // navigate('/home');
       }
     };
-
     fetchQuizDetails();
+
   }, [restartQuizId]);
 
   const handleModeSelect = (selectedMode) => setMode(selectedMode);
