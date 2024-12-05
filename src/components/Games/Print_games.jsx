@@ -214,7 +214,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 if (response.ok) {
                     const data = await response.json();
 
-                    if (data[1].participateAllowed) {
+                    if (data[0].participateAllowed) {
                         setChatRoomId(rooms[1].roomId);
                         setFirstCreate(false);
                         setSelectedQuiz(rooms[1].quiz);
@@ -259,7 +259,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 if (response.ok) {
                     const data = await response.json();
 
-                    if (data[2].participateAllowed) {
+                    if (data[0].participateAllowed) {
                         setChatRoomId(rooms[2].roomId);
                         setFirstCreate(false);
                         setSelectedQuiz(rooms[2].quiz);
@@ -304,7 +304,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 if (response.ok) {
                     const data = await response.json();
 
-                    if (data[3].participateAllowed) {
+                    if (data[0].participateAllowed) {
                         setChatRoomId(rooms[3].roomId);
                         setFirstCreate(false);
                         setSelectedQuiz(rooms[3].quiz);
@@ -349,7 +349,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 if (response.ok) {
                     const data = await response.json();
 
-                    if (data[4].participateAllowed) {
+                    if (data[0].participateAllowed) {
                         setChatRoomId(rooms[4].roomId);
                         setFirstCreate(false);
                         setSelectedQuiz(rooms[4].quiz);
@@ -394,7 +394,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                 if (response.ok) {
                     const data = await response.json();
 
-                    if (data[5].participateAllowed) {
+                    if (data[0].participateAllowed) {
                         setChatRoomId(rooms[5].roomId);
                         setFirstCreate(false);
                         setSelectedQuiz(rooms[5].quiz);
