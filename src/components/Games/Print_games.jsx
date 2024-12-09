@@ -174,8 +174,9 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedQuiz(rooms[0].quiz);
                         setPassword("");
                         setRoomName(rooms[0].roomName);
-                        console.log(rooms[0].roomName);
-                        navigate('/ingame');  // '/ingame'으로 네비게이션
+                        console.log(data[0]);
+                        console.log(rooms[0]);
+                        navigate(`/ingame/${rooms[0].roomId}`);  // '/ingame'으로 네비게이션
                     } else {
                         // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
                         setError({
@@ -220,7 +221,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedQuiz(rooms[1].quiz);
                         setRoomName(rooms[1].roomName);
                         setPassword("");
-                        navigate('/ingame');  // '/ingame'으로 네비게이션
+                        navigate(`/ingame/${rooms[1].roomId}`);  // '/ingame'으로 네비게이션
                     } else {
                         // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
                         setError({
@@ -265,7 +266,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedQuiz(rooms[2].quiz);
                         setRoomName(rooms[2].roomName);
                         setPassword("");
-                        navigate('/ingame');  // '/ingame'으로 네비게이션
+                        navigate(`/ingame/${rooms[2].roomId}`);  // '/ingame'으로 네비게이션
                     } else {
                         // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
                         setError({
@@ -310,7 +311,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedQuiz(rooms[3].quiz);
                         setRoomName(rooms[3].roomName);
                         setPassword("");
-                        navigate('/ingame');  // '/ingame'으로 네비게이션
+                        navigate(`/ingame/${rooms[3].roomId}`);  // '/ingame'으로 네비게이션
                     } else {
                         // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
                         setError({
@@ -355,7 +356,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedQuiz(rooms[4].quiz);
                         setRoomName(rooms[4].roomName);
                         setPassword("");
-                        navigate('/ingame');  // '/ingame'으로 네비게이션
+                        navigate(`/ingame/${rooms[4].roomId}`);  // '/ingame'으로 네비게이션
                     } else {
                         // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
                         setError({
@@ -400,7 +401,7 @@ function Print_games({ roomIds, setChatRoomId, setFirstCreate,
                         setSelectedQuiz(rooms[5].quiz);
                         setRoomName(rooms[5].roomName);
                         setPassword("");
-                        navigate('/ingame');  // '/ingame'으로 네비게이션
+                        navigate(`/ingame/${rooms[5].roomId}`);  // '/ingame'으로 네비게이션
                     } else {
                         // window.alert('이미 게임이 시작되었거나 인원이 꽉 찼습니다');
                         setError({

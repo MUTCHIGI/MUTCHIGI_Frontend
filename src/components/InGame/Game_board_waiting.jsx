@@ -1,9 +1,10 @@
 import './CSS/Game_board_waiting.css';
 import Button from "../Public/Button.jsx";
-import {useNavigate} from "react-router-dom";
+import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
 
 function Game_board_waiting({stompClient,
+                                chatRoomId,
                                 setFirstCreate,
                                 qsRelationId,
                                 songIndex,
@@ -13,6 +14,7 @@ function Game_board_waiting({stompClient,
                                 UserCount,
                                 setGameStart}) {
     const navigate = useNavigate();
+    const location = useLocation();
     const [countdown, setCountdown] = useState(null); // 카운트다운 초기 상태
     const [secondsRemaining,setSecondsRemaining] = useState(5);
     const handleExit = () => {
@@ -25,6 +27,17 @@ function Game_board_waiting({stompClient,
         // /home 경로로 이동
         setFirstCreate(true);
         navigate('/home');
+    };
+
+    const copyToClipboard = async () => {
+        const fullUrl = `${window.location.origin}${location.pathname}/${chatRoomId}`;
+
+        try {
+            await navigator.clipboard.writeText(fullUrl); // 클립보드에 복사
+            alert("링크가 클립보드에 복사되었습니다!");
+        } catch (error) {
+            console.error("클립보드 복사 실패:", error);
+        }
     };
 
     const handleStartClick = () => {
@@ -87,7 +100,7 @@ function Game_board_waiting({stompClient,
                 <Button text={"exit"} classname={"game_exit_deactivated"}/>
             }
 
-            <Button text={"share"} classname={"game_share"}/>
+            <Button text={"share"} classname={"game_share"} onClick={copyToClipboard}/>
         </div>
         <div className="ready_box">
             {!master ?

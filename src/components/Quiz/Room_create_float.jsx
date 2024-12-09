@@ -57,8 +57,43 @@ function Room_create_float({ quiz, onClose, userInfo,
     let handleMoveRoom = () => {
         onClose();
         setFirstCreate(true);
-        navigate('/ingame');
+        handleCreateRoom();
     }
+
+    // 방 생성 처리
+    const handleCreateRoom = async () => {
+        let isPublic = privacy === 'public';
+        const roomData = {
+            roomName: roomName,
+            publicRoom: isPublic,
+            participateAllowed: true, // 참여 허용 여부는 true로 고정
+            password: password,
+            maxPlayer: maxPlayer,
+            quizId: quiz.quizId, // quizId는 필요에 따라 설정
+            userId: userInfo.userId// userId는 필요에 따라 설정
+        };
+
+        try {
+            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/create`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify(roomData),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                setChatRoomId(data); // ChatRoomId state에 만들어진 방 id 저장
+                navigate(`/ingame/${data}`);
+            } else {
+                console.error('Error creating room:', response.statusText);
+            }
+        } catch (error) {
+            console.error('Network error:', error);
+        }
+    };
 
     const fetchThumbnail = async (url) => {
         if (url === "" || url === null) {
