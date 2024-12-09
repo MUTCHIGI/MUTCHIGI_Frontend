@@ -2,6 +2,7 @@ import './CSS/Game_board_waiting.css';
 import Button from "../Public/Button.jsx";
 import {useLocation, useNavigate} from "react-router-dom";
 import {useEffect, useState} from "react";
+import WarningModal from "../Public/Error.jsx";
 
 function Game_board_waiting({stompClient,
                                 chatRoomId,
@@ -17,6 +18,8 @@ function Game_board_waiting({stompClient,
     const location = useLocation();
     const [countdown, setCountdown] = useState(null); // 카운트다운 초기 상태
     const [secondsRemaining,setSecondsRemaining] = useState(5);
+    // 에러 모달
+    const [err, setError] = useState({ hasError: false, title: "", message: "" });
     const handleExit = () => {
         // 방과의 연결 해제
         if (stompClient && stompClient.connected) {
@@ -29,12 +32,26 @@ function Game_board_waiting({stompClient,
         navigate('/home');
     };
 
+    const handleClose = () => {
+        setError({
+            ...err,
+            hasError: false,
+            title: "",
+            message: ""
+        });
+    };
+
     const copyToClipboard = async () => {
         const fullUrl = `${window.location.origin}${location.pathname}/${chatRoomId}`;
 
         try {
             await navigator.clipboard.writeText(fullUrl); // 클립보드에 복사
-            alert("링크가 클립보드에 복사되었습니다!");
+            setError({
+                ...err,
+                hasError: true,
+                title: "복사 완료",
+                message: '링크를 공유해 다른사람들과 게임을 플레이하세요!'
+            });
         } catch (error) {
             console.error("클립보드 복사 실패:", error);
         }
@@ -91,6 +108,13 @@ function Game_board_waiting({stompClient,
     }, [qsRelationId, master]); // qsRelationId 또는 master 값이 변경될 때만 실행
 
     return <div className="Game_board_waiting">
+        <WarningModal
+            show={err.hasError}
+            setError={(flag) => setError(flag)}
+            title={err.title}
+            message={err.message}
+            onHide={handleClose}
+        />
         <div className="title_exit_share">
             <div className="game_board_title">
                 {roomName}
