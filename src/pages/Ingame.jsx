@@ -8,25 +8,26 @@ import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
 import test_profile from '../img/프로필1.png';
 import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import {useLocation, useNavigate, useParams} from "react-router-dom";
 import { useAuth } from "../components/Login/AuthContext.jsx";
 import user from "../components/InGame/User.jsx";
 import WarningModal from '../components/Public/Error';
 
-function Ingame({ quiz, chatRoomId, setChatRoomId,
+function Ingame({ quiz, setChatRoomId,
     privacy, roomName,
     createPassword, setCreatePassword,
     joinPassword, setJoinPassword,
     maxPlayer,
     userInfo,
+    chatRoomId,
     firstCreate,setFirstCreate,
     answerCount,setAnswerCount,
     answeredPerson,setAnsweredPerson,
     answerTime,setAnswerTime,
 }) {
-    let { token } = useAuth();
+    let {token} = useAuth();
     let [qsRelationId, setQsRelationId] = useState(-1);
-    let navigate = useNavigate()
+    let navigate = useNavigate();
     const [userList, setUserList] = useState(
         new Array(8).fill({
             userId: -1,
@@ -35,7 +36,7 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
             name: '',
             profileImageURL: '',
             role: 'Guest',
-            provider: { id: 0, providerName: '' }
+            provider: {id: 0, providerName: ''}
         })
     );
     const [messageText, setMessageText] = useState(''); // 서버로 전송하는 내 입력 채팅
@@ -56,22 +57,16 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
     const [CurrentQuiz, setCurrentQuiz] = useState(null); // 현재 풀고잇는 퀴즈
     const [CurrentHint, setCurrentHint] = useState(null); // 현재 풀고있는 퀴즈의 힌트
 
-    const [err, setError] = useState({ hasError: false, title: "", message: "" }); // 에러
+    const [err, setError] = useState({hasError: false, title: "", message: ""}); // 에러
 
     const client = useRef(null);
     const UserCount = userList.filter(user => user.userId !== -1).length;
 
-    const [kickModal,setKickModal] = useState(Array(8).fill(false));
+    const [kickModal, setKickModal] = useState(Array(8).fill(false));
 
     useEffect(() => {
         setAnswerCount({});
-        if (firstCreate) {
-            handleCreateRoom();
-            setFirstCreate(false);
-        }
-        else {
-            connectToRoom(chatRoomId);
-        }
+        connectToRoom(chatRoomId);
         return () => {
             if (client.current) {
                 // 연결 종료 등의 클린업 처리
@@ -111,7 +106,7 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             name: '',
                             profileImageURL: '',
                             role: 'Guest',
-                            provider: { id: 0, providerName: '' }
+                            provider: {id: 0, providerName: ''}
                         });
                     }
                     setUserList(updatedUserList);
@@ -146,41 +141,6 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
             fetchUserListAndSuperUser();
         }
     }, [chatMessages, token, chatRoomId]);
-
-    // 방 생성 처리
-    const handleCreateRoom = async () => {
-        let isPublic = privacy === 'public';
-        const roomData = {
-            roomName: roomName,
-            publicRoom: isPublic,
-            participateAllowed: true, // 참여 허용 여부는 true로 고정
-            password: createPassword,
-            maxPlayer: maxPlayer,
-            quizId: quiz.quizId, // quizId는 필요에 따라 설정
-            userId: userInfo.userId// userId는 필요에 따라 설정
-        };
-
-        try {
-            const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/room/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`,
-                },
-                body: JSON.stringify(roomData),
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                setChatRoomId(data); // ChatRoomId state에 만들어진 방 id 저장
-                connectToRoom(data);
-            } else {
-                console.error('Error creating room:', response.statusText);
-            }
-        } catch (error) {
-            console.error('Network error:', error);
-        }
-    };
 
     const connectToRoom = (chatRoomId) => {
         const socket = new SockJS(`${import.meta.env.VITE_SERVER_IP}/room`);
@@ -295,7 +255,7 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
             //정답 맞춘 개수 업데이트
             setAnswerCount((prevAnswerCount) => {
                 // 이전 상태 복사
-                const updatedAnswerCount = { ...prevAnswerCount };
+                const updatedAnswerCount = {...prevAnswerCount};
 
                 // 사용자의 정답 횟수 증가
                 const userName = answerChatList[0].answerUserName;
@@ -530,6 +490,7 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                 {!gameStart ?
                     <Game_board_waiting
                         stopmClient={client.current}
+                        chatRoomId={chatRoomId}
                         setFirstCreate={setFirstCreate}
                         qsRelationId={qsRelationId}
                         setSongIndex={setSongIndex}
@@ -569,14 +530,38 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
             </div>
             <div className="user_list">
                 <div className="user_box">
-                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[0]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={1} master={userList[0].userId === superUserId} onClick={handleKickClick_0} index={0} kickModal={kickModal} setKickModal={setKickModal} />
-                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[1]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={2} master={userList[1].userId === superUserId} onClick={handleKickClick_1} index={1} kickModal={kickModal} setKickModal={setKickModal} />
-                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[2]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={3} master={userList[2].userId === superUserId} onClick={handleKickClick_2} index={2} kickModal={kickModal} setKickModal={setKickModal} />
-                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[3]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={4} master={userList[3].userId === superUserId} onClick={handleKickClick_3} index={3} kickModal={kickModal} setKickModal={setKickModal} />
-                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[4]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={5} master={userList[4].userId === superUserId} onClick={handleKickClick_4} index={4} kickModal={kickModal} setKickModal={setKickModal} />
-                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[5]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={6} master={userList[5].userId === superUserId} onClick={handleKickClick_5} index={5} kickModal={kickModal} setKickModal={setKickModal} />
-                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[6]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={7} master={userList[6].userId === superUserId} onClick={handleKickClick_6} index={6} kickModal={kickModal} setKickModal={setKickModal} />
-                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[7]} chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null} number={8} master={userList[7].userId === superUserId} onClick={handleKickClick_7} index={7} kickModal={kickModal} setKickModal={setKickModal} />
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[0]}
+                          chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null}
+                          number={1} master={userList[0].userId === superUserId} onClick={handleKickClick_0}
+                          index={0} kickModal={kickModal} setKickModal={setKickModal}/>
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[1]}
+                          chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null}
+                          number={2} master={userList[1].userId === superUserId} onClick={handleKickClick_1}
+                          index={1} kickModal={kickModal} setKickModal={setKickModal}/>
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[2]}
+                          chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null}
+                          number={3} master={userList[2].userId === superUserId} onClick={handleKickClick_2}
+                          index={2} kickModal={kickModal} setKickModal={setKickModal}/>
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[3]}
+                          chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null}
+                          number={4} master={userList[3].userId === superUserId} onClick={handleKickClick_3}
+                          index={3} kickModal={kickModal} setKickModal={setKickModal}/>
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[4]}
+                          chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null}
+                          number={5} master={userList[4].userId === superUserId} onClick={handleKickClick_4}
+                          index={4} kickModal={kickModal} setKickModal={setKickModal}/>
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[5]}
+                          chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null}
+                          number={6} master={userList[5].userId === superUserId} onClick={handleKickClick_5}
+                          index={5} kickModal={kickModal} setKickModal={setKickModal}/>
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[6]}
+                          chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null}
+                          number={7} master={userList[6].userId === superUserId} onClick={handleKickClick_6}
+                          index={6} kickModal={kickModal} setKickModal={setKickModal}/>
+                    <User client={client} chatRoomId={chatRoomId} userInfo={userList[7]}
+                          chat={chatMessages.length > 0 ? chatMessages[chatMessages.length - 1] : null}
+                          number={8} master={userList[7].userId === superUserId} onClick={handleKickClick_7}
+                          index={7} kickModal={kickModal} setKickModal={setKickModal}/>
                 </div>
             </div>
         </div>
@@ -588,7 +573,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             {userList[0].userId !== -1
                                 &&
                                 <>
-                                    <span style={{ color: 'red' }}>{userList[0].name}</span> &nbsp;&nbsp;{answerCount[userList[0].name] ? answerCount[userList[0].name] : 0}
+                                            <span
+                                                style={{color: 'red'}}>{userList[0].name}</span> &nbsp;&nbsp;{answerCount[userList[0].name] ? answerCount[userList[0].name] : 0}
                                 </>
                             }
                         </div>
@@ -596,7 +582,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             {userList[1].userId !== -1
                                 &&
                                 <>
-                                    <span style={{ color: 'orange' }}>{userList[1].name}</span> &nbsp;&nbsp;{answerCount[userList[1].name] ? answerCount[userList[1].name] : 0}
+                                            <span
+                                                style={{color: 'orange'}}>{userList[1].name}</span> &nbsp;&nbsp;{answerCount[userList[1].name] ? answerCount[userList[1].name] : 0}
                                 </>
                             }
                         </div>
@@ -604,7 +591,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             {userList[2].userId !== -1
                                 &&
                                 <>
-                                    <span style={{ color: 'yellow' }}>{userList[2].name}</span> &nbsp;&nbsp;{answerCount[userList[2].name] ? answerCount[userList[2].name] : 0}
+                                            <span
+                                                style={{color: 'yellow'}}>{userList[2].name}</span> &nbsp;&nbsp;{answerCount[userList[2].name] ? answerCount[userList[2].name] : 0}
                                 </>
                             }
                         </div>
@@ -612,7 +600,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             {userList[3].userId !== -1
                                 &&
                                 <>
-                                    <span style={{ color: 'lightgreen' }}>{userList[3].name}</span> &nbsp;&nbsp;{answerCount[userList[3].name] ? answerCount[userList[3].name] : 0}
+                                            <span
+                                                style={{color: 'lightgreen'}}>{userList[3].name}</span> &nbsp;&nbsp;{answerCount[userList[3].name] ? answerCount[userList[3].name] : 0}
                                 </>
                             }
                         </div>
@@ -624,7 +613,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             {userList[4].userId !== -1
                                 &&
                                 <>
-                                    <span style={{ color: 'lightblue' }}>{userList[4].name}</span> &nbsp;&nbsp;{answerCount[userList[4].name] ? answerCount[userList[4].name] : 0}
+                                            <span
+                                                style={{color: 'lightblue'}}>{userList[4].name}</span> &nbsp;&nbsp;{answerCount[userList[4].name] ? answerCount[userList[4].name] : 0}
                                 </>
                             }
                         </div>
@@ -632,7 +622,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             {userList[5].userId !== -1
                                 &&
                                 <>
-                                    <span style={{ color: 'magenta' }}>{userList[5].name}</span> &nbsp;&nbsp;{answerCount[userList[5].name] ? answerCount[userList[5].name] : 0}
+                                            <span
+                                                style={{color: 'magenta'}}>{userList[5].name}</span> &nbsp;&nbsp;{answerCount[userList[5].name] ? answerCount[userList[5].name] : 0}
                                 </>
                             }
                         </div>
@@ -640,7 +631,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             {userList[6].userId !== -1
                                 &&
                                 <>
-                                    <span style={{ color: 'mediumpurple' }}>{userList[6].name}</span> &nbsp;&nbsp;{answerCount[userList[6].name] ? answerCount[userList[6].name] : 0}
+                                            <span
+                                                style={{color: 'mediumpurple'}}>{userList[6].name}</span> &nbsp;&nbsp;{answerCount[userList[6].name] ? answerCount[userList[6].name] : 0}
                                 </>
                             }
                         </div>
@@ -648,7 +640,8 @@ function Ingame({ quiz, chatRoomId, setChatRoomId,
                             {userList[7].userId !== -1
                                 &&
                                 <>
-                                    <span style={{ color: 'ivory' }}>{userList[7].name}</span> &nbsp;&nbsp;{answerCount[userList[7].name] ? answerCount[userList[7].name] : 0}
+                                            <span
+                                                style={{color: 'ivory'}}>{userList[7].name}</span> &nbsp;&nbsp;{answerCount[userList[7].name] ? answerCount[userList[7].name] : 0}
                                 </>
                             }
                         </div>

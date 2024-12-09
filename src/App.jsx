@@ -14,6 +14,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import Quiz_page_Playlist from "./pages/Quiz_page_Playlist.jsx";
 import Login from "./pages/Login.jsx"
 import Game_stat from "./pages/Game_stat.jsx";
+import Ingame_tunnel from "./pages/Ingame_tunnel.jsx";
 
 export let WindowSizeContext = createContext();
 
@@ -93,6 +94,13 @@ function App() {
                           userInfo={userInfo} setUserInfo={setUserInfo}
                           setRestartQuizId={setRestartQuizId}
                           setFirstCreate={setFirstCreate}
+                      />}/>
+                      <Route path="/ingame/:chatRoomId" element={<Ingame_tunnel
+                          setUserInfo={setUserInfo}
+                          setChatRoomId={setChatRoomId}
+                          setSelectedQuiz={setSelectedQuiz}
+                          setRoomName={setRoomName}
+                          setPassword={setJoinPassword}
                       />}/>
                       <Route path="/ingame" element={<Ingame
                           quiz={selectedQuiz}
