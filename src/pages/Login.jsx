@@ -14,6 +14,21 @@ function Login() {
     const navigator = useNavigate();
 
     useEffect(() => {
+        // 1. 현재 URL의 쿼리 파라미터 확인
+        const urlParams = new URLSearchParams(window.location.search);
+        const tokenFromUrl = urlParams.get('token');
+
+        // 2. URL에 토큰이 '없는' 경우에만 (즉, 구글 로그인 리다이렉트가 아닌 경우)
+        // 기존에 저장된 토큰을 날려버림
+        if (!tokenFromUrl) {
+            // console.log("일반 접속이므로 토큰을 초기화합니다.");
+            setToken(null);
+            localStorage.removeItem('jwtToken');
+        }
+        // 만약 tokenFromUrl이 있다면, AuthContext에서 이미 처리를 하거나 유지하므로 둡니다.
+    }, [setToken]);
+
+    useEffect(() => {
         if (token !== null) {
             navigator('/home');
         }
