@@ -363,6 +363,7 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
     // Function to fetch the list of songs being processed
     const fetchProcessingSongs = async () => {
         try {
+            // 1. 변환 상태 조회
             const response = await fetch(`${import.meta.env.VITE_SERVER_IP}/GCP/quiz/DemucsCount?quizId=${quizId}`, {
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -375,21 +376,56 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
             const data = await response.json();
             const notConvertedIds = data.notConvertedQsRelationIDInQuizList || [];
             const allIds = data.allQsRelationIDInQuizList || [];
-            const updatedCards = cards.map(card => {
+
+            // 2. 카드 상태 업데이트 및 정답 가져오기 (비동기 처리)
+            const updatedCardsPromises = cards.map(async (card) => {
                 const isInAllIds = allIds.includes(card.quizRelationId);
                 const isInNotConvertedIds = notConvertedIds.includes(card.quizRelationId);
-                // isConverted 값을 업데이트하고 나머지 속성은 그대로 유지
+                
+                // 서버 기준 현재 변환 완료 상태인지 확인
+                const isNowConverted = (isInAllIds && (!isInNotConvertedIds));
+
+                // [중요 변경] 기존에는 변환 안 됨(false) 상태였는데, 지금 변환 완료(true)가 된 경우 -> 정답 호출
+                if (!card.isConverted && isNowConverted) {
+                    try {
+                        const answerResponse = await fetch(`${import.meta.env.VITE_SERVER_IP}/song/youtube/${card.quizRelationId}/answers`, {
+                            method: 'GET',
+                            headers: {
+                                'Accept': '*/*',
+                                'Authorization': `Bearer ${token}`,
+                            },
+                        });
+                        
+                        let newAnswers = [];
+                        if (answerResponse.ok) {
+                            newAnswers = await answerResponse.json();
+                        }
+
+                        // 변환 상태와 새로 가져온 정답을 함께 업데이트
+                        return {
+                            ...card,
+                            isConverted: true,
+                            answers: newAnswers 
+                        };
+                    } catch (err) {
+                        console.error(`Error fetching answers for ${card.quizRelationId}:`, err);
+                        // 정답 불러오기 실패하더라도 변환 상태는 true로 변경
+                        return { ...card, isConverted: true };
+                    }
+                }
+
+                // 상태 변화가 없거나 이미 완료된 항목은 isConverted 상태만 동기화
                 return {
                     ...card,
-                    isConverted: (isInAllIds && (!isInNotConvertedIds)),
+                    isConverted: isNowConverted,
                 };
             });
 
-            setCards(prevCards =>
-                prevCards.map(card =>
-                    updatedCards.find(updatedCard => updatedCard.quizRelationId === card.quizRelationId) || card
-                )
-            );
+            // 모든 카드의 처리가 끝날 때까지 기다림
+            const updatedCards = await Promise.all(updatedCardsPromises);
+
+            // 상태 업데이트 (기존 값과 비교하여 변경사항이 있을 때만 업데이트하도록 최적화 가능하지만, 여기선 바로 반영)
+            setCards(updatedCards);
 
         } catch (error) {
             console.error('Error fetching processing songs:', error);
