@@ -415,13 +415,13 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
     // Function to initiate song conversion
     const handleSearch = async () => {
         if (url.trim() === '') return;
-        if (orderCount === 10) {
+        if (orderCount === 15) {
             // alert("최대 요청 횟수를 넘겼습니다");
             setError({
                 ...err,
                 hasError: true,
                 title: "요청 한도 초과",
-                message: "최대 요청 횟수(10 회)를 넘겼습니다."
+                message: "최대 요청 횟수(15 회)를 넘겼습니다."
               });
             setUrl('');
             return;
@@ -614,7 +614,7 @@ function MusicList({ quizId, cards, isModalOpen, isLoading, hintSetting, orderCo
                         <span className={`${styles['tooltip-icon']}`}>
                             ?
                             <span className={`${styles['tooltip-text']}`}>
-                                AI 퀴즈 노래 변환은 하루에 10곡으로 제한되며,<br />
+                                AI 퀴즈 노래 변환은 하루에 15곡으로 제한되며,<br />
                                 변환을 시작하면 되돌릴 수 없습니다.
                             </span>
                         </span>
